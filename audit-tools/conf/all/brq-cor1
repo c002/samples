@@ -1,0 +1,3352 @@
+!RANCID-CONTENT-TYPE: cisco
+!
+!Chassis type: 7206VXR - a 7200 router
+!CPU: NPE-G1, SB-1 CPU at 700MHz, impl 1, Rev 0.2, 512KB L2 Cache
+!
+!Memory: main 491520K/32768K
+!Memory: nvram 509K
+!Memory: bootflash 16384K
+!Memory: pcmcia ATA slot2 62720K
+!
+!Processor ID: 30469788
+!
+!Power: Power Supply 1 is Astec DC Power Supply. Unit is on.
+!Power: Power Supply 2 is Astec DC Power Supply. Unit is on.
+!
+!Image: Software: C7200-IS-M, 12.3(21), RELEASE SOFTWARE (fc2)
+!Image: Compiled: Mon 06-Nov-06 16:25 by ccai
+!Image: disk2:c7200-is-mz.123-21.bin
+!
+!ROM Bootstrap: Version 12.2(8r)B, RELEASE SOFTWARE (fc1)
+!BOOTLDR: Version 12.2(14)S5, EARLY DEPLOYMENT RELEASE SOFTWARE (fc2)
+!
+!
+!
+!Variable: BOOT variable = disk2:c7200-is-mz.123-21.bin,1;
+!Variable: CONFIG_FILE variable does not exist
+!Variable: BOOTLDR variable does not exist
+!
+!Flash: nvram: Directory of nvram:/
+!Flash: nvram:   477  -rw-       32215                    <no date>  startup-config
+!Flash: nvram:   478  ----          27                    <no date>  private-config
+!Flash: nvram:   479  -rw-       32215                    <no date>  underlying-config
+!Flash: nvram:     1  ----         108                    <no date>  persistent-data
+!Flash: nvram:     2  -rw-      154261                    <no date>  ifIndex-table
+!Flash: nvram: 522232 bytes total (329170 bytes free)
+!
+!Flash: bootflash: Directory of bootflash:/
+!Flash: bootflash:     1  -rw-     5240492  Jan 22 2000 05:17:31 +10:00  c7200-kboot-mz.122-14.S5.bin
+!Flash: bootflash: 15990784 bytes total (10750164 bytes free)
+!
+!Flash: disk2: Directory of disk2:/
+!Flash: disk2:     1  -rw-    17839180  Jun 20 2007 17:08:22 +10:00  c7200-is-mz.123-21.bin
+!Flash: disk2: 63991808 bytes total (46149632 bytes free)
+!
+!Interface: GigabitEthernet0/1, BCM1250 Internal MAC (Revision A8/A10)
+!Interface: GigabitEthernet0/2, BCM1250 Internal MAC (Revision A8/A10)
+!Interface: GigabitEthernet0/3, BCM1250 Internal MAC (Revision A8/A10)
+!Interface: ATM2/0, ENHANCED ATM PA - OC3 (155000Kbps)
+!Interface: ATM4/0, ENHANCED ATM PA Plus - OC3 (155000Kbps)
+!Interface: FastEthernet5/0, i82543 (Livengood) A2
+!Interface: FastEthernet5/1, i82543 (Livengood) A2
+!
+!Slot 2: type ATM WAN OC3 SMI, 1 ports
+!Slot 2: hvers 2.0 rev A0
+!Slot 2: part 73-2427-04, serial 11525179
+!
+!Slot 4: type ATM WAN OC3+ SMI, 1 ports
+!Slot 4: hvers 2.0 rev A0
+!Slot 4: part 800-20779-02, serial JAE09065GXK
+!
+!Slot 5: type Dual Port FastEthernet RJ45, 2 ports
+!Slot 5: hvers 1.1 rev D0
+!Slot 5: part 800-08350-06, serial JAE0929GG3W
+!
+!Slot Midplane: hvers 2.7 rev A0
+!Slot Midplane: part 73-3223-11, serial 30469788
+!
+!Slot CPU: hvers 1.1 rev A0
+!Slot CPU: part 28-5082-05, serial 31242217
+!
+!
+config-register 0x2102
+version 12.3
+service nagle
+no service pad
+service timestamps debug datetime msec localtime show-timezone
+service timestamps log datetime msec localtime show-timezone
+service password-encryption
+service linenumber
+service compress-config
+!
+hostname brq-cor1
+!
+boot-start-marker
+boot system flash disk2:c7200-is-mz.123-21.bin
+boot-end-marker
+!
+logging queue-limit 100
+logging buffered 65536 warnings
+no logging console
+enable secret 5 $1$PJCe$jpmnYF/9g8f279dP4w.QZ1
+!
+clock timezone AEST 10
+aaa new-model
+!
+aaa authentication login default group tacacs+ local enable
+aaa authentication login vty-access group tacacs+ local enable
+aaa authentication login console-access group tacacs+ local enable
+aaa authentication enable default none
+aaa authorization exec default group tacacs+ if-authenticated 
+aaa authorization commands 1 default group tacacs+ if-authenticated 
+aaa authorization commands 15 default group tacacs+ if-authenticated 
+aaa authorization network default none 
+aaa accounting exec default stop-only group tacacs+
+aaa accounting commands 1 default stop-only group tacacs+
+aaa accounting commands 15 default stop-only group tacacs+
+aaa session-id common
+ip subnet-zero
+no ip source-route
+no ip icmp rate-limit unreachable DF
+ip flow-cache timeout active 10
+!
+ip cef
+ip finger
+ip tcp selective-ack
+ip tcp mss 1460
+ip tcp window-size 65535
+ip tcp queuemax 50
+ip tcp path-mtu-discovery
+ip tftp source-interface Loopback0
+no ip ftp passive
+ip ftp source-interface Loopback0
+ip ftp username cisco
+ip ftp password 7 01105717585B
+ip domain list connect.com.au
+ip domain name connect.com.au
+ip name-server 203.8.183.1
+ip name-server 192.189.54.33
+!
+no ip bootp server
+!
+memory sanity all
+username admin password 7 053F050E284D5A0D0D
+!
+class-map match-all IP-RT
+  description VoIP Real Time Audio traffic
+  match ip precedence 4  5 
+class-map match-all IP-ID
+  description VoIP Signalling Traffic
+  match ip precedence 2  3 
+class-map match-all IP-NWC
+  description Network Control Traffic
+  match ip precedence 6  7 
+!
+policy-map CE-IN
+  class IP-RT
+  class IP-ID
+  class IP-NWC
+   set ip precedence 3
+  class class-default
+   set ip precedence 0
+policy-map CE-OUT-IprovideOffice1
+  class IP-RT
+   priority percent 82
+  class IP-ID
+   bandwidth remaining percent 66
+   random-detect
+  class class-default
+   fair-queue
+   random-detect
+!
+interface Loopback0
+ description RTRCO-BRIS0318-BRQ-COR1
+ ip address 203.63.80.248 255.255.255.255
+!
+interface Null0
+ no ip unreachables
+!
+interface GigabitEthernet0/1
+ description Connection to bqueedist01 Gi9/6
+ bandwidth 1000000
+ ip address 202.10.15.161 255.255.255.254
+ ip access-group MARTIAN out
+ ip accounting precedence input
+ ip accounting precedence output
+ ip route-cache flow
+ ip ospf authentication message-digest
+ ip ospf message-digest-key 1 md5 7 03055A1B122F086B7E
+ ip ospf network point-to-point
+ ip ospf cost 4000
+ ip ospf priority 0
+ load-interval 30
+ duplex full
+ speed 1000
+ media-type rj45
+ no negotiation auto
+ fair-queue
+ no cdp enable
+!
+interface GigabitEthernet0/2
+ description Connection to bqueedist02 Gi9/6
+ bandwidth 1000000
+ ip address 202.10.15.163 255.255.255.254
+ ip access-group MARTIAN out
+ ip accounting precedence input
+ ip accounting precedence output
+ ip route-cache flow
+ ip ospf authentication message-digest
+ ip ospf message-digest-key 1 md5 7 03055A1B122F086B7E
+ ip ospf network point-to-point
+ ip ospf cost 4000
+ ip ospf priority 0
+ load-interval 30
+ duplex full
+ speed 1000
+ media-type rj45
+ no negotiation auto
+ fair-queue
+ no cdp enable
+!
+interface GigabitEthernet0/3
+ description TRNK: Connection to MANSWBRIS0318001 Gi0/1
+ no ip address
+ ip route-cache flow
+ duplex full
+ speed 1000
+ media-type gbic
+ negotiation auto
+ fair-queue
+ arp timeout 300
+ no cdp enable
+ hold-queue 200 in
+!
+interface GigabitEthernet0/3.504
+ description DMCC142502 -7 Maculrob Services Pty Ltd 100Mb (BRIS0318 - BRIS1619 VVC 0001)
+ bandwidth 100000
+ encapsulation dot1Q 504
+ ip address 210.8.13.122 255.255.255.252
+ ip verify unicast reverse-path
+ no ip redirects
+ rate-limit input 100000000 18750000 37500000 conform-action transmit exceed-action drop
+ rate-limit output 100000000 18750000 37500000 conform-action transmit exceed-action drop
+ arp timeout 300
+ no cdp enable
+!
+interface GigabitEthernet0/3.509
+ description DQUE144412-2 Queensland Rail 100Mb (BRIS0318 - BRIS1070 VVC 0001)
+ bandwidth 100000
+ encapsulation dot1Q 509
+ ip address 210.8.13.134 255.255.255.252
+ no ip redirects
+ rate-limit input 100000000 18750000 37500000 conform-action transmit exceed-action drop
+ rate-limit output 100000000 18750000 37500000 conform-action transmit exceed-action drop
+ arp timeout 300
+ no cdp enable
+!
+interface GigabitEthernet0/3.520
+ description DQUE146833-2 QUEENSLAND RAIL LTD 100Mb (BRIS0318 - BRIS1917 VVC 0001)
+ bandwidth 100000
+ encapsulation dot1Q 520
+ ip address 210.8.156.250 255.255.255.252
+ ip verify unicast reverse-path
+ no ip redirects
+ rate-limit input 100000000 18750000 37500000 conform-action transmit exceed-action drop
+ rate-limit output 100000000 18750000 37500000 conform-action transmit exceed-action drop
+ arp timeout 300
+ no cdp enable
+!
+interface GigabitEthernet0/3.538
+ description DQUE146159-1 Queensland Rail 10Mb (BRIS0318 - BRIS1070 VVC 0002)
+ bandwidth 10000
+ encapsulation dot1Q 538
+ ip address 210.8.13.6 255.255.255.252
+ no ip redirects
+ rate-limit input 10000000 1875000 3750000 conform-action transmit exceed-action drop
+ rate-limit output 10000000 1875000 3750000 conform-action transmit exceed-action drop
+ arp timeout 300
+ no cdp enable
+!
+interface ATM2/0
+ description bb10066b 3.3
+ no ip address
+ ip route-cache flow
+ no atm ilmi-keepalive
+!
+interface ATM2/0.10236 point-to-point
+ description SPARE DTS 877051
+ mtu 1500
+ bandwidth 2048
+ ip verify unicast reverse-path
+ shutdown
+ pvc 1/236 
+  vbr-nrt 2458 2458 33
+  no ilmi manage
+  encapsulation aal5snap
+ !
+!
+interface ATM2/0.20205 point-to-point
+ description DQUE139835-3 515 Queen Street Pty Ltd 2Mb (BRIS0318 - BRIS1667 PVC 0001)
+ mtu 1516
+ bandwidth 1536
+ ip address 210.9.87.134 255.255.255.252
+ ip verify unicast reverse-path
+ pvc 2/205 
+  vbr-nrt 2713 2713 33
+  no ilmi manage
+  encapsulation aal5snap
+ !
+!
+interface ATM2/0.30032 point-to-point
+ description Cancelled DTS 881202
+!
+interface ATM2/0.30033 point-to-point
+ description WOR146007-1 Fednav Pty Ltd 2048k (BRIS0318 - BRIS1791 PVC 0001)
+ mtu 1500
+ bandwidth 2048
+ ip address 210.8.20.22 255.255.255.252
+ ip verify unicast reverse-path
+ pvc 30/33 
+  vbr-nrt 2048 2048 32
+  no ilmi manage
+  encapsulation aal5snap
+ !
+!
+interface ATM2/0.30035 point-to-point
+ description DEN24281-13 Dentsply Australia Pty Ltd 1024k (BRIS0318 - DUTP1001 PVC 0001)
+ mtu 1500
+ bandwidth 1024
+ ip address 210.10.41.6 255.255.255.252
+ ip verify unicast reverse-path
+ pvc 30/35 
+  vbr-nrt 1024 1024 32
+  no ilmi manage
+  encapsulation aal5snap
+ !
+!
+interface ATM2/0.30036 point-to-point
+ description GOP134937-4 Goprint  1024k (BRIS0318 - WGBA1035 PVC 0001)
+ mtu 1500
+ bandwidth 1024
+ ip address 210.10.41.10 255.255.255.252
+ ip verify unicast reverse-path
+ pvc 30/36 
+  vbr-nrt 1024 1024 32
+  no ilmi manage
+  encapsulation aal5snap
+ !
+!
+interface ATM4/0
+ description bb10066b 3.5
+ no ip address
+ ip route-cache flow
+ no atm ilmi-keepalive
+!
+interface ATM4/0.444 point-to-point
+ description DRIO140631 Rio Tinto Services 2Mb (ZET10017500)
+ bandwidth 1984
+ ip address 210.11.168.114 255.255.255.252
+ no ip mroute-cache
+ atm route-bridged ip
+ pvc 2/254 
+  vbr-nrt 1984 1984 32
+  no ilmi manage
+  encapsulation aal5snap
+ !
+!
+interface ATM4/0.500 point-to-point
+ description DHOL146938-1 HOLMES INSTITUTE PTY. LTD 2048k [IoA] (ZET10018318)
+ mtu 1500
+ bandwidth 2048
+ ip address 210.10.41.14 255.255.255.252
+ ip verify unicast reverse-path
+ shutdown
+ pvc 2/500 
+  vbr-nrt 2048 2048 33
+  no ilmi manage
+  encapsulation aal5snap
+ !
+!
+interface ATM4/0.501 point-to-point
+ description *********SPARE*************
+ no ip mroute-cache
+!
+interface ATM4/0.502 point-to-point
+ description DSTJ145312-1 St John Ambulance Australia (QLD) 4Mb (ZET10068559)
+ bandwidth 4096
+ ip address 210.11.168.18 255.255.255.252
+ no ip mroute-cache
+ atm route-bridged ip
+ pvc 2/502 
+  vbr-nrt 4096 4096 32
+  no ilmi manage
+  encapsulation aal5snap
+ !
+!
+interface ATM4/0.504 point-to-point
+ description SPARE DTS 879891
+ mtu 1500
+ bandwidth 2048
+ ip address 210.11.168.86 255.255.255.252
+ no ip mroute-cache
+ shutdown
+ atm route-bridged ip
+ pvc 2/504 
+  vbr-nrt 2048 2048 33
+  no ilmi manage
+  encapsulation aal5snap
+ !
+!
+interface ATM4/0.511 point-to-point
+ description DINP143994-1 Inprint 2Mb (ZET10049981) - Suspended DTS 885415
+ bandwidth 2000
+ ip address 210.11.168.46 255.255.255.252
+ no ip mroute-cache
+ shutdown
+ atm route-bridged ip
+ pvc 2/511 
+  vbr-nrt 2000 2000 32
+  no ilmi manage
+  encapsulation aal5snap
+ !
+!
+interface ATM4/0.513 point-to-point
+ description XYZ Ethernet ATM,ZET10012890, Australian Workers Union DAUS140656 (Suspended DTS797256)
+ bandwidth 2000
+ ip address 203.63.50.190 255.255.255.240
+ no ip mroute-cache
+ atm route-bridged ip
+ pvc 2/513 
+  vbr-nrt 1984 1984 32
+  no ilmi manage
+  encapsulation aal5snap
+ !
+!
+interface ATM4/0.514 point-to-point
+ description 142615-12 Invacare Australia Pty Ltd 1536k [IoA] (ZET10066241 ) - CXL DTS885241
+ mtu 1500
+ bandwidth 1536
+ ip verify unicast reverse-path
+ no ip mroute-cache
+ shutdown
+ atm route-bridged ip
+ pvc 2/514 
+  vbr-nrt 1536 1536 33
+  no ilmi manage
+  encapsulation aal5snap
+ !
+!
+interface ATM4/0.1033 point-to-point
+ description IProvideOffice bulk provisioned interface - 2M
+ mtu 1500
+ bandwidth 2048
+ ip unnumbered Loopback0
+ no ip redirects
+ no ip mroute-cache
+ pvc 10/33 
+  vbr-nrt 2048 2048 32
+  tx-ring-limit 3
+  no ilmi manage
+  encapsulation aal5snap
+  max-reserved-bandwidth 95
+  service-policy input CE-IN
+  service-policy output CE-OUT-IprovideOffice1
+ !
+!
+interface ATM4/0.1037 point-to-point
+ description IprovideOffice - Thai Airways International (auth by Paul Kenny - 23/2)
+ mtu 1500
+ bandwidth 2048
+ ip unnumbered Loopback0
+ no ip mroute-cache
+ pvc 10/37 
+  vbr-nrt 2048 2048 32
+  tx-ring-limit 3
+  no ilmi manage
+  encapsulation aal5snap
+  max-reserved-bandwidth 95
+  service-policy input CE-IN
+  service-policy output CE-OUT-IprovideOffice1
+ !
+!
+interface ATM4/0.1052 point-to-point
+ description IProvideOffice bulk provisioned interface - 4M
+ mtu 1500
+ bandwidth 4096
+ ip unnumbered Loopback0
+ no ip mroute-cache
+ pvc 10/52 
+  vbr-nrt 4096 4096 32
+  tx-ring-limit 3
+  no ilmi manage
+  encapsulation aal5snap
+  max-reserved-bandwidth 95
+  service-policy input CE-IN
+  service-policy output CE-OUT-IprovideOffice1
+ !
+!
+interface ATM4/0.1054 point-to-point
+ description IProvideOffice bulk provisioned interface - 4M
+ mtu 1500
+ bandwidth 4096
+ ip unnumbered Loopback0
+ no ip mroute-cache
+ pvc 10/54 
+  vbr-nrt 4096 4096 32
+  tx-ring-limit 3
+  no ilmi manage
+  encapsulation aal5snap
+  max-reserved-bandwidth 95
+  service-policy input CE-IN
+  service-policy output CE-OUT-IprovideOffice1
+ !
+!
+interface ATM4/0.1055 point-to-point
+ description IProvideOffice bulk provisioned interface - 4M
+ mtu 1500
+ bandwidth 4096
+ ip unnumbered Loopback0
+ no ip mroute-cache
+ pvc 10/55 
+  vbr-nrt 4096 4096 32
+  tx-ring-limit 3
+  no ilmi manage
+  encapsulation aal5snap
+  max-reserved-bandwidth 95
+  service-policy input CE-IN
+  service-policy output CE-OUT-IprovideOffice1
+ !
+!
+interface ATM4/0.1057 point-to-point
+ description IProvideOffice bulk provisioned interface - 4M
+ mtu 1500
+ bandwidth 4096
+ ip unnumbered Loopback0
+ no ip mroute-cache
+ pvc 10/57 
+  vbr-nrt 4096 4096 32
+  tx-ring-limit 3
+  no ilmi manage
+  encapsulation aal5snap
+  max-reserved-bandwidth 95
+  service-policy input CE-IN
+  service-policy output CE-OUT-IprovideOffice1
+ !
+!
+interface ATM4/0.1058 point-to-point
+ description IProvideOffice bulk provisioned interface - 6M
+ mtu 1500
+ bandwidth 6144
+ ip unnumbered Loopback0
+ no ip mroute-cache
+ pvc 10/58 
+  vbr-nrt 6144 6144 32
+  tx-ring-limit 3
+  no ilmi manage
+  encapsulation aal5snap
+  max-reserved-bandwidth 95
+  service-policy input CE-IN
+  service-policy output CE-OUT-IprovideOffice1
+ !
+!
+interface ATM4/0.1059 point-to-point
+ description IProvideOffice bulk provisioned interface - 4M
+ mtu 1500
+ bandwidth 4096
+ ip unnumbered Loopback0
+ no ip mroute-cache
+ pvc 10/59 
+  vbr-nrt 4096 4096 32
+  tx-ring-limit 3
+  no ilmi manage
+  encapsulation aal5snap
+  max-reserved-bandwidth 95
+  service-policy input CE-IN
+  service-policy output CE-OUT-IprovideOffice1
+ !
+!
+interface ATM4/0.1061 point-to-point
+ description IProvideOffice bulk provisioned interface - 6M
+ mtu 1500
+ bandwidth 6144
+ ip unnumbered Loopback0
+ no ip mroute-cache
+ pvc 10/61 
+  vbr-nrt 6144 6144 32
+  tx-ring-limit 3
+  no ilmi manage
+  encapsulation aal5snap
+  max-reserved-bandwidth 95
+  service-policy input CE-IN
+  service-policy output CE-OUT-IprovideOffice1
+ !
+!
+interface ATM4/0.1065 point-to-point
+ description IProvideOffice bulk provisioned interface - 6M
+ mtu 1500
+ bandwidth 6144
+ ip unnumbered Loopback0
+ no ip mroute-cache
+ pvc 10/65 
+  vbr-nrt 6144 6144 32
+  tx-ring-limit 3
+  no ilmi manage
+  encapsulation aal5snap
+  max-reserved-bandwidth 95
+  service-policy input CE-IN
+  service-policy output CE-OUT-IprovideOffice1
+ !
+!
+interface ATM4/0.1074 point-to-point
+ description IProvideOffice bulk provisioned interface - 2M
+ mtu 1500
+ bandwidth 2048
+ ip unnumbered Loopback0
+ no ip mroute-cache
+ pvc 10/74 
+  vbr-nrt 2048 2048 32
+  tx-ring-limit 3
+  no ilmi manage
+  encapsulation aal5snap
+  max-reserved-bandwidth 95
+  service-policy input CE-IN
+  service-policy output CE-OUT-IprovideOffice1
+ !
+!
+interface ATM4/0.1077 point-to-point
+ description IProvideOffice bulk provisioned interface - 2M
+ mtu 1500
+ bandwidth 2048
+ ip unnumbered Loopback0
+ no ip mroute-cache
+ pvc 10/77 
+  vbr-nrt 2048 2048 32
+  tx-ring-limit 3
+  no ilmi manage
+  encapsulation aal5snap
+  max-reserved-bandwidth 95
+  service-policy input CE-IN
+  service-policy output CE-OUT-IprovideOffice1
+ !
+!
+interface ATM4/0.1079 point-to-point
+ description IProvideOffice bulk provisioned interface - 2M
+ mtu 1500
+ bandwidth 2048
+ ip unnumbered Loopback0
+ no ip mroute-cache
+ pvc 10/79 
+  vbr-nrt 2048 2048 32
+  tx-ring-limit 3
+  no ilmi manage
+  encapsulation aal5snap
+  max-reserved-bandwidth 95
+  service-policy input CE-IN
+  service-policy output CE-OUT-IprovideOffice1
+ !
+!
+interface ATM4/0.1083 point-to-point
+ description IProvideOffice bulk provisioned interface - 2M
+ mtu 1500
+ bandwidth 2048
+ ip unnumbered Loopback0
+ no ip mroute-cache
+ pvc 10/83 
+  vbr-nrt 2048 2048 32
+  tx-ring-limit 3
+  no ilmi manage
+  encapsulation aal5snap
+  max-reserved-bandwidth 95
+  service-policy input CE-IN
+  service-policy output CE-OUT-IprovideOffice1
+ !
+!
+interface ATM4/0.1093 point-to-point
+ description IProvideOffice bulk provisioned interface - 2M
+ mtu 1500
+ bandwidth 2048
+ ip unnumbered Loopback0
+ no ip mroute-cache
+ pvc 10/93 
+  vbr-nrt 2048 2048 32
+  tx-ring-limit 3
+  no ilmi manage
+  encapsulation aal5snap
+  max-reserved-bandwidth 95
+  service-policy input CE-IN
+  service-policy output CE-OUT-IprovideOffice1
+ !
+!
+interface ATM4/0.1103 point-to-point
+ description IProvideOffice bulk provisioned interface - 2M
+ mtu 1500
+ bandwidth 2048
+ ip unnumbered Loopback0
+ no ip mroute-cache
+ pvc 10/103 
+  vbr-nrt 2048 2048 32
+  tx-ring-limit 3
+  no ilmi manage
+  encapsulation aal5snap
+  max-reserved-bandwidth 95
+  service-policy input CE-IN
+  service-policy output CE-OUT-IprovideOffice1
+ !
+!
+interface ATM4/0.1106 point-to-point
+ description IProvideOffice bulk provisioned interface - 2M
+ mtu 1500
+ bandwidth 2048
+ ip unnumbered Loopback0
+ no ip mroute-cache
+ pvc 10/106 
+  vbr-nrt 2048 2048 32
+  tx-ring-limit 3
+  no ilmi manage
+  encapsulation aal5snap
+  max-reserved-bandwidth 95
+  service-policy input CE-IN
+  service-policy output CE-OUT-IprovideOffice1
+ !
+!
+interface ATM4/0.1115 point-to-point
+ description IProvideOffice bulk provisioned interface - 2M
+ mtu 1500
+ bandwidth 2048
+ ip unnumbered Loopback0
+ no ip mroute-cache
+ pvc 10/115 
+  vbr-nrt 2048 2048 32
+  tx-ring-limit 3
+  no ilmi manage
+  encapsulation aal5snap
+  max-reserved-bandwidth 95
+  service-policy input CE-IN
+  service-policy output CE-OUT-IprovideOffice1
+ !
+!
+interface ATM4/0.1116 point-to-point
+ description IProvideOffice bulk provisioned interface - 2M
+ mtu 1500
+ bandwidth 2048
+ ip unnumbered Loopback0
+ no ip mroute-cache
+ pvc 10/116 
+  vbr-nrt 2048 2048 32
+  tx-ring-limit 3
+  no ilmi manage
+  encapsulation aal5snap
+  max-reserved-bandwidth 95
+  service-policy input CE-IN
+  service-policy output CE-OUT-IprovideOffice1
+ !
+!
+interface ATM4/0.1121 point-to-point
+ description IProvideOffice bulk provisioned interface - 2M
+ mtu 1500
+ bandwidth 2048
+ ip unnumbered Loopback0
+ no ip mroute-cache
+ pvc 10/121 
+  vbr-nrt 2048 2048 32
+  tx-ring-limit 3
+  no ilmi manage
+  encapsulation aal5snap
+  max-reserved-bandwidth 95
+  service-policy input CE-IN
+  service-policy output CE-OUT-IprovideOffice1
+ !
+!
+interface ATM4/0.1126 point-to-point
+ description IProvideOffice bulk provisioned interface - 2M
+ mtu 1500
+ bandwidth 2048
+ ip unnumbered Loopback0
+ no ip mroute-cache
+ pvc 10/126 
+  vbr-nrt 2048 2048 32
+  tx-ring-limit 3
+  no ilmi manage
+  encapsulation aal5snap
+  max-reserved-bandwidth 95
+  service-policy input CE-IN
+  service-policy output CE-OUT-IprovideOffice1
+ !
+!
+interface ATM4/0.1127 point-to-point
+ description IProvideOffice bulk provisioned interface - 2M
+ mtu 1500
+ bandwidth 2048
+ ip unnumbered Loopback0
+ no ip mroute-cache
+ pvc 10/127 
+  vbr-nrt 2048 2048 32
+  tx-ring-limit 3
+  no ilmi manage
+  encapsulation aal5snap
+  max-reserved-bandwidth 95
+  service-policy input CE-IN
+  service-policy output CE-OUT-IprovideOffice1
+ !
+!
+interface ATM4/0.1128 point-to-point
+ description IProvideOffice bulk provisioned interface - 2M
+ mtu 1500
+ bandwidth 2048
+ ip unnumbered Loopback0
+ no ip mroute-cache
+ pvc 10/128 
+  vbr-nrt 2048 2048 32
+  tx-ring-limit 3
+  no ilmi manage
+  encapsulation aal5snap
+  max-reserved-bandwidth 95
+  service-policy input CE-IN
+  service-policy output CE-OUT-IprovideOffice1
+ !
+!
+interface ATM4/0.1129 point-to-point
+ description IProvideOffice bulk provisioned interface - 2M
+ mtu 1500
+ bandwidth 2048
+ ip unnumbered Loopback0
+ no ip mroute-cache
+ pvc 10/129 
+  vbr-nrt 2048 2048 32
+  tx-ring-limit 3
+  no ilmi manage
+  encapsulation aal5snap
+  max-reserved-bandwidth 95
+  service-policy input CE-IN
+  service-policy output CE-OUT-IprovideOffice1
+ !
+!
+interface ATM4/0.1133 point-to-point
+ description IProvideOffice bulk provisioned interface - 1.5M
+ mtu 1500
+ bandwidth 1536
+ ip unnumbered Loopback0
+ no ip mroute-cache
+ pvc 10/133 
+  vbr-nrt 1536 1536 32
+  tx-ring-limit 3
+  no ilmi manage
+  encapsulation aal5snap
+  max-reserved-bandwidth 95
+  service-policy input CE-IN
+  service-policy output CE-OUT-IprovideOffice1
+ !
+!
+interface ATM4/0.1134 point-to-point
+ description IProvideOffice bulk provisioned interface - 1.5M
+ mtu 1500
+ bandwidth 1536
+ ip unnumbered Loopback0
+ no ip mroute-cache
+ pvc 10/134 
+  vbr-nrt 1536 1536 32
+  tx-ring-limit 3
+  no ilmi manage
+  encapsulation aal5snap
+  max-reserved-bandwidth 95
+  service-policy input CE-IN
+  service-policy output CE-OUT-IprovideOffice1
+ !
+!
+interface ATM4/0.1136 point-to-point
+ description IProvideOffice bulk provisioned interface - 1M
+ mtu 1500
+ bandwidth 1024
+ ip unnumbered Loopback0
+ no ip mroute-cache
+ pvc 10/136 
+  vbr-nrt 1024 1024 32
+  tx-ring-limit 3
+  no ilmi manage
+  encapsulation aal5snap
+  max-reserved-bandwidth 95
+  service-policy input CE-IN
+  service-policy output CE-OUT-IprovideOffice1
+ !
+!
+interface ATM4/0.1138 point-to-point
+ description IProvideOffice bulk provisioned interface - 1M
+ mtu 1500
+ bandwidth 1024
+ ip unnumbered Loopback0
+ no ip mroute-cache
+ pvc 10/138 
+  vbr-nrt 1024 1024 32
+  tx-ring-limit 3
+  no ilmi manage
+  encapsulation aal5snap
+  max-reserved-bandwidth 95
+  service-policy input CE-IN
+  service-policy output CE-OUT-IprovideOffice1
+ !
+!
+interface ATM4/0.1140 point-to-point
+ description IProvideOffice bulk provisioned interface - 1M
+ mtu 1500
+ bandwidth 1024
+ ip unnumbered Loopback0
+ no ip mroute-cache
+ pvc 10/140 
+  vbr-nrt 1024 1024 32
+  tx-ring-limit 3
+  no ilmi manage
+  encapsulation aal5snap
+  max-reserved-bandwidth 95
+  service-policy input CE-IN
+  service-policy output CE-OUT-IprovideOffice1
+ !
+!
+interface ATM4/0.1141 point-to-point
+ description IProvideOffice bulk provisioned interface - 1M - ZIN10067391
+ mtu 1500
+ bandwidth 1024
+ ip unnumbered Loopback0
+ ip access-group FIND-SIP-IN in
+ ip access-group FIND-SIP-OUT out
+ no ip mroute-cache
+ pvc 10/141 
+  vbr-nrt 1024 1024 32
+  tx-ring-limit 3
+  no ilmi manage
+  encapsulation aal5snap
+  max-reserved-bandwidth 95
+  service-policy input CE-IN
+  service-policy output CE-OUT-IprovideOffice1
+ !
+!
+interface ATM4/0.1142 point-to-point
+ description IProvideOffice bulk provisioned interface - 1M
+ mtu 1500
+ bandwidth 1024
+ ip unnumbered Loopback0
+ no ip mroute-cache
+ pvc 10/142 
+  vbr-nrt 1024 1024 32
+  tx-ring-limit 3
+  no ilmi manage
+  encapsulation aal5snap
+  max-reserved-bandwidth 95
+  service-policy input CE-IN
+  service-policy output CE-OUT-IprovideOffice1
+ !
+!
+interface ATM4/0.1143 point-to-point
+ description IProvideOffice bulk provisioned interface - 1M
+ mtu 1500
+ bandwidth 1024
+ ip unnumbered Loopback0
+ no ip mroute-cache
+ pvc 10/143 
+  vbr-nrt 1024 1024 32
+  tx-ring-limit 3
+  no ilmi manage
+  encapsulation aal5snap
+  max-reserved-bandwidth 95
+  service-policy input CE-IN
+  service-policy output CE-OUT-IprovideOffice1
+ !
+!
+interface ATM4/0.1145 point-to-point
+ description IProvideOffice bulk provisioned interface - 1024k
+ mtu 1500
+ bandwidth 1024
+ ip unnumbered Loopback0
+ no ip mroute-cache
+ pvc 10/145 
+  vbr-nrt 1024 1024 32
+  tx-ring-limit 3
+  no ilmi manage
+  encapsulation aal5snap
+  max-reserved-bandwidth 95
+  service-policy input CE-IN
+  service-policy output CE-OUT-IprovideOffice1
+ !
+!
+interface ATM4/0.1146 point-to-point
+ description IProvideOffice bulk provisioned interface - 512K
+ mtu 1500
+ bandwidth 512
+ ip unnumbered Loopback0
+ no ip mroute-cache
+ pvc 10/146 
+  vbr-nrt 512 512 32
+  tx-ring-limit 3
+  no ilmi manage
+  encapsulation aal5snap
+  max-reserved-bandwidth 95
+  service-policy input CE-IN
+  service-policy output CE-OUT-IprovideOffice1
+ !
+!
+interface ATM4/0.1147 point-to-point
+ description IProvideOffice bulk provisioned interface - 512K
+ mtu 1500
+ bandwidth 512
+ ip unnumbered Loopback0
+ no ip mroute-cache
+ pvc 10/147 
+  vbr-nrt 512 512 32
+  tx-ring-limit 3
+  no ilmi manage
+  encapsulation aal5snap
+  max-reserved-bandwidth 95
+  service-policy input CE-IN
+  service-policy output CE-OUT-IprovideOffice1
+ !
+!
+interface ATM4/0.1150 point-to-point
+ description IProvideOffice bulk provisioned interface - 4M
+ mtu 1500
+ bandwidth 4096
+ ip unnumbered Loopback0
+ no ip mroute-cache
+ pvc 10/150 
+  vbr-nrt 4096 4096 32
+  tx-ring-limit 3
+  no ilmi manage
+  encapsulation aal5snap
+  max-reserved-bandwidth 95
+  service-policy input CE-IN
+  service-policy output CE-OUT-IprovideOffice1
+ !
+!
+interface ATM4/0.1154 point-to-point
+ description IProvideOffice bulk provisioned interface - 4M
+ mtu 1500
+ bandwidth 4096
+ ip unnumbered Loopback0
+ no ip mroute-cache
+ pvc 10/154 
+  vbr-nrt 4096 4096 32
+  tx-ring-limit 3
+  no ilmi manage
+  encapsulation aal5snap
+  max-reserved-bandwidth 95
+  service-policy input CE-IN
+  service-policy output CE-OUT-IprovideOffice1
+ !
+!
+interface ATM4/0.1159 point-to-point
+ description IProvideOffice bulk provisioned interface - 4M
+ mtu 1500
+ bandwidth 4096
+ ip unnumbered Loopback0
+ no ip mroute-cache
+ pvc 10/159 
+  vbr-nrt 4096 4096 32
+  tx-ring-limit 3
+  no ilmi manage
+  encapsulation aal5snap
+  max-reserved-bandwidth 95
+  service-policy input CE-IN
+  service-policy output CE-OUT-IprovideOffice1
+ !
+!
+interface ATM4/0.1161 point-to-point
+ description IProvideOffice bulk provisioned interface - 6M
+ mtu 1500
+ bandwidth 6144
+ ip unnumbered Loopback0
+ no ip mroute-cache
+ pvc 10/161 
+  vbr-nrt 6144 6144 32
+  tx-ring-limit 3
+  no ilmi manage
+  encapsulation aal5snap
+  max-reserved-bandwidth 95
+  service-policy input CE-IN
+  service-policy output CE-OUT-IprovideOffice1
+ !
+!
+interface ATM4/0.1163 point-to-point
+ description IProvideOffice bulk provisioned interface - 6M
+ mtu 1500
+ bandwidth 6144
+ ip unnumbered Loopback0
+ no ip mroute-cache
+ pvc 10/163 
+  vbr-nrt 6144 6144 32
+  tx-ring-limit 3
+  no ilmi manage
+  encapsulation aal5snap
+  max-reserved-bandwidth 95
+  service-policy input CE-IN
+  service-policy output CE-OUT-IprovideOffice1
+ !
+!
+interface ATM4/0.1165 point-to-point
+ description IProvideOffice bulk provisioned interface - 6M
+ mtu 1500
+ bandwidth 6144
+ ip unnumbered Loopback0
+ no ip mroute-cache
+ pvc 10/165 
+  vbr-nrt 6144 6144 32
+  tx-ring-limit 3
+  no ilmi manage
+  encapsulation aal5snap
+  max-reserved-bandwidth 95
+  service-policy input CE-IN
+  service-policy output CE-OUT-IprovideOffice1
+ !
+!
+interface ATM4/0.1166 point-to-point
+ description IProvideOffice bulk provisioned interface - 6M
+ mtu 1500
+ bandwidth 6144
+ ip unnumbered Loopback0
+ no ip mroute-cache
+ pvc 10/166 
+  vbr-nrt 6144 6144 32
+  tx-ring-limit 3
+  no ilmi manage
+  encapsulation aal5snap
+  max-reserved-bandwidth 95
+  service-policy input CE-IN
+  service-policy output CE-OUT-IprovideOffice1
+ !
+!
+interface ATM4/0.1169 point-to-point
+ description IProvideOffice bulk provisioned interface - 6M
+ mtu 1500
+ bandwidth 6144
+ ip unnumbered Loopback0
+ no ip mroute-cache
+ pvc 10/169 
+  vbr-nrt 6144 6144 32
+  tx-ring-limit 3
+  no ilmi manage
+  encapsulation aal5snap
+  max-reserved-bandwidth 95
+  service-policy input CE-IN
+  service-policy output CE-OUT-IprovideOffice1
+ !
+!
+interface ATM4/0.1171 point-to-point
+ description IProvideOffice bulk provisioned interface - 2M
+ mtu 1500
+ bandwidth 2048
+ ip unnumbered Loopback0
+ no ip mroute-cache
+ pvc 10/171 
+  vbr-nrt 2048 2048 32
+  tx-ring-limit 3
+  no ilmi manage
+  encapsulation aal5snap
+  max-reserved-bandwidth 95
+  service-policy input CE-IN
+  service-policy output CE-OUT-IprovideOffice1
+ !
+!
+interface ATM4/0.1173 point-to-point
+ description IProvideOffice bulk provisioned interface - 2M
+ mtu 1500
+ bandwidth 2048
+ ip unnumbered Loopback0
+ no ip mroute-cache
+ pvc 10/173 
+  vbr-nrt 2048 2048 32
+  tx-ring-limit 3
+  no ilmi manage
+  encapsulation aal5snap
+  max-reserved-bandwidth 95
+  service-policy input CE-IN
+  service-policy output CE-OUT-IprovideOffice1
+ !
+!
+interface ATM4/0.1174 point-to-point
+ description IProvideOffice bulk provisioned interface - 2M
+ mtu 1500
+ bandwidth 2048
+ ip unnumbered Loopback0
+ no ip mroute-cache
+ pvc 10/174 
+  vbr-nrt 2048 2048 32
+  tx-ring-limit 3
+  no ilmi manage
+  encapsulation aal5snap
+  max-reserved-bandwidth 95
+  service-policy input CE-IN
+  service-policy output CE-OUT-IprovideOffice1
+ !
+!
+interface ATM4/0.1176 point-to-point
+ description IProvideOffice bulk provisioned interface - 2M
+ mtu 1500
+ bandwidth 2048
+ ip unnumbered Loopback0
+ no ip mroute-cache
+ pvc 10/176 
+  vbr-nrt 2048 2048 32
+  tx-ring-limit 3
+  no ilmi manage
+  encapsulation aal5snap
+  max-reserved-bandwidth 95
+  service-policy input CE-IN
+  service-policy output CE-OUT-IprovideOffice1
+ !
+!
+interface ATM4/0.1177 point-to-point
+ description IProvideOffice bulk provisioned interface - 2M
+ mtu 1500
+ bandwidth 2048
+ ip unnumbered Loopback0
+ no ip mroute-cache
+ pvc 10/177 
+  vbr-nrt 2048 2048 32
+  tx-ring-limit 3
+  no ilmi manage
+  encapsulation aal5snap
+  max-reserved-bandwidth 95
+  service-policy input CE-IN
+  service-policy output CE-OUT-IprovideOffice1
+ !
+!
+interface ATM4/0.1178 point-to-point
+ description IProvideOffice bulk provisioned interface - 2M
+ mtu 1500
+ bandwidth 2048
+ ip unnumbered Loopback0
+ no ip mroute-cache
+ pvc 10/178 
+  vbr-nrt 2048 2048 32
+  tx-ring-limit 3
+  no ilmi manage
+  encapsulation aal5snap
+  max-reserved-bandwidth 95
+  service-policy input CE-IN
+  service-policy output CE-OUT-IprovideOffice1
+ !
+!
+interface ATM4/0.1180 point-to-point
+ description IProvideOffice bulk provisioned interface - 2M
+ mtu 1500
+ bandwidth 2048
+ ip unnumbered Loopback0
+ no ip mroute-cache
+ pvc 10/180 
+  vbr-nrt 2048 2048 32
+  tx-ring-limit 3
+  no ilmi manage
+  encapsulation aal5snap
+  max-reserved-bandwidth 95
+  service-policy input CE-IN
+  service-policy output CE-OUT-IprovideOffice1
+ !
+!
+interface ATM4/0.1181 point-to-point
+ description IProvideOffice bulk provisioned interface - 2M
+ mtu 1500
+ bandwidth 2048
+ ip unnumbered Loopback0
+ no ip mroute-cache
+ pvc 10/181 
+  vbr-nrt 2048 2048 32
+  tx-ring-limit 3
+  no ilmi manage
+  encapsulation aal5snap
+  max-reserved-bandwidth 95
+  service-policy input CE-IN
+  service-policy output CE-OUT-IprovideOffice1
+ !
+!
+interface ATM4/0.1182 point-to-point
+ description IProvideOffice bulk provisioned interface - 2M
+ mtu 1500
+ bandwidth 2048
+ ip unnumbered Loopback0
+ no ip mroute-cache
+ pvc 10/182 
+  vbr-nrt 2048 2048 32
+  tx-ring-limit 3
+  no ilmi manage
+  encapsulation aal5snap
+  max-reserved-bandwidth 95
+  service-policy input CE-IN
+  service-policy output CE-OUT-IprovideOffice1
+ !
+!
+interface ATM4/0.1189 point-to-point
+ description IProvideOffice bulk provisioned interface - 2M
+ mtu 1500
+ bandwidth 2048
+ ip unnumbered Loopback0
+ no ip mroute-cache
+ pvc 10/189 
+  vbr-nrt 2048 2048 32
+  tx-ring-limit 3
+  no ilmi manage
+  encapsulation aal5snap
+  max-reserved-bandwidth 95
+  service-policy input CE-IN
+  service-policy output CE-OUT-IprovideOffice1
+ !
+!
+interface ATM4/0.1193 point-to-point
+ description IProvideOffice bulk provisioned interface - 2M
+ mtu 1500
+ bandwidth 2048
+ ip unnumbered Loopback0
+ no ip mroute-cache
+ pvc 10/193 
+  vbr-nrt 2048 2048 32
+  tx-ring-limit 3
+  no ilmi manage
+  encapsulation aal5snap
+  max-reserved-bandwidth 95
+  service-policy input CE-IN
+  service-policy output CE-OUT-IprovideOffice1
+ !
+!
+interface ATM4/0.1194 point-to-point
+ description IProvideOffice bulk provisioned interface - 2M
+ mtu 1500
+ bandwidth 2048
+ ip unnumbered Loopback0
+ no ip mroute-cache
+ pvc 10/194 
+  vbr-nrt 2048 2048 32
+  tx-ring-limit 3
+  no ilmi manage
+  encapsulation aal5snap
+  max-reserved-bandwidth 95
+  service-policy input CE-IN
+  service-policy output CE-OUT-IprovideOffice1
+ !
+!
+interface ATM4/0.1198 point-to-point
+ description IProvideOffice bulk provisioned interface - 2M
+ mtu 1500
+ bandwidth 2048
+ ip unnumbered Loopback0
+ no ip mroute-cache
+ pvc 10/198 
+  vbr-nrt 2048 2048 32
+  tx-ring-limit 3
+  no ilmi manage
+  encapsulation aal5snap
+  max-reserved-bandwidth 95
+  service-policy input CE-IN
+  service-policy output CE-OUT-IprovideOffice1
+ !
+!
+interface ATM4/0.1204 point-to-point
+ description IProvideOffice bulk provisioned interface - 2M
+ mtu 1500
+ bandwidth 2048
+ ip unnumbered Loopback0
+ no ip mroute-cache
+ pvc 10/204 
+  vbr-nrt 2048 2048 32
+  tx-ring-limit 3
+  no ilmi manage
+  encapsulation aal5snap
+  max-reserved-bandwidth 95
+  service-policy input CE-IN
+  service-policy output CE-OUT-IprovideOffice1
+ !
+!
+interface ATM4/0.1207 point-to-point
+ description IProvideOffice bulk provisioned interface - 2M
+ mtu 1500
+ bandwidth 2048
+ ip unnumbered Loopback0
+ no ip mroute-cache
+ pvc 10/207 
+  vbr-nrt 2048 2048 32
+  tx-ring-limit 3
+  no ilmi manage
+  encapsulation aal5snap
+  max-reserved-bandwidth 95
+  service-policy input CE-IN
+  service-policy output CE-OUT-IprovideOffice1
+ !
+!
+interface ATM4/0.1208 point-to-point
+ description IProvideOffice bulk provisioned interface - 2M
+ mtu 1500
+ bandwidth 2048
+ ip unnumbered Loopback0
+ no ip mroute-cache
+ pvc 10/208 
+  vbr-nrt 2048 2048 32
+  tx-ring-limit 3
+  no ilmi manage
+  encapsulation aal5snap
+  max-reserved-bandwidth 95
+  service-policy input CE-IN
+  service-policy output CE-OUT-IprovideOffice1
+ !
+!
+interface ATM4/0.1209 point-to-point
+ description IProvideOffice bulk provisioned interface - 2M
+ mtu 1500
+ bandwidth 2048
+ ip unnumbered Loopback0
+ no ip mroute-cache
+ pvc 10/209 
+  vbr-nrt 2048 2048 32
+  tx-ring-limit 3
+  no ilmi manage
+  encapsulation aal5snap
+  max-reserved-bandwidth 95
+  service-policy input CE-IN
+  service-policy output CE-OUT-IprovideOffice1
+ !
+!
+interface ATM4/0.1210 point-to-point
+ description IProvideOffice bulk provisioned interface - 2M
+ mtu 1500
+ bandwidth 2048
+ ip unnumbered Loopback0
+ no ip mroute-cache
+ pvc 10/210 
+  vbr-nrt 2048 2048 32
+  tx-ring-limit 3
+  no ilmi manage
+  encapsulation aal5snap
+  max-reserved-bandwidth 95
+  service-policy input CE-IN
+  service-policy output CE-OUT-IprovideOffice1
+ !
+!
+interface ATM4/0.1215 point-to-point
+ description IProvideOffice bulk provisioned interface - 2M
+ mtu 1500
+ bandwidth 2048
+ ip unnumbered Loopback0
+ no ip mroute-cache
+ pvc 10/215 
+  vbr-nrt 2048 2048 32
+  tx-ring-limit 3
+  no ilmi manage
+  encapsulation aal5snap
+  max-reserved-bandwidth 95
+  service-policy input CE-IN
+  service-policy output CE-OUT-IprovideOffice1
+ !
+!
+interface ATM4/0.1218 point-to-point
+ description IProvideOffice bulk provisioned interface - 2M
+ mtu 1500
+ bandwidth 2048
+ ip unnumbered Loopback0
+ no ip mroute-cache
+ pvc 10/218 
+  vbr-nrt 2048 2048 32
+  tx-ring-limit 3
+  no ilmi manage
+  encapsulation aal5snap
+  max-reserved-bandwidth 95
+  service-policy input CE-IN
+  service-policy output CE-OUT-IprovideOffice1
+ !
+!
+interface ATM4/0.1220 point-to-point
+ description IProvideOffice bulk provisioned interface - 2M
+ mtu 1500
+ bandwidth 2048
+ ip unnumbered Loopback0
+ no ip mroute-cache
+ pvc 10/220 
+  vbr-nrt 2048 2048 32
+  tx-ring-limit 3
+  no ilmi manage
+  encapsulation aal5snap
+  max-reserved-bandwidth 95
+  service-policy input CE-IN
+  service-policy output CE-OUT-IprovideOffice1
+ !
+!
+interface ATM4/0.1224 point-to-point
+ description IProvideOffice bulk provisioned interface - 2M
+ mtu 1500
+ bandwidth 1536
+ ip unnumbered Loopback0
+ no ip mroute-cache
+ pvc 10/224 
+  vbr-nrt 1536 1536 32
+  tx-ring-limit 3
+  no ilmi manage
+  encapsulation aal5snap
+  max-reserved-bandwidth 95
+  service-policy input CE-IN
+  service-policy output CE-OUT-IprovideOffice1
+ !
+!
+interface ATM4/0.1226 point-to-point
+ description IProvideOffice bulk provisioned interface - 2M
+ mtu 1500
+ bandwidth 2048
+ ip unnumbered Loopback0
+ no ip mroute-cache
+ pvc 10/226 
+  vbr-nrt 2048 2048 32
+  tx-ring-limit 3
+  no ilmi manage
+  encapsulation aal5snap
+  max-reserved-bandwidth 95
+  service-policy input CE-IN
+  service-policy output CE-OUT-IprovideOffice1
+ !
+!
+interface ATM4/0.1229 point-to-point
+ description IProvideOffice bulk provisioned interface - 2M
+ mtu 1500
+ bandwidth 2048
+ ip unnumbered Loopback0
+ no ip mroute-cache
+ pvc 10/229 
+  vbr-nrt 2048 2048 32
+  tx-ring-limit 3
+  no ilmi manage
+  encapsulation aal5snap
+  max-reserved-bandwidth 95
+  service-policy input CE-IN
+  service-policy output CE-OUT-IprovideOffice1
+ !
+!
+interface ATM4/0.1235 point-to-point
+ description IProvideOffice bulk provisioned interface - 1M
+ mtu 1500
+ bandwidth 1024
+ ip unnumbered Loopback0
+ no ip mroute-cache
+ pvc 10/235 
+  vbr-nrt 1024 1024 32
+  tx-ring-limit 3
+  no ilmi manage
+  encapsulation aal5snap
+  max-reserved-bandwidth 95
+  service-policy input CE-IN
+  service-policy output CE-OUT-IprovideOffice1
+ !
+!
+interface ATM4/0.1236 point-to-point
+ description IProvideOffice bulk provisioned interface - 1M
+ mtu 1500
+ bandwidth 1024
+ ip unnumbered Loopback0
+ no ip mroute-cache
+ pvc 10/236 
+  vbr-nrt 1024 1024 32
+  tx-ring-limit 3
+  no ilmi manage
+  encapsulation aal5snap
+  max-reserved-bandwidth 95
+  service-policy input CE-IN
+  service-policy output CE-OUT-IprovideOffice1
+ !
+!
+interface ATM4/0.1242 point-to-point
+ description IProvideOffice bulk provisioned interface - 512K
+ mtu 1500
+ bandwidth 512
+ ip unnumbered Loopback0
+ no ip mroute-cache
+ pvc 10/242 
+  vbr-nrt 512 512 32
+  tx-ring-limit 3
+  no ilmi manage
+  encapsulation aal5snap
+  max-reserved-bandwidth 95
+  service-policy input CE-IN
+  service-policy output CE-OUT-IprovideOffice1
+ !
+!
+interface ATM4/0.1243 point-to-point
+ description IProvideOffice bulk provisioned interface - 512K
+ mtu 1500
+ bandwidth 512
+ ip unnumbered Loopback0
+ no ip mroute-cache
+ pvc 10/243 
+  vbr-nrt 512 512 32
+  tx-ring-limit 3
+  no ilmi manage
+  encapsulation aal5snap
+  max-reserved-bandwidth 95
+  service-policy input CE-IN
+  service-policy output CE-OUT-IprovideOffice1
+ !
+!
+interface ATM4/0.1262 point-to-point
+ description IProvideOffice bulk provisioned interface - 6M
+ mtu 1500
+ bandwidth 6144
+ ip unnumbered Loopback0
+ no ip mroute-cache
+ pvc 10/262 
+  vbr-nrt 6144 6144 32
+  tx-ring-limit 3
+  no ilmi manage
+  encapsulation aal5snap
+  max-reserved-bandwidth 95
+  service-policy input CE-IN
+  service-policy output CE-OUT-IprovideOffice1
+ !
+!
+interface ATM4/0.1265 point-to-point
+ description IProvideOffice bulk provisioned interface - 2M
+ mtu 1500
+ bandwidth 2048
+ ip unnumbered Loopback0
+ no ip mroute-cache
+ pvc 10/265 
+  vbr-nrt 2048 2048 32
+  tx-ring-limit 3
+  no ilmi manage
+  encapsulation aal5snap
+  max-reserved-bandwidth 95
+  service-policy input CE-IN
+  service-policy output CE-OUT-IprovideOffice1
+ !
+!
+interface ATM4/0.1267 point-to-point
+ description IProvideOffice bulk provisioned interface - 2M
+ mtu 1500
+ bandwidth 2048
+ ip unnumbered Loopback0
+ no ip mroute-cache
+ pvc 10/267 
+  vbr-nrt 2048 2048 32
+  tx-ring-limit 3
+  no ilmi manage
+  encapsulation aal5snap
+  max-reserved-bandwidth 95
+  service-policy input CE-IN
+  service-policy output CE-OUT-IprovideOffice1
+ !
+!
+interface ATM4/0.1270 point-to-point
+ description IProvideOffice bulk provisioned interface - 2M
+ mtu 1500
+ bandwidth 2048
+ ip unnumbered Loopback0
+ no ip mroute-cache
+ pvc 10/270 
+  vbr-nrt 2048 2048 32
+  tx-ring-limit 3
+  no ilmi manage
+  encapsulation aal5snap
+  max-reserved-bandwidth 95
+  service-policy input CE-IN
+  service-policy output CE-OUT-IprovideOffice1
+ !
+!
+interface ATM4/0.1271 point-to-point
+ description IProvideOffice bulk provisioned interface - 2M
+ mtu 1500
+ bandwidth 2048
+ ip unnumbered Loopback0
+ no ip mroute-cache
+ pvc 10/271 
+  vbr-nrt 2048 2048 32
+  tx-ring-limit 3
+  no ilmi manage
+  encapsulation aal5snap
+  max-reserved-bandwidth 95
+  service-policy input CE-IN
+  service-policy output CE-OUT-IprovideOffice1
+ !
+!
+interface ATM4/0.1273 point-to-point
+ description IProvideOffice bulk provisioned interface - 2M
+ mtu 1500
+ bandwidth 2048
+ ip unnumbered Loopback0
+ no ip mroute-cache
+ pvc 10/273 
+  vbr-nrt 2048 2048 32
+  tx-ring-limit 3
+  no ilmi manage
+  encapsulation aal5snap
+  max-reserved-bandwidth 95
+  service-policy input CE-IN
+  service-policy output CE-OUT-IprovideOffice1
+ !
+!
+interface ATM4/0.1284 point-to-point
+ description IProvideOffice bulk provisioned interface - 2M
+ mtu 1500
+ bandwidth 2048
+ ip unnumbered Loopback0
+ no ip mroute-cache
+ pvc 10/284 
+  vbr-nrt 2048 2048 32
+  tx-ring-limit 3
+  no ilmi manage
+  encapsulation aal5snap
+  max-reserved-bandwidth 95
+  service-policy input CE-IN
+  service-policy output CE-OUT-IprovideOffice1
+ !
+!
+interface ATM4/0.1285 point-to-point
+ description IProvideOffice bulk provisioned interface - 2M
+ mtu 1500
+ bandwidth 2048
+ ip unnumbered Loopback0
+ no ip mroute-cache
+ pvc 10/285 
+  vbr-nrt 2048 2048 32
+  tx-ring-limit 3
+  no ilmi manage
+  encapsulation aal5snap
+  max-reserved-bandwidth 95
+  service-policy input CE-IN
+  service-policy output CE-OUT-IprovideOffice1
+ !
+!
+interface ATM4/0.1286 point-to-point
+ description IProvideOffice bulk provisioned interface - 2M
+ mtu 1500
+ bandwidth 2048
+ ip unnumbered Loopback0
+ no ip mroute-cache
+ pvc 10/286 
+  vbr-nrt 2048 2048 32
+  tx-ring-limit 3
+  no ilmi manage
+  encapsulation aal5snap
+  max-reserved-bandwidth 95
+  service-policy input CE-IN
+  service-policy output CE-OUT-IprovideOffice1
+ !
+!
+interface ATM4/0.1289 point-to-point
+ description IProvideOffice bulk provisioned interface - 2M
+ mtu 1500
+ bandwidth 2048
+ ip unnumbered Loopback0
+ no ip mroute-cache
+ pvc 10/289 
+  vbr-nrt 2048 2048 32
+  tx-ring-limit 3
+  no ilmi manage
+  encapsulation aal5snap
+  max-reserved-bandwidth 95
+  service-policy input CE-IN
+  service-policy output CE-OUT-IprovideOffice1
+ !
+!
+interface ATM4/0.1295 point-to-point
+ description IProvideOffice bulk provisioned interface - 2M
+ mtu 1500
+ bandwidth 2048
+ ip unnumbered Loopback0
+ no ip mroute-cache
+ pvc 10/295 
+  vbr-nrt 2048 2048 32
+  tx-ring-limit 3
+  no ilmi manage
+  encapsulation aal5snap
+  max-reserved-bandwidth 95
+  service-policy input CE-IN
+  service-policy output CE-OUT-IprovideOffice1
+ !
+!
+interface ATM4/0.1296 point-to-point
+ description IProvideOffice bulk provisioned interface - 2M
+ mtu 1500
+ bandwidth 2048
+ ip unnumbered Loopback0
+ no ip mroute-cache
+ pvc 10/296 
+  vbr-nrt 2048 2048 32
+  tx-ring-limit 3
+  no ilmi manage
+  encapsulation aal5snap
+  max-reserved-bandwidth 95
+  service-policy input CE-IN
+  service-policy output CE-OUT-IprovideOffice1
+ !
+!
+interface ATM4/0.1297 point-to-point
+ description IProvideOffice bulk provisioned interface - 2M
+ mtu 1500
+ bandwidth 2048
+ ip unnumbered Loopback0
+ no ip mroute-cache
+ pvc 10/297 
+  vbr-nrt 2048 2048 32
+  tx-ring-limit 3
+  no ilmi manage
+  encapsulation aal5snap
+  max-reserved-bandwidth 95
+  service-policy input CE-IN
+  service-policy output CE-OUT-IprovideOffice1
+ !
+!
+interface ATM4/0.1298 point-to-point
+ description IProvideOffice bulk provisioned interface - 2M
+ mtu 1500
+ bandwidth 2048
+ ip unnumbered Loopback0
+ no ip mroute-cache
+ pvc 10/298 
+  vbr-nrt 2048 2048 32
+  tx-ring-limit 3
+  no ilmi manage
+  encapsulation aal5snap
+  max-reserved-bandwidth 95
+  service-policy input CE-IN
+  service-policy output CE-OUT-IprovideOffice1
+ !
+!
+interface ATM4/0.1299 point-to-point
+ description IProvideOffice bulk provisioned interface - 2M
+ mtu 1500
+ bandwidth 2048
+ ip unnumbered Loopback0
+ no ip mroute-cache
+ pvc 10/299 
+  vbr-nrt 2048 2048 32
+  tx-ring-limit 3
+  no ilmi manage
+  encapsulation aal5snap
+  max-reserved-bandwidth 95
+  service-policy input CE-IN
+  service-policy output CE-OUT-IprovideOffice1
+ !
+!
+interface ATM4/0.1304 point-to-point
+ description IProvideOffice bulk provisioned interface - 2M
+ mtu 1500
+ bandwidth 2048
+ ip unnumbered Loopback0
+ no ip mroute-cache
+ pvc 10/304 
+  vbr-nrt 2048 2048 32
+  tx-ring-limit 3
+  no ilmi manage
+  encapsulation aal5snap
+  max-reserved-bandwidth 95
+  service-policy input CE-IN
+  service-policy output CE-OUT-IprovideOffice1
+ !
+!
+interface ATM4/0.1305 point-to-point
+ description IProvideOffice bulk provisioned interface - 2M
+ mtu 1500
+ bandwidth 2048
+ ip unnumbered Loopback0
+ no ip mroute-cache
+ pvc 10/305 
+  vbr-nrt 2048 2048 32
+  tx-ring-limit 3
+  no ilmi manage
+  encapsulation aal5snap
+  max-reserved-bandwidth 95
+  service-policy input CE-IN
+  service-policy output CE-OUT-IprovideOffice1
+ !
+!
+interface ATM4/0.1307 point-to-point
+ description IProvideOffice bulk provisioned interface - 2M
+ mtu 1500
+ bandwidth 2048
+ ip unnumbered Loopback0
+ no ip mroute-cache
+ pvc 10/307 
+  vbr-nrt 2048 2048 32
+  tx-ring-limit 3
+  no ilmi manage
+  encapsulation aal5snap
+  max-reserved-bandwidth 95
+  service-policy input CE-IN
+  service-policy output CE-OUT-IprovideOffice1
+ !
+!
+interface ATM4/0.1310 point-to-point
+ description IProvideOffice bulk provisioned interface - 2M
+ mtu 1500
+ bandwidth 2048
+ ip unnumbered Loopback0
+ no ip mroute-cache
+ pvc 10/310 
+  vbr-nrt 2048 2048 32
+  tx-ring-limit 3
+  no ilmi manage
+  encapsulation aal5snap
+  max-reserved-bandwidth 95
+  service-policy input CE-IN
+  service-policy output CE-OUT-IprovideOffice1
+ !
+!
+interface ATM4/0.1312 point-to-point
+ description IProvideOffice bulk provisioned interface - 2M
+ mtu 1500
+ bandwidth 2048
+ ip unnumbered Loopback0
+ no ip mroute-cache
+ pvc 10/312 
+  vbr-nrt 2048 2048 32
+  tx-ring-limit 3
+  no ilmi manage
+  encapsulation aal5snap
+  max-reserved-bandwidth 95
+  service-policy input CE-IN
+  service-policy output CE-OUT-IprovideOffice1
+ !
+!
+interface ATM4/0.1315 point-to-point
+ description IProvideOffice bulk provisioned interface - 2M
+ mtu 1500
+ bandwidth 2048
+ ip unnumbered Loopback0
+ no ip mroute-cache
+ pvc 10/315 
+  vbr-nrt 2048 2048 32
+  tx-ring-limit 3
+  no ilmi manage
+  encapsulation aal5snap
+  max-reserved-bandwidth 95
+  service-policy input CE-IN
+  service-policy output CE-OUT-IprovideOffice1
+ !
+!
+interface ATM4/0.1319 point-to-point
+ description IProvideOffice bulk provisioned interface - 6M
+ mtu 1500
+ bandwidth 6144
+ ip unnumbered Loopback0
+ no ip mroute-cache
+ pvc 10/319 
+  vbr-nrt 6144 6144 32
+  tx-ring-limit 3
+  no ilmi manage
+  encapsulation aal5snap
+  max-reserved-bandwidth 95
+  service-policy input CE-IN
+  service-policy output CE-OUT-IprovideOffice1
+ !
+!
+interface ATM4/0.1324 point-to-point
+ description IProvideOffice bulk provisioned interface - 2M
+ mtu 1500
+ bandwidth 2048
+ ip unnumbered Loopback0
+ no ip mroute-cache
+ pvc 10/324 
+  vbr-nrt 2048 2048 32
+  tx-ring-limit 3
+  no ilmi manage
+  encapsulation aal5snap
+  max-reserved-bandwidth 95
+  service-policy input CE-IN
+  service-policy output CE-OUT-IprovideOffice1
+ !
+!
+interface ATM4/0.1332 point-to-point
+ description IProvideOffice bulk provisioned interface - 2M
+ mtu 1500
+ bandwidth 2048
+ ip unnumbered Loopback0
+ no ip mroute-cache
+ pvc 10/332 
+  vbr-nrt 2048 2048 32
+  tx-ring-limit 3
+  no ilmi manage
+  encapsulation aal5snap
+  max-reserved-bandwidth 95
+  service-policy input CE-IN
+  service-policy output CE-OUT-IprovideOffice1
+ !
+!
+interface ATM4/0.1333 point-to-point
+ description IProvideOffice bulk provisioned interface - 2M
+ mtu 1500
+ bandwidth 2048
+ ip unnumbered Loopback0
+ no ip mroute-cache
+ pvc 10/333 
+  vbr-nrt 2048 2048 32
+  tx-ring-limit 3
+  no ilmi manage
+  encapsulation aal5snap
+  max-reserved-bandwidth 95
+  service-policy input CE-IN
+  service-policy output CE-OUT-IprovideOffice1
+ !
+!
+interface ATM4/0.1334 point-to-point
+ description IProvideOffice bulk provisioned interface - 2M
+ mtu 1500
+ bandwidth 2048
+ ip unnumbered Loopback0
+ no ip mroute-cache
+ pvc 10/334 
+  vbr-nrt 2048 2048 32
+  tx-ring-limit 3
+  no ilmi manage
+  encapsulation aal5snap
+  max-reserved-bandwidth 95
+  service-policy input CE-IN
+  service-policy output CE-OUT-IprovideOffice1
+ !
+!
+interface ATM4/0.1335 point-to-point
+ description IProvideOffice bulk provisioned interface - 2M
+ mtu 1500
+ bandwidth 6000
+ ip unnumbered Loopback0
+ no ip mroute-cache
+ pvc 10/335 
+  vbr-nrt 7200 7200 33
+  tx-ring-limit 3
+  no ilmi manage
+  encapsulation aal5snap
+  max-reserved-bandwidth 95
+  service-policy input CE-IN
+  service-policy output CE-OUT-IprovideOffice1
+ !
+!
+interface ATM4/0.1338 point-to-point
+ description IProvideOffice bulk provisioned interface - 2M
+ mtu 1500
+ bandwidth 2048
+ ip unnumbered Loopback0
+ no ip mroute-cache
+ pvc 10/338 
+  vbr-nrt 2048 2048 32
+  tx-ring-limit 3
+  no ilmi manage
+  encapsulation aal5snap
+  max-reserved-bandwidth 95
+  service-policy input CE-IN
+  service-policy output CE-OUT-IprovideOffice1
+ !
+!
+interface ATM4/0.1339 point-to-point
+ description IProvideOffice bulk provisioned interface - 2M
+ mtu 1500
+ bandwidth 2048
+ ip unnumbered Loopback0
+ no ip mroute-cache
+ pvc 10/339 
+  vbr-nrt 2048 2048 32
+  tx-ring-limit 3
+  no ilmi manage
+  encapsulation aal5snap
+  max-reserved-bandwidth 95
+  service-policy input CE-IN
+  service-policy output CE-OUT-IprovideOffice1
+ !
+!
+interface ATM4/0.1342 point-to-point
+ description IProvideOffice bulk provisioned interface - 2M
+ mtu 1500
+ bandwidth 2048
+ ip unnumbered Loopback0
+ no ip mroute-cache
+ pvc 10/342 
+  vbr-nrt 2048 2048 32
+  tx-ring-limit 3
+  no ilmi manage
+  encapsulation aal5snap
+  max-reserved-bandwidth 95
+  service-policy input CE-IN
+  service-policy output CE-OUT-IprovideOffice1
+ !
+!
+interface ATM4/0.1347 point-to-point
+ description IProvideOffice bulk provisioned interface - 2M
+ mtu 1500
+ bandwidth 2048
+ ip unnumbered Loopback0
+ no ip mroute-cache
+ pvc 10/347 
+  vbr-nrt 2048 2048 32
+  tx-ring-limit 3
+  no ilmi manage
+  encapsulation aal5snap
+  max-reserved-bandwidth 95
+  service-policy input CE-IN
+  service-policy output CE-OUT-IprovideOffice1
+ !
+!
+interface ATM4/0.1348 point-to-point
+ description IProvideOffice bulk provisioned interface - 2M
+ mtu 1500
+ bandwidth 2048
+ ip unnumbered Loopback0
+ no ip mroute-cache
+ pvc 10/348 
+  vbr-nrt 2048 2048 32
+  tx-ring-limit 3
+  no ilmi manage
+  encapsulation aal5snap
+  max-reserved-bandwidth 95
+  service-policy input CE-IN
+  service-policy output CE-OUT-IprovideOffice1
+ !
+!
+interface ATM4/0.1349 point-to-point
+ description IProvideOffice bulk provisioned interface - 2M
+ mtu 1500
+ bandwidth 2048
+ ip unnumbered Loopback0
+ no ip mroute-cache
+ pvc 10/349 
+  vbr-nrt 2048 2048 32
+  tx-ring-limit 3
+  no ilmi manage
+  encapsulation aal5snap
+  max-reserved-bandwidth 95
+  service-policy input CE-IN
+  service-policy output CE-OUT-IprovideOffice1
+ !
+!
+interface ATM4/0.1352 point-to-point
+ description IProvideOffice bulk provisioned interface - 2M
+ mtu 1500
+ bandwidth 2048
+ ip unnumbered Loopback0
+ no ip mroute-cache
+ pvc 10/352 
+  vbr-nrt 2048 2048 32
+  tx-ring-limit 3
+  no ilmi manage
+  encapsulation aal5snap
+  max-reserved-bandwidth 95
+  service-policy input CE-IN
+  service-policy output CE-OUT-IprovideOffice1
+ !
+!
+interface ATM4/0.1353 point-to-point
+ description IProvideOffice bulk provisioned interface - 2M
+ mtu 1500
+ bandwidth 2048
+ ip unnumbered Loopback0
+ no ip mroute-cache
+ pvc 10/353 
+  vbr-nrt 2048 2048 32
+  tx-ring-limit 3
+  no ilmi manage
+  encapsulation aal5snap
+  max-reserved-bandwidth 95
+  service-policy input CE-IN
+  service-policy output CE-OUT-IprovideOffice1
+ !
+!
+interface ATM4/0.1355 point-to-point
+ description IProvideOffice bulk provisioned interface - 6M
+ mtu 1500
+ bandwidth 6144
+ ip unnumbered Loopback0
+ no ip mroute-cache
+ pvc 10/355 
+  vbr-nrt 6144 6144 32
+  tx-ring-limit 3
+  no ilmi manage
+  encapsulation aal5snap
+  max-reserved-bandwidth 95
+  service-policy input CE-IN
+  service-policy output CE-OUT-IprovideOffice1
+ !
+!
+interface ATM4/0.1357 point-to-point
+ description IProvideOffice bulk provisioned interface - 6M
+ mtu 1500
+ bandwidth 6144
+ ip unnumbered Loopback0
+ no ip mroute-cache
+ pvc 10/357 
+  vbr-nrt 6144 6144 32
+  tx-ring-limit 3
+  no ilmi manage
+  encapsulation aal5snap
+  max-reserved-bandwidth 95
+  service-policy input CE-IN
+  service-policy output CE-OUT-IprovideOffice1
+ !
+!
+interface ATM4/0.1362 point-to-point
+ description IProvideOffice bulk provisioned interface - 6M
+ mtu 1500
+ bandwidth 6144
+ ip unnumbered Loopback0
+ no ip mroute-cache
+ pvc 10/362 
+  vbr-nrt 6144 6144 32
+  tx-ring-limit 3
+  no ilmi manage
+  encapsulation aal5snap
+  max-reserved-bandwidth 95
+  service-policy input CE-IN
+  service-policy output CE-OUT-IprovideOffice1
+ !
+!
+interface ATM4/0.1374 point-to-point
+ description IProvideOffice bulk provisioned interface - 6M
+ mtu 1500
+ bandwidth 6144
+ ip unnumbered Loopback0
+ no ip mroute-cache
+ pvc 10/374 
+  vbr-nrt 6144 6144 32
+  tx-ring-limit 3
+  no ilmi manage
+  encapsulation aal5snap
+  max-reserved-bandwidth 95
+  service-policy input CE-IN
+  service-policy output CE-OUT-IprovideOffice1
+ !
+!
+interface ATM4/0.1609 point-to-point
+ description DHEN133572-12 Hendry Group 2M (ZIN10057297)
+ mtu 1500
+ bandwidth 2048
+ ip address 210.11.242.38 255.255.255.252
+ no ip mroute-cache
+ atm route-bridged ip
+ pvc 5/41 
+  ubr 2048
+  no ilmi manage
+  encapsulation aal5snap
+ !
+!
+interface ATM4/0.1611 point-to-point
+ description *******SPARE *************
+ no ip mroute-cache
+ shutdown
+!
+interface FastEthernet5/0
+ description TRNK: Connection to BRQ-HUB1 Gi1/0/24
+ no ip address
+ ip route-cache flow
+ duplex full
+ speed 100
+ fair-queue
+ no cdp enable
+!
+interface FastEthernet5/0.1
+ description BAST: Brisbane 
+ encapsulation dot1Q 1 native
+ ip address 192.189.54.73 255.255.255.248 secondary
+ ip address 192.189.54.65 255.255.255.248
+ no ip redirects
+ arp timeout 300
+ no cdp enable
+ standby 1 ip 192.189.54.68
+ standby 1 priority 120
+ standby 1 preempt delay minimum 300
+!
+interface FastEthernet5/0.10
+ description METR: Brisbane
+ encapsulation dot1Q 10
+ ip address 203.8.183.220 255.255.255.240
+ no ip redirects
+ arp timeout 300
+ no cdp enable
+!
+interface FastEthernet5/1
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+!
+router ospf 1
+ router-id 203.63.80.248
+ log-adjacency-changes
+ area 7 authentication
+ passive-interface default
+ no passive-interface GigabitEthernet0/1
+ no passive-interface GigabitEthernet0/2
+ network 202.10.15.161 0.0.0.0 area 7
+ network 202.10.15.163 0.0.0.0 area 7
+ network 203.63.80.248 0.0.0.0 area 7
+!
+router bgp 2764
+ no synchronization
+ bgp router-id 203.63.80.248
+ bgp log-neighbor-changes
+ bgp dampening
+ network 203.63.80.248 mask 255.255.255.255
+ redistribute connected route-map STATIC-EXPORT
+ redistribute static route-map STATIC-EXPORT
+ neighbor ibgp_dist_new peer-group
+ neighbor ibgp_dist_new remote-as 2764
+ neighbor ibgp_dist_new update-source Loopback0
+ neighbor ibgp_dist_new next-hop-self
+ neighbor ibgp_dist_new send-community
+ neighbor ibgp_dist_new password 7 112B3E3529333849567D7D70
+ neighbor 202.10.12.200 peer-group ibgp_dist_new
+ neighbor 202.10.12.201 peer-group ibgp_dist_new
+ neighbor 210.8.13.5 remote-as 64938
+ neighbor 210.8.13.5 description Queensland Rail
+ neighbor 210.8.13.5 send-community
+ neighbor 210.8.13.5 default-originate
+ neighbor 210.8.13.5 remove-private-AS
+ neighbor 210.8.13.5 soft-reconfiguration inbound
+ neighbor 210.8.13.5 route-map AS64938-IMPORT in
+ neighbor 210.8.13.5 route-map AS64938-EXPORT out
+ neighbor 210.8.13.121 remote-as 64948
+ neighbor 210.8.13.121 description Maculrob Services Pty Ltd
+ neighbor 210.8.13.121 default-originate
+ neighbor 210.8.13.121 remove-private-AS
+ neighbor 210.8.13.121 soft-reconfiguration inbound
+ neighbor 210.8.13.121 route-map AS64948-IMPORT in
+ neighbor 210.8.13.121 route-map AS64948-EXPORT out
+ neighbor 210.8.13.133 remote-as 64912
+ neighbor 210.8.13.133 description Queensland Rail
+ neighbor 210.8.13.133 default-originate
+ neighbor 210.8.13.133 remove-private-AS
+ neighbor 210.8.13.133 soft-reconfiguration inbound
+ neighbor 210.8.13.133 route-map AS64912-IMPORT in
+ neighbor 210.8.13.133 route-map AS64912-EXPORT out
+ neighbor 210.8.156.249 remote-as 56318
+ neighbor 210.8.156.249 description QUEENSLAND RAIL LTD
+ neighbor 210.8.156.249 default-originate
+ neighbor 210.8.156.249 remove-private-AS
+ neighbor 210.8.156.249 soft-reconfiguration inbound
+ neighbor 210.8.156.249 route-map AS56318-IMPORT in
+ neighbor 210.8.156.249 route-map AS56318-EXPORT out
+ maximum-paths ibgp 2
+ no auto-summary
+!
+ip classless
+ip route 192.0.2.1 255.255.255.255 Null0
+ip route 202.10.6.128 255.255.255.248 192.189.54.66
+ip route 203.63.44.64 255.255.255.248 ATM4/0.1355
+ip route 203.63.48.1 255.255.255.255 ATM4/0.1037
+ip route 203.63.48.3 255.255.255.255 ATM4/0.1052
+ip route 203.63.48.5 255.255.255.255 ATM4/0.1054
+ip route 203.63.48.6 255.255.255.255 ATM4/0.1055
+ip route 203.63.48.8 255.255.255.255 ATM4/0.1057
+ip route 203.63.48.9 255.255.255.255 ATM4/0.1058
+ip route 203.63.48.10 255.255.255.255 ATM4/0.1059
+ip route 203.63.48.12 255.255.255.255 ATM4/0.1061
+ip route 203.63.48.16 255.255.255.255 ATM4/0.1065
+ip route 203.63.48.25 255.255.255.255 ATM4/0.1074
+ip route 203.63.48.28 255.255.255.255 ATM4/0.1077
+ip route 203.63.48.34 255.255.255.255 ATM4/0.1083
+ip route 203.63.48.44 255.255.255.255 ATM4/0.1093
+ip route 203.63.48.54 255.255.255.255 ATM4/0.1103
+ip route 203.63.48.57 255.255.255.255 ATM4/0.1106
+ip route 203.63.48.66 255.255.255.255 ATM4/0.1115
+ip route 203.63.48.67 255.255.255.255 ATM4/0.1116
+ip route 203.63.48.72 255.255.255.255 ATM4/0.1121
+ip route 203.63.48.77 255.255.255.255 ATM4/0.1126
+ip route 203.63.48.78 255.255.255.255 ATM4/0.1127
+ip route 203.63.48.79 255.255.255.255 ATM4/0.1128
+ip route 203.63.48.80 255.255.255.255 ATM4/0.1129
+ip route 203.63.48.84 255.255.255.255 ATM4/0.1133
+ip route 203.63.48.85 255.255.255.255 ATM4/0.1134
+ip route 203.63.48.87 255.255.255.255 ATM4/0.1136
+ip route 203.63.48.89 255.255.255.255 ATM4/0.1138
+ip route 203.63.48.91 255.255.255.255 ATM4/0.1140
+ip route 203.63.48.92 255.255.255.255 ATM4/0.1141
+ip route 203.63.48.93 255.255.255.255 ATM4/0.1142
+ip route 203.63.48.94 255.255.255.255 ATM4/0.1143
+ip route 203.63.48.96 255.255.255.255 ATM4/0.1145
+ip route 203.63.48.97 255.255.255.255 ATM4/0.1146
+ip route 203.63.48.98 255.255.255.255 ATM4/0.1147
+ip route 203.63.48.105 255.255.255.255 ATM4/0.1033
+ip route 203.63.48.110 255.255.255.255 ATM4/0.1150
+ip route 203.63.48.114 255.255.255.255 ATM4/0.1154
+ip route 203.63.48.119 255.255.255.255 ATM4/0.1159
+ip route 203.63.48.121 255.255.255.255 ATM4/0.1161
+ip route 203.63.48.123 255.255.255.255 ATM4/0.1163
+ip route 203.63.48.125 255.255.255.255 ATM4/0.1165
+ip route 203.63.48.126 255.255.255.255 ATM4/0.1166
+ip route 203.63.48.129 255.255.255.255 ATM4/0.1169
+ip route 203.63.48.131 255.255.255.255 ATM4/0.1171
+ip route 203.63.48.133 255.255.255.255 ATM4/0.1173
+ip route 203.63.48.134 255.255.255.255 ATM4/0.1174
+ip route 203.63.48.136 255.255.255.255 ATM4/0.1176
+ip route 203.63.48.137 255.255.255.255 ATM4/0.1177
+ip route 203.63.48.138 255.255.255.255 ATM4/0.1178
+ip route 203.63.48.140 255.255.255.255 ATM4/0.1180
+ip route 203.63.48.141 255.255.255.255 ATM4/0.1181
+ip route 203.63.48.142 255.255.255.255 ATM4/0.1182
+ip route 203.63.48.149 255.255.255.255 ATM4/0.1189
+ip route 203.63.48.153 255.255.255.255 ATM4/0.1193
+ip route 203.63.48.154 255.255.255.255 ATM4/0.1194
+ip route 203.63.48.158 255.255.255.255 ATM4/0.1198
+ip route 203.63.48.164 255.255.255.255 ATM4/0.1204
+ip route 203.63.48.167 255.255.255.255 ATM4/0.1207
+ip route 203.63.48.168 255.255.255.255 ATM4/0.1208
+ip route 203.63.48.169 255.255.255.255 ATM4/0.1209
+ip route 203.63.48.170 255.255.255.255 ATM4/0.1210
+ip route 203.63.48.175 255.255.255.255 ATM4/0.1215
+ip route 203.63.48.178 255.255.255.255 ATM4/0.1218
+ip route 203.63.48.180 255.255.255.255 ATM4/0.1220
+ip route 203.63.48.184 255.255.255.255 ATM4/0.1224
+ip route 203.63.48.186 255.255.255.255 ATM4/0.1226
+ip route 203.63.48.189 255.255.255.255 ATM4/0.1229
+ip route 203.63.48.195 255.255.255.255 ATM4/0.1235
+ip route 203.63.48.196 255.255.255.255 ATM4/0.1236
+ip route 203.63.48.202 255.255.255.255 ATM4/0.1242
+ip route 203.63.48.203 255.255.255.255 ATM4/0.1243
+ip route 203.63.48.222 255.255.255.255 ATM4/0.1262
+ip route 203.63.48.225 255.255.255.255 ATM4/0.1265
+ip route 203.63.48.227 255.255.255.255 ATM4/0.1267
+ip route 203.63.48.230 255.255.255.255 ATM4/0.1270
+ip route 203.63.48.231 255.255.255.255 ATM4/0.1271
+ip route 203.63.48.233 255.255.255.255 ATM4/0.1273
+ip route 203.63.48.244 255.255.255.255 ATM4/0.1284
+ip route 203.63.48.245 255.255.255.255 ATM4/0.1285
+ip route 203.63.48.246 255.255.255.255 ATM4/0.1286
+ip route 203.63.48.249 255.255.255.255 ATM4/0.1289
+ip route 203.63.95.56 255.255.255.248 ATM4/0.1127
+ip route 203.63.134.20 255.255.255.252 ATM4/0.1143
+ip route 203.63.164.228 255.255.255.252 ATM4/0.1054
+ip route 203.63.234.36 255.255.255.252 ATM4/0.1224
+ip route 203.63.249.100 255.255.255.252 ATM4/0.1335
+ip route 210.8.13.160 255.255.255.248 203.63.48.1
+ip route 210.8.32.128 255.255.255.240 ATM4/0.1319
+ip route 210.8.37.128 255.255.255.252 ATM4/0.1121
+ip route 210.8.48.16 255.255.255.252 ATM4/0.1150
+ip route 210.8.59.16 255.255.255.252 ATM4/0.1338
+ip route 210.8.67.152 255.255.255.248 ATM4/0.1128
+ip route 210.8.112.140 255.255.255.252 ATM4/0.1349
+ip route 210.8.130.64 255.255.255.248 ATM4/0.1265
+ip route 210.8.130.112 255.255.255.252 ATM4/0.1296
+ip route 210.8.133.68 255.255.255.252 ATM4/0.1299
+ip route 210.8.166.112 255.255.255.248 ATM4/0.1145
+ip route 210.8.185.0 255.255.255.248 ATM4/0.1143
+ip route 210.8.223.204 255.255.255.252 203.63.48.138
+ip route 210.9.14.112 255.255.255.240 ATM4/0.1348
+ip route 210.9.15.4 255.255.255.252 ATM4/0.1159
+ip route 210.9.89.76 255.255.255.252 210.10.41.1
+ip route 210.9.93.140 255.255.255.252 ATM4/0.1332
+ip route 210.9.112.164 255.255.255.252 ATM4/0.1058
+ip route 210.9.117.20 255.255.255.252 ATM4/0.1357
+ip route 210.9.156.136 255.255.255.248 ATM4/0.1138
+ip route 210.9.158.160 255.255.255.248 ATM4/0.1129
+ip route 210.9.188.188 255.255.255.252 ATM4/0.1150
+ip route 210.9.225.1 255.255.255.255 ATM4/0.1295
+ip route 210.9.225.2 255.255.255.255 ATM4/0.1296
+ip route 210.9.225.3 255.255.255.255 ATM4/0.1297
+ip route 210.9.225.4 255.255.255.255 ATM4/0.1298
+ip route 210.9.225.5 255.255.255.255 ATM4/0.1299
+ip route 210.9.225.10 255.255.255.255 ATM4/0.1304
+ip route 210.9.225.11 255.255.255.255 ATM4/0.1305
+ip route 210.9.225.13 255.255.255.255 ATM4/0.1307
+ip route 210.9.225.18 255.255.255.255 ATM4/0.1312
+ip route 210.9.225.21 255.255.255.255 ATM4/0.1315
+ip route 210.9.225.25 255.255.255.255 ATM4/0.1319
+ip route 210.9.225.30 255.255.255.255 ATM4/0.1324
+ip route 210.9.225.38 255.255.255.255 ATM4/0.1332
+ip route 210.9.225.39 255.255.255.255 ATM4/0.1333
+ip route 210.9.225.40 255.255.255.255 ATM4/0.1334
+ip route 210.9.225.41 255.255.255.255 ATM4/0.1335
+ip route 210.9.225.44 255.255.255.255 ATM4/0.1338
+ip route 210.9.225.45 255.255.255.255 ATM4/0.1339
+ip route 210.9.225.48 255.255.255.255 ATM4/0.1342
+ip route 210.9.225.53 255.255.255.255 ATM4/0.1347
+ip route 210.9.225.54 255.255.255.255 ATM4/0.1348
+ip route 210.9.225.55 255.255.255.255 ATM4/0.1349
+ip route 210.9.225.58 255.255.255.255 ATM4/0.1352
+ip route 210.9.225.59 255.255.255.255 ATM4/0.1353
+ip route 210.9.225.61 255.255.255.255 ATM4/0.1355
+ip route 210.9.225.62 255.255.255.255 ATM4/0.1348
+ip route 210.9.225.63 255.255.255.255 ATM4/0.1357
+ip route 210.9.225.68 255.255.255.255 ATM4/0.1362
+ip route 210.9.225.80 255.255.255.255 ATM4/0.1374
+ip route 210.9.255.1 255.255.255.255 ATM4/0.1295
+ip route 210.9.255.10 255.255.255.255 ATM4/0.1304
+ip route 210.9.255.11 255.255.255.255 ATM4/0.1305
+ip route 210.9.255.13 255.255.255.255 ATM4/0.1307
+ip route 210.9.255.16 255.255.255.255 ATM4/0.1310
+ip route 210.9.255.18 255.255.255.255 ATM4/0.1312
+ip route 210.10.53.76 255.255.255.252 210.9.225.39
+ip route 210.10.53.196 255.255.255.252 ATM4/0.1083
+ip route 210.10.110.232 255.255.255.248 210.8.13.133
+ip route 210.11.25.88 255.255.255.248 ATM4/0.1180
+ip route 210.11.43.224 255.255.255.252 210.10.41.1
+ip route 210.11.129.92 255.255.255.252 210.10.41.5
+ip route 210.11.168.124 255.255.255.252 210.9.87.133
+ip flow-export source Loopback0
+ip flow-export version 6 peer-as
+ip flow-export destination 203.8.183.210 9991
+no ip http server
+ip tacacs source-interface Loopback0
+!
+ip bgp-community new-format
+ip community-list 1 permit 2764:2
+ip community-list 2 permit 2764:65357
+ip community-list 30 permit 2764:20
+ip community-list 30 permit 2764:25
+ip community-list 30 permit 2764:30
+ip community-list 30 permit 2764:40
+ip community-list 30 permit 2764:41
+ip community-list 30 permit 2764:61439
+ip community-list 30 permit 2764:61441
+ip community-list 30 permit 2764:61442
+ip community-list 30 permit 2764:61443
+ip community-list 30 permit 2764:61444
+ip community-list 30 permit 2764:61445
+ip community-list 30 permit 2764:61446
+ip community-list 30 permit 2764:61447
+ip community-list 30 permit 2764:61448
+ip community-list 30 permit 2764:61449
+ip community-list 30 permit 2764:61450
+ip community-list 30 permit 2764:61451
+ip community-list 30 permit 2764:61452
+ip community-list 30 permit 2764:65200
+ip community-list 30 permit 2764:65201
+ip community-list 30 permit 2764:65202
+ip community-list 30 permit 2764:65203
+ip community-list 30 permit 2764:65204
+ip community-list 30 permit 2764:65205
+ip community-list 30 permit 2764:65206
+ip community-list 30 permit 2764:65207
+ip community-list 30 permit 2764:65208
+ip community-list 30 permit 2764:65209
+ip community-list 30 permit 2764:65210
+ip community-list 30 permit 2764:65211
+ip community-list 30 permit 2764:65212
+ip community-list 30 permit 2764:65213
+ip community-list 30 permit 2764:65280
+ip community-list 30 permit 2764:65281
+ip community-list 30 permit 2764:65282
+ip community-list 30 permit 2764:65283
+ip community-list 30 permit 2764:65284
+ip community-list 30 permit 2764:65285
+ip community-list 30 permit 2764:65286
+ip community-list 30 permit 2764:65287
+ip community-list 30 permit 2764:65288
+ip community-list 30 permit 2764:65289
+ip community-list 30 permit 2764:65290
+ip community-list 30 permit 2764:65291
+ip community-list 30 permit 2764:65292
+ip community-list 30 permit 2764:65293
+ip community-list 30 permit 2764:65294
+ip community-list 30 permit 2764:65295
+ip community-list 30 permit 2764:65296
+ip community-list 30 permit 2764:65297
+ip community-list 30 permit 2764:65298
+ip community-list 30 permit 2764:65299
+ip community-list 30 permit 2764:65300
+ip community-list 30 permit 2764:65301
+ip community-list 30 permit 2764:65302
+ip community-list 30 permit 2764:65303
+ip community-list 30 permit 2764:65304
+ip community-list 30 permit 2764:65305
+ip community-list 30 permit 2764:65306
+ip community-list 30 permit 2764:65307
+ip community-list 30 permit 2764:65308
+ip community-list 30 permit 2764:65309
+ip community-list 30 permit 2764:65310
+ip community-list 30 permit 2764:65311
+ip community-list 30 permit 2764:65312
+ip community-list 30 permit 2764:65313
+ip community-list 30 permit 2764:65314
+ip community-list 30 permit 2764:65315
+ip community-list 30 permit 2764:65316
+ip community-list 30 permit 2764:65317
+ip community-list 30 permit 2764:65318
+ip community-list 30 permit 2764:65319
+ip community-list 30 permit 2764:65320
+ip community-list 30 permit 2764:65321
+ip community-list 30 permit 2764:65322
+ip community-list 30 permit 2764:65323
+ip community-list 30 permit 2764:65324
+ip community-list 30 permit 2764:65325
+ip community-list 30 permit 2764:65326
+ip community-list 30 permit 2764:65327
+ip community-list 30 permit 2764:65328
+ip community-list 30 permit 2764:65329
+ip community-list 30 permit 2764:65330
+ip community-list 30 permit 2764:65331
+ip community-list 30 permit 2764:65332
+ip community-list 30 permit 2764:65333
+ip community-list 30 permit 2764:65334
+ip community-list 30 permit 2764:65335
+ip community-list 30 permit 2764:65336
+ip community-list 30 permit 2764:65337
+ip community-list 30 permit 2764:65338
+ip community-list 30 permit 2764:65339
+ip community-list 30 permit 2764:65340
+ip community-list 30 permit 2764:65341
+ip community-list 30 permit 2764:65342
+ip community-list 30 permit 2764:65343
+ip community-list 30 permit 2764:65344
+ip community-list 30 permit 2764:65345
+ip community-list 30 permit 2764:65346
+ip community-list 30 permit 2764:65347
+ip community-list 30 permit 2764:65348
+ip community-list 30 permit 2764:65349
+ip community-list 30 permit 2764:65350
+ip community-list 30 permit 2764:65351
+ip community-list 30 permit 2764:65352
+ip community-list 30 permit 2764:65353
+ip community-list 30 permit 2764:65354
+ip community-list 30 permit 2764:65355
+ip community-list 30 permit 2764:65356
+ip community-list 30 permit 2764:65357
+ip community-list 30 permit 2764:65358
+ip community-list 30 permit 2764:65359
+ip community-list 30 permit 2764:65361
+ip community-list 30 permit 2764:65362
+ip community-list 30 permit 2764:65363
+ip community-list 30 permit 2764:65364
+ip community-list 30 permit 2764:65365
+ip community-list 30 permit 2764:65366
+ip community-list 30 permit 2764:65367
+ip community-list 30 permit 2764:65368
+ip community-list 30 permit 2764:65369
+ip community-list 30 permit 2764:65370
+ip community-list 30 permit 2764:65371
+ip community-list 30 permit 2764:65391
+ip community-list 30 permit 2764:65392
+ip community-list 30 permit 2764:65393
+ip community-list 30 permit 2764:65394
+ip community-list 30 permit 2764:65395
+ip community-list 30 permit 2764:65396
+ip community-list 30 permit 2764:65397
+ip community-list 30 permit 2764:65398
+ip community-list 30 permit 2764:65399
+ip community-list 30 permit 2764:65400
+ip community-list 30 permit 2764:65401
+ip community-list 30 permit 2764:65407
+ip community-list 30 permit 2764:65408
+ip community-list 30 permit 2764:65409
+ip community-list 30 permit 2764:65410
+ip community-list 30 permit 2764:65411
+ip community-list 30 permit 2764:65412
+ip community-list 30 permit 2764:65413
+ip community-list 30 permit 2764:65414
+ip community-list 30 permit 2764:65415
+ip community-list 30 permit 2764:65416
+ip community-list 30 permit 2764:65417
+ip community-list 30 permit 2764:65418
+ip community-list 30 permit 2764:65419
+ip community-list 30 permit 2764:65420
+ip community-list 30 permit 2764:65472
+ip community-list 30 permit 2764:65473
+ip community-list 30 permit 2764:65474
+ip community-list 30 permit 2764:65475
+ip community-list 30 permit 2764:65476
+ip community-list 30 permit 2764:65477
+ip community-list 30 permit 2764:65478
+ip community-list 30 permit 2764:65479
+ip community-list 30 permit 2764:65480
+ip community-list 30 permit 2764:65481
+ip community-list 30 permit 2764:65482
+ip community-list 30 permit 2764:65483
+ip community-list 30 permit 2764:65484
+ip community-list 30 permit 2764:65485
+ip community-list 30 permit 2764:65486
+ip community-list 30 permit 2764:65487
+ip community-list 30 permit 2764:65488
+ip community-list 30 permit 2764:65489
+ip community-list 30 permit 2764:65490
+ip community-list 30 permit 2764:65491
+ip community-list 30 permit 2764:65492
+ip community-list 30 permit 2764:65496
+ip community-list 30 permit 2764:65497
+ip community-list 30 permit 2764:65498
+ip community-list 30 permit 2764:65499
+ip community-list 30 permit 2764:65500
+ip community-list 30 permit 2764:65501
+ip community-list 30 permit 2764:65505
+ip community-list 30 permit 2764:65508
+ip community-list 30 permit 2764:9837
+ip community-list 31 permit 2764:3
+ip community-list 32 permit 2764:4
+ip community-list 33 permit 2764:5
+ip community-list 34 permit 2764:2
+ip community-list 34 permit 2764:6
+ip community-list 34 permit 2764:7
+ip community-list 34 permit 2764:15
+ip community-list 34 permit no-export
+ip community-list 34 permit no-advertise
+ip as-path access-list 130 permit ^(_56318)+$
+ip as-path access-list 131 permit ^(_64912)+$
+ip as-path access-list 132 permit ^(_64938)+$
+ip as-path access-list 133 permit ^(_64948)+$
+!
+ip access-list extended MARTIAN
+ deny   ip host 0.0.0.0 any
+ deny   ip 127.0.0.0 0.255.255.255 any
+ permit ip 10.64.0.0 0.3.255.255 any
+ deny   ip 10.0.0.0 0.255.255.255 any
+ deny   ip 172.16.0.0 0.15.255.255 any
+ deny   ip 192.168.0.0 0.0.255.255 any
+ deny   ip 192.0.2.0 0.0.0.255 any
+ deny   ip 128.0.0.0 0.0.255.255 any
+ deny   ip 191.255.0.0 0.0.255.255 any
+ deny   ip 192.0.0.0 0.0.0.255 any
+ deny   ip 223.255.255.0 0.0.0.255 any
+ deny   ip 169.254.0.0 0.0.255.255 any
+ deny   ip 224.0.0.0 31.255.255.255 any
+ deny   ip any host 0.0.0.0
+ deny   ip any 127.0.0.0 0.255.255.255
+ permit ip any 10.64.0.0 0.3.255.255
+ deny   ip any 10.0.0.0 0.255.255.255
+ deny   ip any 172.16.0.0 0.15.255.255
+ deny   ip any 192.168.0.0 0.0.255.255
+ deny   ip any 192.0.2.0 0.0.0.255
+ deny   ip any 128.0.0.0 0.0.255.255
+ deny   ip any 191.255.0.0 0.0.255.255
+ deny   ip any 192.0.0.0 0.0.0.255
+ deny   ip any 223.255.255.0 0.0.0.255
+ deny   ip any 169.254.0.0 0.0.255.255
+ permit ip any any
+logging trap debugging
+logging facility local4
+logging source-interface Loopback0
+logging 192.94.41.2
+logging 203.63.11.27
+access-list compiled
+access-list 95 permit 64.104.197.49
+access-list 95 permit 202.92.113.217
+access-list 95 remark *** SNMP RO ACL ***
+access-list 95 permit 192.94.41.0 0.0.0.255
+access-list 95 permit 192.189.54.0 0.0.0.255
+access-list 95 permit 203.8.183.0 0.0.0.255
+access-list 95 permit 203.63.11.0 0.0.0.63
+access-list 95 permit 210.8.231.40 0.0.0.1
+access-list 96 permit 192.189.54.17
+access-list 96 permit 203.8.183.1
+access-list 96 remark *** TFTP source ***
+access-list 96 permit 192.94.41.2
+access-list 98 permit 64.104.197.49
+access-list 98 permit 202.92.113.209
+access-list 98 permit 202.92.113.211
+access-list 98 permit 202.92.113.217
+access-list 98 remark *** Telnet ***
+access-list 98 permit 192.94.41.0 0.0.0.255
+access-list 98 permit 203.63.11.0 0.0.0.63
+access-list 99 permit 202.92.113.217
+access-list 99 remark *** SNMP ACL RW ***
+access-list 99 permit 192.94.41.2
+access-list 99 permit 203.63.11.0 0.0.0.63
+access-list 126 permit ip 10.64.0.0 0.3.255.255 255.252.0.0 0.3.255.255
+access-list 130 deny   ip host 0.0.0.0 any
+access-list 130 deny   ip 10.0.0.0 0.255.255.255 255.0.0.0 0.255.255.255
+access-list 130 deny   ip 127.0.0.0 0.255.255.255 255.0.0.0 0.255.255.255
+access-list 130 deny   ip 128.0.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 130 deny   ip 169.254.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 130 deny   ip 172.16.0.0 0.15.255.255 255.240.0.0 0.15.255.255
+access-list 130 deny   ip 191.255.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 130 deny   ip 192.0.0.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 130 deny   ip 192.0.2.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 130 deny   ip 192.168.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 130 deny   ip 223.255.255.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 130 deny   ip 224.0.0.0 31.255.255.255 224.0.0.0 31.255.255.255
+access-list 130 permit ip host 202.2.61.0 host 255.255.255.0
+access-list 130 deny   ip any any
+access-list 131 deny   ip host 0.0.0.0 any
+access-list 131 deny   ip 10.0.0.0 0.255.255.255 255.0.0.0 0.255.255.255
+access-list 131 deny   ip 127.0.0.0 0.255.255.255 255.0.0.0 0.255.255.255
+access-list 131 deny   ip 128.0.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 131 deny   ip 169.254.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 131 deny   ip 172.16.0.0 0.15.255.255 255.240.0.0 0.15.255.255
+access-list 131 deny   ip 191.255.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 131 deny   ip 192.0.0.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 131 deny   ip 192.0.2.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 131 deny   ip 192.168.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 131 deny   ip 223.255.255.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 131 deny   ip 224.0.0.0 31.255.255.255 224.0.0.0 31.255.255.255
+access-list 131 permit ip host 29.8.0.0 host 255.255.0.0
+access-list 131 permit ip host 123.255.208.0 host 255.255.248.0
+access-list 131 permit ip host 202.2.60.32 host 255.255.255.248
+access-list 131 permit ip host 202.2.60.56 host 255.255.255.248
+access-list 131 permit ip host 202.2.60.116 host 255.255.255.252
+access-list 131 permit ip host 202.2.60.232 host 255.255.255.248
+access-list 131 permit ip host 202.2.61.0 host 255.255.255.0
+access-list 131 permit ip 202.2.63.160 0.0.0.4 host 255.255.255.252
+access-list 131 permit ip 202.10.6.128 0.0.0.56 host 255.255.255.248
+access-list 131 permit ip host 202.10.6.192 host 255.255.255.240
+access-list 131 permit ip host 202.10.6.209 host 255.255.255.255
+access-list 131 permit ip host 202.10.6.210 host 255.255.255.255
+access-list 131 permit ip 202.10.6.212 0.0.0.3 host 255.255.255.255
+access-list 131 permit ip host 202.10.6.217 host 255.255.255.255
+access-list 131 permit ip 202.10.7.248 0.0.0.4 host 255.255.255.252
+access-list 131 permit ip host 202.10.8.0 host 255.255.255.0
+access-list 131 permit ip host 202.37.133.240 host 255.255.255.248
+access-list 131 permit ip host 202.91.206.1 host 255.255.255.255
+access-list 131 permit ip host 202.137.160.34 host 255.255.255.255
+access-list 131 permit ip host 203.14.180.240 host 255.255.255.248
+access-list 131 permit ip host 203.15.34.70 host 255.255.255.255
+access-list 131 permit ip host 203.15.34.137 host 255.255.255.255
+access-list 131 permit ip host 203.18.56.129 host 255.255.255.255
+access-list 131 permit ip host 203.23.159.197 host 255.255.255.255
+access-list 131 permit ip host 203.23.159.198 host 255.255.255.255
+access-list 131 permit ip host 203.23.236.41 host 255.255.255.255
+access-list 131 permit ip host 203.27.96.216 host 255.255.255.248
+access-list 131 permit ip host 203.27.96.232 host 255.255.255.248
+access-list 131 permit ip host 203.27.96.240 host 255.255.255.248
+access-list 131 permit ip 203.30.148.0 0.0.0.128 host 255.255.255.128
+access-list 131 permit ip host 203.34.175.113 host 255.255.255.255
+access-list 131 permit ip host 203.56.220.0 host 255.255.255.0
+access-list 131 permit ip host 203.57.132.0 host 255.255.255.0
+access-list 131 permit ip host 203.142.159.250 host 255.255.255.255
+access-list 131 permit ip host 203.185.210.64 host 255.255.255.192
+access-list 131 permit ip host 210.55.234.0 host 255.255.255.0
+access-list 131 permit ip host 222.153.222.112 host 255.255.255.240
+access-list 131 permit ip host 222.153.222.160 host 255.255.255.240
+access-list 131 permit ip host 222.153.222.208 host 255.255.255.240
+access-list 131 deny   ip any any
+access-list 132 deny   ip host 0.0.0.0 any
+access-list 132 deny   ip 10.0.0.0 0.255.255.255 255.0.0.0 0.255.255.255
+access-list 132 deny   ip 127.0.0.0 0.255.255.255 255.0.0.0 0.255.255.255
+access-list 132 deny   ip 128.0.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 132 deny   ip 169.254.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 132 deny   ip 172.16.0.0 0.15.255.255 255.240.0.0 0.15.255.255
+access-list 132 deny   ip 191.255.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 132 deny   ip 192.0.0.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 132 deny   ip 192.0.2.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 132 deny   ip 192.168.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 132 deny   ip 223.255.255.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 132 deny   ip 224.0.0.0 31.255.255.255 224.0.0.0 31.255.255.255
+access-list 132 permit ip host 58.84.208.0 host 255.255.240.0
+access-list 132 permit ip host 59.100.0.0 host 255.254.0.0
+access-list 132 permit ip host 59.102.0.0 host 255.255.128.0
+access-list 132 permit ip host 61.8.96.0 host 255.255.224.0
+access-list 132 permit ip host 61.8.117.0 host 255.255.255.0
+access-list 132 permit ip host 61.68.0.0 host 255.254.0.0
+access-list 132 permit ip host 103.1.108.0 host 255.255.252.0
+access-list 132 permit ip host 103.1.192.0 host 255.255.252.0
+access-list 132 permit ip host 103.1.212.0 host 255.255.252.0
+access-list 132 permit ip host 103.1.216.0 host 255.255.252.0
+access-list 132 permit ip host 117.121.242.0 host 255.255.255.0
+access-list 132 permit ip host 119.252.184.0 host 255.255.248.0
+access-list 132 permit ip host 120.20.0.0 host 255.255.0.0
+access-list 132 permit ip 122.100.4.0 0.0.1.0 host 255.255.255.0
+access-list 132 permit ip 122.100.10.0 0.0.1.0 host 255.255.255.0
+access-list 132 permit ip host 123.136.44.0 host 255.255.255.0
+access-list 132 permit ip host 125.168.0.0 host 255.255.0.0
+access-list 132 permit ip host 125.214.80.0 host 255.255.248.0
+access-list 132 permit ip 140.168.128.0 0.0.3.0 host 255.255.255.0
+access-list 132 permit ip host 141.162.113.0 host 255.255.255.0
+access-list 132 permit ip host 146.178.12.0 host 255.255.255.0
+access-list 132 permit ip host 149.176.0.0 host 255.255.0.0
+access-list 132 permit ip host 149.176.253.0 host 255.255.255.0
+access-list 132 permit ip host 158.45.0.0 host 255.255.252.0
+access-list 132 permit ip 158.45.12.0 0.0.1.0 host 255.255.255.0
+access-list 132 permit ip host 158.45.14.0 host 255.255.255.0
+access-list 132 permit ip host 158.45.60.0 host 255.255.252.0
+access-list 132 permit ip host 158.45.60.0 host 255.255.255.0
+access-list 132 permit ip host 158.45.201.0 host 255.255.255.0
+access-list 132 permit ip 158.45.202.0 0.0.1.0 host 255.255.255.0
+access-list 132 permit ip host 158.45.204.0 host 255.255.255.0
+access-list 132 permit ip host 158.45.206.0 host 255.255.255.0
+access-list 132 permit ip host 158.45.208.0 host 255.255.255.0
+access-list 132 permit ip host 158.116.206.0 host 255.255.255.0
+access-list 132 permit ip host 165.142.240.0 host 255.255.240.0
+access-list 132 permit ip host 168.186.0.0 host 255.255.0.0
+access-list 132 permit ip host 169.208.0.0 host 255.255.0.0
+access-list 132 permit ip host 184.86.222.0 host 255.255.255.0
+access-list 132 permit ip host 192.94.41.0 host 255.255.255.0
+access-list 132 permit ip host 192.189.54.0 host 255.255.255.0
+access-list 132 permit ip host 192.231.135.0 host 255.255.255.0
+access-list 132 permit ip host 202.0.90.0 host 255.255.255.0
+access-list 132 permit ip host 202.1.3.0 host 255.255.255.0
+access-list 132 permit ip host 202.3.34.0 host 255.255.255.0
+access-list 132 permit ip host 202.10.0.0 host 255.255.224.0
+access-list 132 permit ip host 202.10.6.0 host 255.255.254.0
+access-list 132 permit ip host 202.21.8.0 host 255.255.248.0
+access-list 132 permit ip host 202.45.97.0 host 255.255.255.0
+access-list 132 permit ip host 202.45.98.0 host 255.255.254.0
+access-list 132 permit ip host 202.45.122.0 host 255.255.255.0
+access-list 132 permit ip host 202.62.32.0 host 255.255.224.0
+access-list 132 permit ip host 202.72.147.250 host 255.255.255.255
+access-list 132 permit ip host 202.87.4.0 host 255.255.252.0
+access-list 132 permit ip host 202.94.71.0 host 255.255.255.0
+access-list 132 permit ip 202.146.24.0 0.0.1.0 host 255.255.255.0
+access-list 132 permit ip host 202.147.74.0 host 255.255.254.0
+access-list 132 permit ip host 203.0.31.0 host 255.255.255.0
+access-list 132 permit ip host 203.0.37.0 host 255.255.255.0
+access-list 132 permit ip host 203.0.238.0 host 255.255.255.0
+access-list 132 permit ip host 203.3.44.0 host 255.255.255.0
+access-list 132 permit ip host 203.4.224.0 host 255.255.255.0
+access-list 132 permit ip host 203.8.163.0 host 255.255.255.0
+access-list 132 permit ip host 203.8.176.0 host 255.255.248.0
+access-list 132 permit ip host 203.8.188.0 host 255.255.254.0
+access-list 132 permit ip host 203.8.200.0 host 255.255.255.0
+access-list 132 permit ip host 203.8.221.0 host 255.255.255.0
+access-list 132 permit ip host 203.9.35.0 host 255.255.255.0
+access-list 132 permit ip 203.9.124.0 0.0.3.0 host 255.255.255.0
+access-list 132 permit ip 203.9.128.0 0.0.1.0 host 255.255.255.0
+access-list 132 permit ip host 203.10.126.0 host 255.255.254.0
+access-list 132 permit ip host 203.11.81.0 host 255.255.255.0
+access-list 132 permit ip host 203.11.83.0 host 255.255.255.0
+access-list 132 permit ip host 203.12.31.0 host 255.255.255.0
+access-list 132 permit ip host 203.13.144.0 host 255.255.255.0
+access-list 132 permit ip host 203.14.180.0 host 255.255.255.0
+access-list 132 permit ip host 203.14.230.0 host 255.255.255.0
+access-list 132 permit ip host 203.15.222.0 host 255.255.255.0
+access-list 132 permit ip host 203.16.164.0 host 255.255.255.0
+access-list 132 permit ip host 203.16.207.0 host 255.255.255.0
+access-list 132 permit ip 203.16.224.0 0.0.1.0 host 255.255.255.0
+access-list 132 permit ip host 203.16.229.0 host 255.255.255.0
+access-list 132 permit ip host 203.17.125.0 host 255.255.255.0
+access-list 132 permit ip host 203.18.56.0 host 255.255.255.0
+access-list 132 permit ip host 203.18.82.0 host 255.255.254.0
+access-list 132 permit ip host 203.18.246.0 host 255.255.255.0
+access-list 132 permit ip host 203.19.80.210 host 255.255.255.255
+access-list 132 permit ip host 203.19.235.0 host 255.255.255.0
+access-list 132 permit ip host 203.20.64.0 host 255.255.255.0
+access-list 132 permit ip host 203.21.125.0 host 255.255.255.0
+access-list 132 permit ip host 203.23.57.0 host 255.255.255.0
+access-list 132 permit ip host 203.23.60.0 host 255.255.255.0
+access-list 132 permit ip host 203.23.97.0 host 255.255.255.0
+access-list 132 permit ip host 203.23.156.0 host 255.255.254.0
+access-list 132 permit ip host 203.23.175.0 host 255.255.255.0
+access-list 132 permit ip host 203.24.26.0 host 255.255.255.0
+access-list 132 permit ip host 203.25.79.0 host 255.255.255.0
+access-list 132 permit ip host 203.27.76.0 host 255.255.255.0
+access-list 132 permit ip host 203.27.93.0 host 255.255.255.0
+access-list 132 permit ip host 203.27.226.0 host 255.255.255.0
+access-list 132 permit ip host 203.27.242.0 host 255.255.255.0
+access-list 132 permit ip host 203.28.116.0 host 255.255.252.0
+access-list 132 permit ip host 203.28.123.0 host 255.255.255.0
+access-list 132 permit ip host 203.28.222.0 host 255.255.254.0
+access-list 132 permit ip host 203.28.238.0 host 255.255.255.0
+access-list 132 permit ip host 203.29.38.0 host 255.255.254.0
+access-list 132 permit ip host 203.29.92.0 host 255.255.255.0
+access-list 132 permit ip host 203.29.191.0 host 255.255.255.0
+access-list 132 permit ip host 203.30.148.0 host 255.255.255.0
+access-list 132 permit ip host 203.30.165.0 host 255.255.255.0
+access-list 132 permit ip host 203.30.208.0 host 255.255.255.0
+access-list 132 permit ip host 203.30.212.0 host 255.255.255.0
+access-list 132 permit ip host 203.31.95.0 host 255.255.255.0
+access-list 132 permit ip host 203.31.169.0 host 255.255.255.0
+access-list 132 permit ip host 203.31.182.0 host 255.255.255.0
+access-list 132 permit ip host 203.32.27.0 host 255.255.255.0
+access-list 132 permit ip host 203.32.61.0 host 255.255.255.0
+access-list 132 permit ip host 203.32.207.0 host 255.255.255.0
+access-list 132 permit ip host 203.32.220.0 host 255.255.255.0
+access-list 132 permit ip host 203.33.193.0 host 255.255.255.0
+access-list 132 permit ip host 203.34.62.0 host 255.255.255.0
+access-list 132 permit ip host 203.34.93.0 host 255.255.255.0
+access-list 132 permit ip host 203.34.156.0 host 255.255.254.0
+access-list 132 permit ip host 203.34.158.0 host 255.255.255.0
+access-list 132 permit ip host 203.34.189.0 host 255.255.255.0
+access-list 132 permit ip host 203.34.236.0 host 255.255.255.0
+access-list 132 permit ip 203.55.54.0 0.0.1.0 255.255.254.0 0.0.1.0
+access-list 132 permit ip host 203.55.77.0 host 255.255.255.0
+access-list 132 permit ip host 203.55.83.0 host 255.255.255.0
+access-list 132 permit ip host 203.55.105.0 host 255.255.255.0
+access-list 132 permit ip host 203.56.32.0 host 255.255.255.0
+access-list 132 permit ip host 203.56.94.0 host 255.255.255.0
+access-list 132 permit ip host 203.56.122.0 host 255.255.255.0
+access-list 132 permit ip host 203.56.128.0 host 255.255.252.0
+access-list 132 permit ip host 203.56.234.0 host 255.255.255.0
+access-list 132 permit ip host 203.57.30.0 host 255.255.254.0
+access-list 132 permit ip host 203.57.38.0 host 255.255.255.0
+access-list 132 permit ip host 203.57.192.0 host 255.255.254.0
+access-list 132 permit ip host 203.63.0.0 host 255.255.0.0
+access-list 132 permit ip host 203.82.174.0 host 255.255.255.0
+access-list 132 permit ip host 203.90.31.0 host 255.255.255.0
+access-list 132 permit ip host 203.102.202.0 host 255.255.255.0
+access-list 132 permit ip host 203.161.144.0 host 255.255.255.0
+access-list 132 permit ip host 203.210.102.0 host 255.255.255.0
+access-list 132 permit ip host 203.210.105.0 host 255.255.255.0
+access-list 132 permit ip host 210.8.0.0 host 255.252.0.0
+access-list 132 permit ip host 210.56.80.0 host 255.255.240.0
+access-list 132 permit ip 210.56.84.0 0.0.3.0 host 255.255.255.0
+access-list 132 permit ip host 210.56.88.0 host 255.255.248.0
+access-list 132 permit ip host 220.253.140.0 host 255.255.252.0
+access-list 132 deny   ip any any
+access-list 133 deny   ip host 0.0.0.0 any
+access-list 133 deny   ip 10.0.0.0 0.255.255.255 255.0.0.0 0.255.255.255
+access-list 133 deny   ip 127.0.0.0 0.255.255.255 255.0.0.0 0.255.255.255
+access-list 133 deny   ip 128.0.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 133 deny   ip 169.254.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 133 deny   ip 172.16.0.0 0.15.255.255 255.240.0.0 0.15.255.255
+access-list 133 deny   ip 191.255.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 133 deny   ip 192.0.0.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 133 deny   ip 192.0.2.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 133 deny   ip 192.168.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 133 deny   ip 223.255.255.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 133 deny   ip 224.0.0.0 31.255.255.255 224.0.0.0 31.255.255.255
+access-list 133 permit ip 59.100.0.0 0.1.255.252 255.254.0.0 0.1.255.252
+access-list 133 permit ip 59.102.0.0 0.0.127.252 255.255.128.0 0.0.127.252
+access-list 133 permit ip 61.68.0.0 0.1.255.252 255.254.0.0 0.1.255.252
+access-list 133 permit ip 192.94.41.0 0.0.0.252 255.255.255.0 0.0.0.252
+access-list 133 permit ip 192.189.54.0 0.0.0.252 255.255.255.0 0.0.0.252
+access-list 133 permit ip 202.2.61.0 0.0.0.252 255.255.255.0 0.0.0.252
+access-list 133 permit ip 202.21.8.0 0.0.7.252 255.255.248.0 0.0.7.252
+access-list 133 permit ip 203.8.176.0 0.0.7.252 255.255.248.0 0.0.7.252
+access-list 133 permit ip 203.63.0.0 0.0.255.252 255.255.0.0 0.0.255.252
+access-list 133 permit ip 210.8.0.0 0.3.255.252 255.252.0.0 0.3.255.252
+access-list 133 deny   ip any any
+access-list 134 deny   ip host 0.0.0.0 any
+access-list 134 deny   ip 10.0.0.0 0.255.255.255 255.0.0.0 0.255.255.255
+access-list 134 deny   ip 127.0.0.0 0.255.255.255 255.0.0.0 0.255.255.255
+access-list 134 deny   ip 128.0.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 134 deny   ip 169.254.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 134 deny   ip 172.16.0.0 0.15.255.255 255.240.0.0 0.15.255.255
+access-list 134 deny   ip 191.255.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 134 deny   ip 192.0.0.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 134 deny   ip 192.0.2.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 134 deny   ip 192.168.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 134 deny   ip 223.255.255.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 134 deny   ip 224.0.0.0 31.255.255.255 224.0.0.0 31.255.255.255
+access-list 134 permit ip 59.100.0.0 0.1.255.255 255.255.0.0 0.0.255.255
+access-list 134 permit ip 59.102.0.0 0.0.127.255 255.255.192.0 0.0.63.255
+access-list 134 permit ip 61.68.0.0 0.1.255.255 255.255.0.0 0.0.255.255
+access-list 134 permit ip 192.94.41.0 0.0.0.255 255.255.255.128 0.0.0.127
+access-list 134 permit ip 192.189.54.0 0.0.0.255 255.255.255.128 0.0.0.127
+access-list 134 permit ip 202.2.61.0 0.0.0.255 255.255.255.128 0.0.0.127
+access-list 134 permit ip 202.21.8.0 0.0.7.255 255.255.252.0 0.0.3.255
+access-list 134 permit ip 203.8.176.0 0.0.7.255 255.255.252.0 0.0.3.255
+access-list 134 permit ip 203.63.0.0 0.0.255.255 255.255.128.0 0.0.127.255
+access-list 134 permit ip 210.8.0.0 0.3.255.255 255.254.0.0 0.1.255.255
+access-list 134 deny   ip any any
+access-list 135 deny   ip host 0.0.0.0 any
+access-list 135 deny   ip 10.0.0.0 0.255.255.255 255.0.0.0 0.255.255.255
+access-list 135 deny   ip 127.0.0.0 0.255.255.255 255.0.0.0 0.255.255.255
+access-list 135 deny   ip 128.0.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 135 deny   ip 169.254.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 135 deny   ip 172.16.0.0 0.15.255.255 255.240.0.0 0.15.255.255
+access-list 135 deny   ip 191.255.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 135 deny   ip 192.0.0.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 135 deny   ip 192.0.2.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 135 deny   ip 192.168.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 135 deny   ip 223.255.255.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 135 deny   ip 224.0.0.0 31.255.255.255 224.0.0.0 31.255.255.255
+access-list 135 permit ip 203.94.52.0 0.0.3.255 255.255.254.0 0.0.1.255
+access-list 135 permit ip 203.94.56.0 0.0.7.255 255.255.252.0 0.0.3.255
+access-list 135 permit ip 203.193.194.0 0.0.1.255 255.255.255.128 0.0.0.127
+access-list 135 permit ip 203.193.202.0 0.0.1.255 255.255.255.0 0.0.0.255
+access-list 135 permit ip 203.193.204.0 0.0.0.255 255.255.255.128 0.0.0.127
+access-list 135 permit ip 203.193.214.0 0.0.0.255 255.255.255.128 0.0.0.127
+access-list 135 deny   ip any any
+access-list 136 deny   ip host 0.0.0.0 any
+access-list 136 deny   ip 10.0.0.0 0.255.255.255 255.0.0.0 0.255.255.255
+access-list 136 deny   ip 127.0.0.0 0.255.255.255 255.0.0.0 0.255.255.255
+access-list 136 deny   ip 128.0.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 136 deny   ip 169.254.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 136 deny   ip 172.16.0.0 0.15.255.255 255.240.0.0 0.15.255.255
+access-list 136 deny   ip 191.255.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 136 deny   ip 192.0.0.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 136 deny   ip 192.0.2.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 136 deny   ip 192.168.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 136 deny   ip 223.255.255.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 136 deny   ip 224.0.0.0 31.255.255.255 224.0.0.0 31.255.255.255
+access-list 136 permit ip 202.146.28.0 0.0.3.0 host 255.255.255.0
+access-list 136 deny   ip any any
+access-list 137 deny   ip host 0.0.0.0 any
+access-list 137 deny   ip 10.0.0.0 0.255.255.255 255.0.0.0 0.255.255.255
+access-list 137 deny   ip 127.0.0.0 0.255.255.255 255.0.0.0 0.255.255.255
+access-list 137 deny   ip 128.0.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 137 deny   ip 169.254.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 137 deny   ip 172.16.0.0 0.15.255.255 255.240.0.0 0.15.255.255
+access-list 137 deny   ip 191.255.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 137 deny   ip 192.0.0.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 137 deny   ip 192.0.2.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 137 deny   ip 192.168.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 137 deny   ip 223.255.255.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 137 deny   ip 224.0.0.0 31.255.255.255 224.0.0.0 31.255.255.255
+access-list 137 permit ip host 210.9.177.48 host 255.255.255.248
+access-list 137 permit ip host 210.10.110.232 host 255.255.255.248
+access-list 137 deny   ip any any
+access-list 138 deny   ip host 0.0.0.0 any
+access-list 138 deny   ip 10.0.0.0 0.255.255.255 255.0.0.0 0.255.255.255
+access-list 138 deny   ip 127.0.0.0 0.255.255.255 255.0.0.0 0.255.255.255
+access-list 138 deny   ip 128.0.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 138 deny   ip 169.254.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 138 deny   ip 172.16.0.0 0.15.255.255 255.240.0.0 0.15.255.255
+access-list 138 deny   ip 191.255.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 138 deny   ip 192.0.0.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 138 deny   ip 192.0.2.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 138 deny   ip 192.168.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 138 deny   ip 223.255.255.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 138 deny   ip 224.0.0.0 31.255.255.255 224.0.0.0 31.255.255.255
+access-list 138 permit ip 202.146.24.0 0.0.1.0 host 255.255.255.0
+access-list 138 permit ip host 202.146.26.0 host 255.255.255.0
+access-list 138 permit ip 202.146.28.0 0.0.1.0 host 255.255.255.0
+access-list 138 permit ip host 202.146.31.0 host 255.255.255.0
+access-list 138 deny   ip any any
+access-list 139 deny   ip host 0.0.0.0 any
+access-list 139 deny   ip 10.0.0.0 0.255.255.255 255.0.0.0 0.255.255.255
+access-list 139 deny   ip 127.0.0.0 0.255.255.255 255.0.0.0 0.255.255.255
+access-list 139 deny   ip 128.0.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 139 deny   ip 169.254.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 139 deny   ip 172.16.0.0 0.15.255.255 255.240.0.0 0.15.255.255
+access-list 139 deny   ip 191.255.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 139 deny   ip 192.0.0.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 139 deny   ip 192.0.2.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 139 deny   ip 192.168.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 139 deny   ip 223.255.255.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 139 deny   ip 224.0.0.0 31.255.255.255 224.0.0.0 31.255.255.255
+access-list 139 permit ip host 210.8.86.128 host 255.255.255.192
+access-list 139 deny   ip any any
+access-list 140 deny   ip host 0.0.0.0 any
+access-list 140 deny   ip 10.0.0.0 0.255.255.255 255.0.0.0 0.255.255.255
+access-list 140 deny   ip 127.0.0.0 0.255.255.255 255.0.0.0 0.255.255.255
+access-list 140 deny   ip 128.0.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 140 deny   ip 169.254.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 140 deny   ip 172.16.0.0 0.15.255.255 255.240.0.0 0.15.255.255
+access-list 140 deny   ip 191.255.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 140 deny   ip 192.0.0.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 140 deny   ip 192.0.2.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 140 deny   ip 192.168.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 140 deny   ip 223.255.255.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 140 deny   ip 224.0.0.0 31.255.255.255 224.0.0.0 31.255.255.255
+access-list 140 permit ip host 210.9.58.128 host 255.255.255.252
+access-list 140 permit ip host 210.9.117.216 host 255.255.255.248
+access-list 140 permit ip host 210.9.179.168 host 255.255.255.252
+access-list 140 deny   ip any any
+no cdp run
+!
+route-map AS56318-EXPORT deny 10
+!
+route-map AS56318-IMPORT permit 10
+ match ip address 136
+ match as-path 130
+ match community 30
+ set local-preference 100
+ set community 2764:65211 2764:65357 2764:65408 2764:65473
+!
+route-map AS56318-IMPORT permit 20
+ match ip address 136
+ match as-path 130
+ match community 31
+ set local-preference 75
+ set community 2764:65211 2764:65357 2764:65408 2764:65473 additive
+!
+route-map AS56318-IMPORT permit 30
+ match ip address 136
+ match as-path 130
+ match community 32
+ set local-preference 85
+ set community 2764:65211 2764:65357 2764:65408 2764:65473 additive
+!
+route-map AS56318-IMPORT permit 40
+ match ip address 136
+ match as-path 130
+ match community 33
+ set local-preference 95
+ set community 2764:65211 2764:65357 2764:65408 2764:65473 additive
+!
+route-map AS56318-IMPORT permit 50
+ match ip address 136
+ match as-path 130
+ set local-preference 100
+ set community 2764:65211 2764:65357 2764:65408 2764:65473 additive
+!
+route-map AS64912-EXPORT deny 10
+!
+route-map AS64912-IMPORT permit 10
+ match ip address 137
+ match as-path 131
+ match community 30
+ set local-preference 100
+ set community 2764:7 2764:65211 2764:65357 2764:65408 2764:65473
+!
+route-map AS64912-IMPORT permit 20
+ match ip address 138
+ match as-path 131
+ match community 30
+ set local-preference 100
+ set community 2764:65211 2764:65357 2764:65408 2764:65473
+!
+route-map AS64912-IMPORT permit 30
+ match ip address 137
+ match as-path 131
+ match community 34
+ set local-preference 100
+ set community 2764:7 2764:65211 2764:65357 2764:65408 2764:65473
+!
+route-map AS64912-IMPORT permit 40
+ match ip address 138
+ match as-path 131
+ match community 31
+ set local-preference 75
+ set community 2764:65211 2764:65357 2764:65408 2764:65473 additive
+!
+route-map AS64912-IMPORT permit 50
+ match ip address 138
+ match as-path 131
+ match community 32
+ set local-preference 85
+ set community 2764:65211 2764:65357 2764:65408 2764:65473 additive
+!
+route-map AS64912-IMPORT permit 60
+ match ip address 137
+ match as-path 131
+ match community 33
+ set local-preference 95
+ set community 2764:7 2764:65211 2764:65357 2764:65408 2764:65473 additive
+!
+route-map AS64912-IMPORT permit 70
+ match ip address 138
+ match as-path 131
+ match community 33
+ set local-preference 95
+ set community 2764:65211 2764:65357 2764:65408 2764:65473 additive
+!
+route-map AS64912-IMPORT permit 80
+ match ip address 137
+ match as-path 131
+ set local-preference 100
+ set community 2764:7 2764:65211 2764:65357 2764:65408 2764:65473 additive
+!
+route-map AS64912-IMPORT permit 90
+ match ip address 138
+ match as-path 131
+ set local-preference 100
+ set community 2764:65211 2764:65357 2764:65408 2764:65473 additive
+!
+route-map AS64938-EXPORT deny 10
+!
+route-map AS64938-IMPORT permit 10
+ match ip address 139
+ match as-path 132
+ match community 30
+ set local-preference 100
+ set community 2764:7 2764:65211 2764:65357 2764:65408 2764:65473
+!
+route-map AS64938-IMPORT permit 20
+ match ip address 139
+ match as-path 132
+ match community 34
+ set local-preference 100
+ set community 2764:7 2764:65211 2764:65357 2764:65408 2764:65473
+!
+route-map AS64938-IMPORT permit 30
+ match ip address 139
+ match as-path 132
+ match community 33
+ set local-preference 95
+ set community 2764:7 2764:65211 2764:65357 2764:65408 2764:65473 additive
+!
+route-map AS64938-IMPORT permit 40
+ match ip address 139
+ match as-path 132
+ set local-preference 100
+ set community 2764:7 2764:65211 2764:65357 2764:65408 2764:65473 additive
+!
+route-map AS64948-EXPORT deny 10
+!
+route-map AS64948-IMPORT permit 10
+ match ip address 140
+ match as-path 133
+ match community 30
+ set local-preference 100
+ set community 2764:7 2764:65211 2764:65357 2764:65408 2764:65473
+!
+route-map AS64948-IMPORT permit 20
+ match ip address 140
+ match as-path 133
+ match community 34
+ set local-preference 100
+ set community 2764:7 2764:65211 2764:65357 2764:65408 2764:65473
+!
+route-map AS64948-IMPORT permit 30
+ match ip address 140
+ match as-path 133
+ match community 33
+ set local-preference 95
+ set community 2764:7 2764:65211 2764:65357 2764:65408 2764:65473 additive
+!
+route-map AS64948-IMPORT permit 40
+ match ip address 140
+ match as-path 133
+ set local-preference 100
+ set community 2764:7 2764:65211 2764:65357 2764:65408 2764:65473 additive
+!
+route-map BLACKHOLE deny 10
+!
+route-map STATIC-EXPORT permit 5
+ description iProvide RFC1918 address ranges
+ match ip address 126
+ set community 2764:65211 2764:65357 2764:65472 no-export
+!
+route-map STATIC-EXPORT permit 10
+ match ip address 130
+ set community 2764:7 2764:14 2764:65211 2764:65357 2764:65408 2764:65472
+!
+route-map STATIC-EXPORT permit 20
+ match ip address 131
+ set community 2764:7 2764:65211 2764:65357 2764:65408 2764:65472
+!
+route-map STATIC-EXPORT permit 30
+ match ip address 132
+ set community 2764:65211 2764:65357 2764:65408 2764:65472
+!
+route-map STATIC-EXPORT permit 40
+ match ip address 133
+ set community 2764:65211 2764:65357 2764:65407 2764:65472
+!
+route-map STATIC-EXPORT permit 50
+ match ip address 134
+ set community 2764:65211 2764:65357 2764:65407 2764:65472 no-export
+!
+route-map STATIC-EXPORT permit 60
+ match ip address 135
+ set community 2764:65211 2764:65357 2764:65407 2764:65472 no-export
+!
+snmp-server view noflash internet included
+snmp-server view noflash ciscoFlashMIB excluded
+snmp-server community CCASQNET RW 99
+snmp-server community ccanet RO 95
+snmp-server ifindex persist
+snmp-server trap-source Loopback0
+snmp-server packetsize 8192
+snmp-server location 345 Queen St, Brisbane 4000
+snmp-server contact AAPT Support 1300731111
+snmp-server enable traps snmp authentication linkdown linkup coldstart warmstart
+snmp-server enable traps tty
+snmp-server enable traps atm subif
+snmp-server enable traps entity
+snmp-server enable traps envmon
+snmp-server enable traps bgp
+snmp-server enable traps dial
+snmp-server host 203.63.11.27 version 2c ccatrap 
+snmp-server tftp-server-list 96
+tacacs-server host 203.63.89.44 key 7 15473B4D1605271D166A21
+tacacs-server host 210.8.164.176 key 7 005123471674073F317858
+tacacs-server directed-request
+!
+dial-peer cor custom
+!
+gatekeeper
+ shutdown
+!
+banner motd ^CC
+
+Access to this system is restricted solely to employees of AAPT Pty Ltd and authorised service personnel.
+
+WARNING:  It is a criminal offence to:
+i. Obtain access to data without authority 
+   (Penalty 2 years imprisonment)                     
+ii Damage, delete, alter or insert data without authority 
+   (Penalty 10 years imprisonment)
+
+^C
+!
+line con 0
+ password 7 0330580A0F0E35485A
+ login authentication console-access
+ transport output all
+ stopbits 1
+line aux 0
+ access-class 98 in
+ password 7 09784D08100403161F
+ transport output all
+ stopbits 1
+line vty 0 4
+ access-class 98 in
+ exec-timeout 60 0
+ password 7 0330580A0F0E35485A
+ login authentication vty-access
+ transport input all
+ transport output all
+line vty 5 15
+ access-class 98 in
+ exec-timeout 60 0
+ password 7 09784D08100403161F
+ login authentication vty-access
+ transport input all
+ transport output all
+!
+ntp update-calendar
+ntp server 192.189.54.17
+ntp server 192.189.54.33
+!
+end

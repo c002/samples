@@ -1,0 +1,56 @@
+#
+# 
+# 
+
+CC=gcc
+#export SNMP=/home/harryr/local/net530
+#export OS=Linux
+#export OS=SunOS
+
+all: iniparser-2.15 hashtable lib modlib modules src config test
+
+.PHONY: iniparser-2.15 lib modlib modules src test
+
+distclean:
+#	-(cd test; $(MAKE) distclean)
+	-(cd src; $(MAKE) distclean)
+	-(cd modules; $(MAKE) distclean)
+	-(cd modlib; $(MAKE) distclean)
+	-(cd lib/hashtable; $(MAKE) distclean)
+	-(cd lib; $(MAKE) distclean)
+	-(cd iniparser-2.15; $(MAKE) realclean)
+clean:
+#	-(cd test; $(MAKE) clean)
+	-(cd src; $(MAKE) clean)
+	-(cd modules; $(MAKE) clean)
+	-(cd modlib; $(MAKE) clean)
+	-(cd lib/hashtable; $(MAKE) clean)
+	-(cd lib; $(MAKE) clean)
+	-(cd iniparser-2.15; $(MAKE) clean)
+	
+install:
+	-(cd src; $(MAKE) install)
+	-(cd modules; $(MAKE) install)
+	-(cd etc; $(MAKE) install)
+	
+src: 	lib modlib
+	$(MAKE) -C src
+
+#test: 	lib modlib
+#	$(MAKE) -C test
+hashtable: 	
+	$(MAKE) -C lib/hashtable
+lib: 	
+	$(MAKE) -C lib
+modlib: 	
+	$(MAKE) -C modlib
+
+modules: 	
+	$(MAKE) -C modules
+
+iniparser-2.15:
+	$(MAKE) -C iniparser-2.15
+
+config:
+	$(MAKE) -C etc
+	

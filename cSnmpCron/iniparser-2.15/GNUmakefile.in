@@ -1,0 +1,45 @@
+#
+# iniparser Makefile
+#
+
+# Compiler settings
+CC      = gcc
+LIBTOOL = libtool
+CFLAGS  = -g
+INC	= ../../iniparser-2.15/include
+VPATH   = ../../iniparser-2.15:$(INC)
+
+# Implicit rules
+
+SUFFIXES = .o .c .h .a .so .sl
+
+COMPILE.c=$(CC) $(CFLAGS) -c
+.c.o:
+	mkdir -p src
+	$(LIBTOOL) --mode=compile $(CC) $(CFLAGS) $(INCS) -o $@ -c $<
+
+SRCS = src/iniparser.c \
+	   src/dictionary.c \
+	   src/strlib.c
+
+OBJS = $(SRCS:.c=.o)
+LOBJS = $(SRCS:.c=.lo)
+
+
+default:	libiniparser.a
+
+libiniparser.a:	$(OBJS)
+	$(LIBTOOL) --mode=link $(CC) -o libiniparser.la $(LOBJS)
+clean:
+	rm -rr $(OBJS) *.la *.lo .libs
+
+veryclean:
+	$(RM) $(OBJS) libiniparser.a
+	rm -rf ./html ; mkdir html
+	cd test ; $(MAKE) veryclean
+
+docs:
+	@(cd doc ; $(MAKE))
+	
+check:
+	@(cd test ; $(MAKE))

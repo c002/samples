@@ -1,0 +1,924 @@
+!RANCID-CONTENT-TYPE: cisco
+!
+!Chassis type: AS5300 - a AS5300 router
+!CPU: R4K, R4700 CPU at 150Mhz, impl 33, Rev 1.0, 512KB L2 Cache
+!
+!Memory: main 131072K/16384K
+!Memory: nvram 128K
+!
+!Processor ID: 21242099
+!
+!Power: Redundant Power System is not present.
+!
+!Image: Software: C5300-IS-M, 12.1(9a), RELEASE SOFTWARE (fc1)
+!Image: Compiled: Sun 03-Feb-02 15:41 by kellythw
+!Image: flash:c5300-is-mz.121-9a.bin
+!
+!ROM Bootstrap: Version 12.0(2)XD1, EARLY DEPLOYMENT RELEASE SOFTWARE (fc1)
+!BOOTLDR: Version 12.1(9a), RELEASE SOFTWARE (fc1)
+!
+!
+!
+!BootFlash: Boot flash directory:
+!BootFlash: File  Length   Name/status
+!BootFlash:   1   1600936  c5300-boot-mz.121-9a.bin  
+!BootFlash: [1601000 bytes used, 6787608 available, 8388608 total]
+!BootFlash: 8192K bytes of processor board Boot flash (Read/Write)
+!
+!Flash: System flash directory:
+!Flash: File  Length   Name/status
+!Flash:   1   7352668  c5300-is-mz.121-9a.bin  
+!Flash:   2   468529   mica-modem-pw.2.9.4.0.bin  
+!Flash: [7821328 bytes used, 8955888 available, 16777216 total]
+!Flash: 16384K bytes of processor board System flash (Read/Write)
+!
+!Flash: nvram: Directory of nvram:/
+!Flash: nvram:     1  -rw-       14866              <no date>  startup-config
+!Flash: nvram:     2  ----          47              <no date>  private-config
+!Flash: nvram: 124920 bytes total (110054 bytes free)
+!
+!Flash: bootflash: Directory of bootflash:/
+!Flash: bootflash:     1  -rw-     1600936              <no date>  c5300-boot-mz.121-9a.bin
+!Flash: bootflash: 8388608 bytes total (6787608 bytes free)
+!
+!Interface: LANCE unit 0
+!
+!Modem: IOS-Bundled Default Firmware-Filename             Version  Firmware-Type
+!Modem: =====================================             =======  =============
+!Modem: system:/ucode/mica_board_firmware                 2.0.2.0  Mica Boardware
+!Modem: system:/ucode/mica_port_firmware                  2.7.2.0  Mica Portware
+!Modem: system:/ucode/microcom_firmware                   5.3.30   Microcom F/W and DSP
+!Modem: On-Flash Firmware-Filename                        Version  Firmware-Type
+!Modem: ==========================                        =======  =============
+!Modem: flash:mica-modem-pw.2.9.4.0.bin                   2.9.4.0  Mica Portware
+!Modem: SPE-# SPE-Type   SPE-Range     Version    Upgrade Firmware-Filename
+!Modem: 1/0   MICA-HMM   1/0   - 1/5   2.9.4.0    N/A     flash:mica-modem-pw.2.9.4.0.bin
+!Modem: 1/1   MICA-HMM   1/6   - 1/11  2.9.4.0    N/A     flash:mica-modem-pw.2.9.4.0.bin
+!Modem: 1/2   MICA-HMM   1/12  - 1/17  2.9.4.0    N/A     flash:mica-modem-pw.2.9.4.0.bin
+!Modem: 1/3   MICA-HMM   1/18  - 1/23  2.9.4.0    N/A     flash:mica-modem-pw.2.9.4.0.bin
+!Modem: 1/4   MICA-HMM   1/24  - 1/29  2.9.4.0    N/A     flash:mica-modem-pw.2.9.4.0.bin
+!Modem: 1/5   MICA-HMM   1/30  - 1/35  2.9.4.0    N/A     flash:mica-modem-pw.2.9.4.0.bin
+!Modem: 1/6   MICA-HMM   1/36  - 1/41  2.9.4.0    N/A     flash:mica-modem-pw.2.9.4.0.bin
+!Modem: 1/7   MICA-HMM   1/42  - 1/47  2.9.4.0    N/A     flash:mica-modem-pw.2.9.4.0.bin
+!Modem: 1/8   MICA-HMM   1/48  - 1/53  2.9.4.0    N/A     flash:mica-modem-pw.2.9.4.0.bin
+!Modem: 1/9   MICA-HMM   1/54  - 1/59  2.9.4.0    N/A     flash:mica-modem-pw.2.9.4.0.bin
+!
+!
+config-register 0x2102
+version 12.1
+service nagle
+service timestamps debug datetime localtime
+service timestamps log datetime localtime
+service password-encryption
+service linenumber
+service compress-config
+!
+hostname FRSBAL001
+!
+logging buffered 65536 warnings
+logging console warnings
+aaa new-model
+aaa authentication login console-access line
+aaa authentication login vty-access line
+aaa authentication login dial-access group radius enable
+aaa authentication ppp default if-needed group radius
+aaa authentication ppp isdn-access if-needed local
+aaa authentication ppp serial-access if-needed local
+aaa authorization exec default group radius if-authenticated local
+aaa authorization network default group radius if-authenticated
+aaa authorization network serial-access none
+aaa accounting delay-start
+aaa accounting commands 1 default stop-only group tacacs+
+aaa accounting network default wait-start group radius
+aaa accounting connection default wait-start group radius
+aaa accounting system default wait-start group radius
+enable password 7 11081815031C150E05262725
+!
+username S232704-74 password 7 130A0218041C012F7D73
+username S232804-44 password 7 104B0C0810181C0C5E
+username admin password 7 0232075A02071B2558
+username cnocuser password 7 050A071F35424B1D0A
+username patiencen1-gw password 7 111D1C0212190A09527D
+username patiencen2-gw password 7 105B1B101D1206035A53
+username winnbn2-gw password 7 082D495F1C18174446
+spe 1/0 1/9
+ firmware location flash:mica-modem-pw.2.9.4.0.bin
+!
+resource-pool disable
+!
+clock timezone AEST 10
+modem a-law
+no modem fast-answer
+modem country mica australia
+modem recovery action none
+ip subnet-zero
+no ip source-route
+ip telnet source-interface Loopback1
+ip tftp source-interface Loopback0
+ip host FRSBAL001 172.30.241.42
+ip host con-bal-acc1 2061 203.63.80.32
+ip host uucphost 192.189.54.5
+ip domain-name connect.com.au
+ip name-server 203.8.183.1
+ip name-server 192.189.54.33
+!
+ip address-pool local
+vpdn enable
+vpdn source-ip 203.63.80.32
+vpdn search-order domain 
+vpdn domain-delimiter @ suffix
+vpdn domain-delimiter / prefix
+!
+frame-relay switching
+isdn switch-type primary-net5
+mta receive maximum-recipients 0
+!
+controller E1 0
+ framing NO-CRC4 
+ channel-group 1 timeslots 1-31
+ description Direct to BALIGX1 13.63
+!
+controller E1 1
+ framing CRC4 Australia
+ clock source line secondary 1
+ pri-group timeslots 1-31
+ description Connect Permanent Access A0353300500K1001
+!
+controller E1 2
+ framing CRC4 Australia
+ clock source line primary
+ pri-group timeslots 1-31
+ description Connect Permanent Access A0353305400K1001
+!
+controller E1 3
+ shutdown
+ framing CRC4 Australia
+ pri-group timeslots 1-31
+ description AAPT Dialpoint A0353367500K1004
+!
+buffers big permanent 350
+buffers big max-free 450
+buffers big min-free 75
+buffers huge permanent 20
+buffers huge max-free 30
+buffers huge min-free 5
+!
+interface Loopback0
+ ip address 203.63.80.32 255.255.255.255
+!
+interface Loopback1
+ ip address 210.10.255.46 255.255.255.255
+!
+interface Ethernet0
+ description ** Interface to terminate NBN SDH node **
+ no ip address
+ load-interval 30
+ no cdp enable
+ bridge-group 33
+ bridge-group 33 input-pattern-list 1100
+!
+interface Serial0:1
+ description uni 2 stratcom
+ no ip address
+ encapsulation frame-relay
+ frame-relay lmi-type q933a
+!
+interface Serial0:1.1 point-to-point
+ description AAPT management PVC APTBALBNEP001
+ ip address 172.30.241.42 255.255.240.0
+ no arp frame-relay
+ no cdp enable
+ frame-relay interface-dlci 16   
+!
+interface Serial0:1.2 point-to-point
+ description REGN: Melbourne Trunk 1(mel-bdr2 ATM9/1/0.9)(AAPT Circuit ID: BALL0001 - MELB0006 PVC 0004)(CCOBALMELP001)
+ bandwidth 1984
+ ip address 203.63.112.14 255.255.255.252
+ ip access-group 129 out
+ ip ospf authentication-key 7 0508050E33435B1D1C
+ ip ospf cost 10000
+ no arp frame-relay
+ no cdp enable
+ frame-relay interface-dlci 99 IETF   
+!
+interface Serial0:1.3 point-to-point
+ description bridged clns for marconi sdh management
+ no cdp enable
+ frame-relay interface-dlci 100   
+ bridge-group 33
+!
+interface Serial1:15
+ description Connect ISDN 03 5330 0500/PSTN 03 5330 0600
+ ip address 210.9.96.62 255.255.255.192
+ no ip redirects
+ encapsulation ppp
+ dialer idle-timeout 604800
+ dialer enable-timeout 5
+ dialer wait-for-carrier-time 15
+ dialer map ip 210.9.96.1 name winnbn2-gw broadcast
+ dialer map ip 210.9.96.2 name S232804-44 broadcast
+ dialer map ip 210.9.96.3 name S232704-74 broadcast
+ dialer-group 1
+ isdn switch-type primary-net5
+ isdn incoming-voice modem
+ no cdp enable
+ ppp authentication chap pap isdn-access
+ ppp chap hostname bal-cor1
+ ppp multilink
+!
+interface Serial2:15
+ description Connect 03 5336 7500/AAPT Dialpoint 0353367680 (Shutdown - see cjenkins)
+ ip unnumbered Loopback0
+ ip helper-address 203.8.183.1
+ ip helper-address 192.189.54.17
+ encapsulation ppp
+ shutdown
+ dialer-group 1
+ isdn switch-type primary-net5
+ isdn incoming-voice modem
+ no cdp enable
+ ppp authentication pap chap
+!
+interface Serial3:15
+ description AAPT Dialpoint 0353367680
+ ip unnumbered Loopback0
+ ip helper-address 203.8.183.1
+ ip helper-address 192.189.54.17
+ encapsulation ppp
+ ip tcp header-compression passive
+ dialer-group 1
+ isdn switch-type primary-net5
+ isdn incoming-voice modem
+ no cdp enable
+ ppp authentication pap chap
+!
+interface FastEthernet0
+ description ACCS: Ballarat (bal-acc1 fa0)(AAPT Circuit ID: BALL0001 - BALL0001 ETH 0001)
+ ip address 210.9.96.70 255.255.255.248
+ duplex full
+ speed 100
+ no cdp enable
+!
+interface Group-Async1
+ ip unnumbered Loopback0
+ ip access-group 161 in
+ ip helper-address 203.8.183.1
+ ip helper-address 192.189.54.17
+ encapsulation ppp
+ no ip mroute-cache
+ async mode interactive
+ no fair-queue
+ no cdp enable
+ ppp authentication pap chap
+ group-range 1 60
+!
+autonomous-system 2764
+!
+router ospf 1
+ log-adjacency-changes
+ area 3 authentication
+ passive-interface default
+ no passive-interface Serial0:1.2
+ network 203.63.80.32 0.0.0.0 area 3
+ network 203.63.112.14 0.0.0.0 area 3
+!
+router bgp 2764
+ no synchronization
+ no bgp log-neighbor-changes
+ network 203.63.80.32 mask 255.255.255.255
+ redistribute connected route-map STATIC-EXPORT
+ redistribute static route-map STATIC-EXPORT
+ neighbor ibgp_dist_new peer-group
+ neighbor ibgp_dist_new remote-as 2764
+ neighbor ibgp_dist_new password 7 112B3E3529333849567D7D70
+ neighbor ibgp_dist_new update-source Loopback0
+ neighbor ibgp_dist_new next-hop-self
+ neighbor ibgp_dist_new send-community
+ neighbor 202.10.12.196 peer-group ibgp_dist_new
+ neighbor 202.10.12.197 peer-group ibgp_dist_new
+ no auto-summary
+!
+ip classless
+ip forward-protocol udp ntp
+ip route 172.20.1.0 255.255.255.0 172.30.247.254
+ip route 192.0.2.1 255.255.255.255 Null0
+ip route 192.168.6.68 255.255.255.255 172.30.247.254
+ip route 210.8.0.222 255.255.255.255 210.9.96.66
+ip route 210.9.57.192 255.255.255.240 210.9.96.1
+ip route 210.9.96.0 255.255.255.0 Null0
+ip route 210.10.247.64 255.255.255.224 210.9.96.66
+ip route 210.10.255.183 255.255.255.255 210.9.96.66
+no ip http server
+ip bgp-community new-format
+ip community-list 1 permit 2764:2
+ip community-list 2 permit 2764:65293
+ip community-list 3 permit 2764:65408
+ip community-list 3 permit 2764:65409
+ip community-list 3 permit 2764:65410
+!
+ip access-list extended DSL-L2
+ permit udp any any eq 1701
+ permit udp any any eq domain
+ permit icmp any any
+ permit tcp any any eq bgp
+ deny   ip any any
+ip access-list extended WEB-PROXY
+ permit tcp any 192.189.54.0 0.0.0.255 eq www
+ permit tcp any 210.8.224.0 0.0.31.255 eq www
+ permit tcp any host 203.8.182.10 eq www
+ permit tcp any host 203.63.84.154 eq www
+ permit tcp any host 203.8.182.1 eq www
+ permit tcp any host 203.63.84.156 eq www
+ deny   tcp 210.10.128.0 0.0.127.255 any eq www
+ permit ip any any
+ip radius source-interface Loopback0
+logging facility local4
+logging source-interface Loopback0
+logging 172.20.1.22
+logging 192.94.41.2
+logging 203.63.11.27
+access-list 50 permit 172.30.247.254
+access-list 60 permit 202.92.113.209
+access-list 60 remark *** Telnet SNMP***
+access-list 60 permit 64.104.197.49
+access-list 60 permit 172.21.247.254
+access-list 60 permit 172.30.247.254
+access-list 60 permit 192.94.41.0 0.0.0.255
+access-list 60 permit 192.189.54.0 0.0.0.255
+access-list 60 permit 203.8.183.0 0.0.0.255
+access-list 60 permit 203.63.11.0 0.0.0.63
+access-list 60 permit 203.63.80.32
+access-list 60 permit 203.131.52.0 0.0.0.255
+access-list 60 permit 203.131.53.240 0.0.0.15
+access-list 60 permit 210.8.231.40 0.0.0.1
+access-list 96 permit 192.189.54.17
+access-list 96 permit 203.8.183.1
+access-list 96 remark *** TFTP source ***
+access-list 96 permit 192.94.41.2
+access-list 97 permit 210.10.86.0 0.0.0.255
+access-list 99 remark *** SNMP ACL RW ***
+access-list 99 permit 192.94.41.2
+access-list 99 permit 203.63.11.0 0.0.0.63
+access-list 126 permit ip 10.64.0.0 0.3.255.255 255.252.0.0 0.3.255.255
+access-list 129 deny   udp any 224.0.0.0 31.255.255.255 eq snmp log
+access-list 129 deny   udp any host 0.0.0.0 eq snmp log
+access-list 129 deny   udp any 192.94.41.0 0.0.0.255 eq snmp log
+access-list 129 deny   udp any 192.189.54.0 0.0.0.255 eq snmp log
+access-list 129 deny   udp any 202.2.61.72 0.0.0.7 eq snmp log
+access-list 129 deny   udp any 202.21.9.0 0.0.0.255 eq snmp log
+access-list 129 deny   udp any 203.8.183.0 0.0.0.255 eq snmp log
+access-list 129 deny   udp any 203.63.68.0 0.0.1.255 eq snmp log
+access-list 129 deny   udp any 203.63.80.0 0.0.0.255 eq snmp log
+access-list 129 deny   udp any 203.63.112.0 0.0.1.255 eq snmp log
+access-list 129 deny   udp any 203.63.176.0 0.0.0.255 eq snmp log
+access-list 129 deny   udp any 210.8.0.0 0.0.1.255 eq snmp log
+access-list 129 deny   udp any 210.8.3.0 0.0.0.255 eq snmp log
+access-list 129 deny   udp any 210.8.219.0 0.0.0.255 eq snmp log
+access-list 129 deny   udp any 210.8.224.0 0.0.0.255 eq snmp log
+access-list 129 deny   udp any 210.8.230.0 0.0.1.255 eq snmp log
+access-list 129 deny   udp any 210.8.232.0 0.0.0.255 eq snmp log
+access-list 129 deny   udp any 210.8.236.0 0.0.0.255 eq snmp log
+access-list 129 deny   udp any 210.9.64.0 0.0.0.63 eq snmp log
+access-list 129 deny   udp any 210.9.170.0 0.0.0.255 eq snmp log
+access-list 129 deny   udp any host 139.130.49.82 eq snmp log
+access-list 129 deny   udp any host 202.139.7.6 eq snmp log
+access-list 129 deny   udp any host 203.89.195.253 eq snmp log
+access-list 129 deny   udp any host 203.63.74.198 eq snmp log
+access-list 129 deny   udp any host 210.9.88.62 eq snmp log
+access-list 129 deny   udp any host 198.9.200.42 eq snmp log
+access-list 129 deny   udp any host 202.50.116.202 eq snmp log
+access-list 129 deny   udp any host 202.50.116.115 eq snmp log
+access-list 129 deny   udp any host 202.139.7.70 eq snmp log
+access-list 129 deny   udp any host 203.166.43.174 eq snmp log
+access-list 129 deny   udp any host 203.208.152.6 eq snmp log
+access-list 129 deny   udp any host 203.208.148.206 eq snmp log
+access-list 129 deny   udp any host 139.130.32.6 eq snmp log
+access-list 129 deny   udp any host 202.50.119.98 eq snmp log
+access-list 129 deny   udp any host 203.63.116.246 eq snmp log
+access-list 129 deny   udp any host 139.130.3.10 eq snmp log
+access-list 129 deny   udp any host 139.130.3.14 eq snmp log
+access-list 129 deny   udp any host 202.139.18.94 eq snmp log
+access-list 129 permit ip any any
+access-list 130 deny   ip host 0.0.0.0 any
+access-list 130 deny   ip 10.0.0.0 0.255.255.255 255.0.0.0 0.255.255.255
+access-list 130 deny   ip 127.0.0.0 0.255.255.255 255.0.0.0 0.255.255.255
+access-list 130 deny   ip 128.0.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 130 deny   ip 169.254.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 130 deny   ip 172.16.0.0 0.15.255.255 255.240.0.0 0.15.255.255
+access-list 130 deny   ip 191.255.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 130 deny   ip 192.0.0.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 130 deny   ip 192.0.2.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 130 deny   ip 192.168.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 130 deny   ip 223.255.255.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 130 deny   ip 224.0.0.0 31.255.255.255 224.0.0.0 31.255.255.255
+access-list 130 permit ip host 202.2.61.0 host 255.255.255.0
+access-list 130 deny   ip any any
+access-list 131 deny   ip host 0.0.0.0 any
+access-list 131 deny   ip 10.0.0.0 0.255.255.255 255.0.0.0 0.255.255.255
+access-list 131 deny   ip 127.0.0.0 0.255.255.255 255.0.0.0 0.255.255.255
+access-list 131 deny   ip 128.0.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 131 deny   ip 169.254.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 131 deny   ip 172.16.0.0 0.15.255.255 255.240.0.0 0.15.255.255
+access-list 131 deny   ip 191.255.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 131 deny   ip 192.0.0.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 131 deny   ip 192.0.2.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 131 deny   ip 192.168.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 131 deny   ip 223.255.255.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 131 deny   ip 224.0.0.0 31.255.255.255 224.0.0.0 31.255.255.255
+access-list 131 permit ip host 29.8.0.0 host 255.255.0.0
+access-list 131 permit ip host 123.255.208.0 host 255.255.248.0
+access-list 131 permit ip host 202.2.60.32 host 255.255.255.248
+access-list 131 permit ip host 202.2.60.56 host 255.255.255.248
+access-list 131 permit ip host 202.2.60.116 host 255.255.255.252
+access-list 131 permit ip host 202.2.60.232 host 255.255.255.248
+access-list 131 permit ip host 202.2.61.0 host 255.255.255.0
+access-list 131 permit ip 202.2.63.160 0.0.0.4 host 255.255.255.252
+access-list 131 permit ip 202.10.6.128 0.0.0.56 host 255.255.255.248
+access-list 131 permit ip host 202.10.6.192 host 255.255.255.240
+access-list 131 permit ip host 202.10.6.209 host 255.255.255.255
+access-list 131 permit ip host 202.10.6.210 host 255.255.255.255
+access-list 131 permit ip 202.10.6.212 0.0.0.3 host 255.255.255.255
+access-list 131 permit ip host 202.10.6.217 host 255.255.255.255
+access-list 131 permit ip 202.10.7.248 0.0.0.4 host 255.255.255.252
+access-list 131 permit ip host 202.10.8.0 host 255.255.255.0
+access-list 131 permit ip host 202.37.133.240 host 255.255.255.248
+access-list 131 permit ip host 202.91.206.1 host 255.255.255.255
+access-list 131 permit ip host 202.137.160.34 host 255.255.255.255
+access-list 131 permit ip host 203.14.180.240 host 255.255.255.248
+access-list 131 permit ip host 203.15.34.70 host 255.255.255.255
+access-list 131 permit ip host 203.15.34.137 host 255.255.255.255
+access-list 131 permit ip host 203.18.56.129 host 255.255.255.255
+access-list 131 permit ip host 203.23.159.197 host 255.255.255.255
+access-list 131 permit ip host 203.23.159.198 host 255.255.255.255
+access-list 131 permit ip host 203.23.236.41 host 255.255.255.255
+access-list 131 permit ip host 203.27.96.216 host 255.255.255.248
+access-list 131 permit ip host 203.27.96.232 host 255.255.255.248
+access-list 131 permit ip host 203.27.96.240 host 255.255.255.248
+access-list 131 permit ip 203.30.148.0 0.0.0.128 host 255.255.255.128
+access-list 131 permit ip host 203.34.175.113 host 255.255.255.255
+access-list 131 permit ip host 203.56.220.0 host 255.255.255.0
+access-list 131 permit ip host 203.57.132.0 host 255.255.255.0
+access-list 131 permit ip host 203.142.159.250 host 255.255.255.255
+access-list 131 permit ip host 203.185.210.64 host 255.255.255.192
+access-list 131 permit ip host 210.55.234.0 host 255.255.255.0
+access-list 131 permit ip host 222.153.222.112 host 255.255.255.240
+access-list 131 permit ip host 222.153.222.160 host 255.255.255.240
+access-list 131 permit ip host 222.153.222.208 host 255.255.255.240
+access-list 131 deny   ip any any
+access-list 132 deny   ip host 0.0.0.0 any
+access-list 132 deny   ip 10.0.0.0 0.255.255.255 255.0.0.0 0.255.255.255
+access-list 132 deny   ip 127.0.0.0 0.255.255.255 255.0.0.0 0.255.255.255
+access-list 132 deny   ip 128.0.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 132 deny   ip 169.254.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 132 deny   ip 172.16.0.0 0.15.255.255 255.240.0.0 0.15.255.255
+access-list 132 deny   ip 191.255.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 132 deny   ip 192.0.0.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 132 deny   ip 192.0.2.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 132 deny   ip 192.168.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 132 deny   ip 223.255.255.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 132 deny   ip 224.0.0.0 31.255.255.255 224.0.0.0 31.255.255.255
+access-list 132 permit ip host 58.84.208.0 host 255.255.240.0
+access-list 132 permit ip host 59.100.0.0 host 255.254.0.0
+access-list 132 permit ip host 59.102.0.0 host 255.255.128.0
+access-list 132 permit ip host 61.8.96.0 host 255.255.224.0
+access-list 132 permit ip host 61.8.117.0 host 255.255.255.0
+access-list 132 permit ip host 61.68.0.0 host 255.254.0.0
+access-list 132 permit ip host 103.1.108.0 host 255.255.252.0
+access-list 132 permit ip host 103.1.192.0 host 255.255.252.0
+access-list 132 permit ip host 103.1.212.0 host 255.255.252.0
+access-list 132 permit ip host 103.1.216.0 host 255.255.252.0
+access-list 132 permit ip host 117.121.242.0 host 255.255.255.0
+access-list 132 permit ip host 119.252.184.0 host 255.255.248.0
+access-list 132 permit ip host 120.20.0.0 host 255.255.0.0
+access-list 132 permit ip 122.100.4.0 0.0.1.0 host 255.255.255.0
+access-list 132 permit ip 122.100.10.0 0.0.1.0 host 255.255.255.0
+access-list 132 permit ip host 123.136.44.0 host 255.255.255.0
+access-list 132 permit ip host 125.168.0.0 host 255.255.0.0
+access-list 132 permit ip host 125.214.80.0 host 255.255.248.0
+access-list 132 permit ip 140.168.128.0 0.0.3.0 host 255.255.255.0
+access-list 132 permit ip host 141.162.113.0 host 255.255.255.0
+access-list 132 permit ip host 146.178.12.0 host 255.255.255.0
+access-list 132 permit ip host 149.176.0.0 host 255.255.0.0
+access-list 132 permit ip host 149.176.253.0 host 255.255.255.0
+access-list 132 permit ip host 158.45.0.0 host 255.255.252.0
+access-list 132 permit ip 158.45.12.0 0.0.1.0 host 255.255.255.0
+access-list 132 permit ip host 158.45.14.0 host 255.255.255.0
+access-list 132 permit ip host 158.45.60.0 host 255.255.252.0
+access-list 132 permit ip host 158.45.60.0 host 255.255.255.0
+access-list 132 permit ip host 158.45.201.0 host 255.255.255.0
+access-list 132 permit ip 158.45.202.0 0.0.1.0 host 255.255.255.0
+access-list 132 permit ip host 158.45.204.0 host 255.255.255.0
+access-list 132 permit ip host 158.45.206.0 host 255.255.255.0
+access-list 132 permit ip host 158.45.208.0 host 255.255.255.0
+access-list 132 permit ip host 158.116.206.0 host 255.255.255.0
+access-list 132 permit ip host 165.142.240.0 host 255.255.240.0
+access-list 132 permit ip host 168.186.0.0 host 255.255.0.0
+access-list 132 permit ip host 169.208.0.0 host 255.255.0.0
+access-list 132 permit ip host 184.86.222.0 host 255.255.255.0
+access-list 132 permit ip host 192.94.41.0 host 255.255.255.0
+access-list 132 permit ip host 192.189.54.0 host 255.255.255.0
+access-list 132 permit ip host 192.231.135.0 host 255.255.255.0
+access-list 132 permit ip host 202.0.90.0 host 255.255.255.0
+access-list 132 permit ip host 202.1.3.0 host 255.255.255.0
+access-list 132 permit ip host 202.3.34.0 host 255.255.255.0
+access-list 132 permit ip host 202.10.0.0 host 255.255.224.0
+access-list 132 permit ip host 202.10.6.0 host 255.255.254.0
+access-list 132 permit ip host 202.21.8.0 host 255.255.248.0
+access-list 132 permit ip host 202.45.97.0 host 255.255.255.0
+access-list 132 permit ip host 202.45.98.0 host 255.255.254.0
+access-list 132 permit ip host 202.45.122.0 host 255.255.255.0
+access-list 132 permit ip host 202.62.32.0 host 255.255.224.0
+access-list 132 permit ip host 202.72.147.250 host 255.255.255.255
+access-list 132 permit ip host 202.87.4.0 host 255.255.252.0
+access-list 132 permit ip host 202.94.71.0 host 255.255.255.0
+access-list 132 permit ip 202.146.24.0 0.0.1.0 host 255.255.255.0
+access-list 132 permit ip host 202.147.74.0 host 255.255.254.0
+access-list 132 permit ip host 203.0.31.0 host 255.255.255.0
+access-list 132 permit ip host 203.0.37.0 host 255.255.255.0
+access-list 132 permit ip host 203.0.238.0 host 255.255.255.0
+access-list 132 permit ip host 203.3.44.0 host 255.255.255.0
+access-list 132 permit ip host 203.4.224.0 host 255.255.255.0
+access-list 132 permit ip host 203.8.163.0 host 255.255.255.0
+access-list 132 permit ip host 203.8.176.0 host 255.255.248.0
+access-list 132 permit ip host 203.8.188.0 host 255.255.254.0
+access-list 132 permit ip host 203.8.200.0 host 255.255.255.0
+access-list 132 permit ip host 203.8.221.0 host 255.255.255.0
+access-list 132 permit ip host 203.9.35.0 host 255.255.255.0
+access-list 132 permit ip 203.9.124.0 0.0.3.0 host 255.255.255.0
+access-list 132 permit ip 203.9.128.0 0.0.1.0 host 255.255.255.0
+access-list 132 permit ip host 203.10.126.0 host 255.255.254.0
+access-list 132 permit ip host 203.11.81.0 host 255.255.255.0
+access-list 132 permit ip host 203.11.83.0 host 255.255.255.0
+access-list 132 permit ip host 203.12.31.0 host 255.255.255.0
+access-list 132 permit ip host 203.13.144.0 host 255.255.255.0
+access-list 132 permit ip host 203.14.180.0 host 255.255.255.0
+access-list 132 permit ip host 203.14.230.0 host 255.255.255.0
+access-list 132 permit ip host 203.15.222.0 host 255.255.255.0
+access-list 132 permit ip host 203.16.164.0 host 255.255.255.0
+access-list 132 permit ip host 203.16.207.0 host 255.255.255.0
+access-list 132 permit ip 203.16.224.0 0.0.1.0 host 255.255.255.0
+access-list 132 permit ip host 203.16.229.0 host 255.255.255.0
+access-list 132 permit ip host 203.17.125.0 host 255.255.255.0
+access-list 132 permit ip host 203.18.56.0 host 255.255.255.0
+access-list 132 permit ip host 203.18.82.0 host 255.255.254.0
+access-list 132 permit ip host 203.18.246.0 host 255.255.255.0
+access-list 132 permit ip host 203.19.80.210 host 255.255.255.255
+access-list 132 permit ip host 203.19.235.0 host 255.255.255.0
+access-list 132 permit ip host 203.20.64.0 host 255.255.255.0
+access-list 132 permit ip host 203.21.125.0 host 255.255.255.0
+access-list 132 permit ip host 203.23.57.0 host 255.255.255.0
+access-list 132 permit ip host 203.23.60.0 host 255.255.255.0
+access-list 132 permit ip host 203.23.97.0 host 255.255.255.0
+access-list 132 permit ip host 203.23.156.0 host 255.255.254.0
+access-list 132 permit ip host 203.23.175.0 host 255.255.255.0
+access-list 132 permit ip host 203.24.26.0 host 255.255.255.0
+access-list 132 permit ip host 203.25.79.0 host 255.255.255.0
+access-list 132 permit ip host 203.27.76.0 host 255.255.255.0
+access-list 132 permit ip host 203.27.93.0 host 255.255.255.0
+access-list 132 permit ip host 203.27.226.0 host 255.255.255.0
+access-list 132 permit ip host 203.27.242.0 host 255.255.255.0
+access-list 132 permit ip host 203.28.116.0 host 255.255.252.0
+access-list 132 permit ip host 203.28.123.0 host 255.255.255.0
+access-list 132 permit ip host 203.28.222.0 host 255.255.254.0
+access-list 132 permit ip host 203.28.238.0 host 255.255.255.0
+access-list 132 permit ip host 203.29.38.0 host 255.255.254.0
+access-list 132 permit ip host 203.29.92.0 host 255.255.255.0
+access-list 132 permit ip host 203.29.191.0 host 255.255.255.0
+access-list 132 permit ip host 203.30.148.0 host 255.255.255.0
+access-list 132 permit ip host 203.30.165.0 host 255.255.255.0
+access-list 132 permit ip host 203.30.208.0 host 255.255.255.0
+access-list 132 permit ip host 203.30.212.0 host 255.255.255.0
+access-list 132 permit ip host 203.31.95.0 host 255.255.255.0
+access-list 132 permit ip host 203.31.169.0 host 255.255.255.0
+access-list 132 permit ip host 203.31.182.0 host 255.255.255.0
+access-list 132 permit ip host 203.32.27.0 host 255.255.255.0
+access-list 132 permit ip host 203.32.61.0 host 255.255.255.0
+access-list 132 permit ip host 203.32.207.0 host 255.255.255.0
+access-list 132 permit ip host 203.32.220.0 host 255.255.255.0
+access-list 132 permit ip host 203.33.193.0 host 255.255.255.0
+access-list 132 permit ip host 203.34.62.0 host 255.255.255.0
+access-list 132 permit ip host 203.34.93.0 host 255.255.255.0
+access-list 132 permit ip host 203.34.156.0 host 255.255.254.0
+access-list 132 permit ip host 203.34.158.0 host 255.255.255.0
+access-list 132 permit ip host 203.34.189.0 host 255.255.255.0
+access-list 132 permit ip host 203.34.236.0 host 255.255.255.0
+access-list 132 permit ip 203.55.54.0 0.0.1.0 255.255.254.0 0.0.1.0
+access-list 132 permit ip host 203.55.77.0 host 255.255.255.0
+access-list 132 permit ip host 203.55.83.0 host 255.255.255.0
+access-list 132 permit ip host 203.55.105.0 host 255.255.255.0
+access-list 132 permit ip host 203.56.32.0 host 255.255.255.0
+access-list 132 permit ip host 203.56.94.0 host 255.255.255.0
+access-list 132 permit ip host 203.56.122.0 host 255.255.255.0
+access-list 132 permit ip host 203.56.128.0 host 255.255.252.0
+access-list 132 permit ip host 203.56.234.0 host 255.255.255.0
+access-list 132 permit ip host 203.57.30.0 host 255.255.254.0
+access-list 132 permit ip host 203.57.38.0 host 255.255.255.0
+access-list 132 permit ip host 203.57.192.0 host 255.255.254.0
+access-list 132 permit ip host 203.63.0.0 host 255.255.0.0
+access-list 132 permit ip host 203.82.174.0 host 255.255.255.0
+access-list 132 permit ip host 203.90.31.0 host 255.255.255.0
+access-list 132 permit ip host 203.102.202.0 host 255.255.255.0
+access-list 132 permit ip host 203.161.144.0 host 255.255.255.0
+access-list 132 permit ip host 203.210.102.0 host 255.255.255.0
+access-list 132 permit ip host 203.210.105.0 host 255.255.255.0
+access-list 132 permit ip host 210.8.0.0 host 255.252.0.0
+access-list 132 permit ip host 210.56.80.0 host 255.255.240.0
+access-list 132 permit ip 210.56.84.0 0.0.3.0 host 255.255.255.0
+access-list 132 permit ip host 210.56.88.0 host 255.255.248.0
+access-list 132 permit ip host 220.253.140.0 host 255.255.252.0
+access-list 132 deny   ip any any
+access-list 133 deny   ip host 0.0.0.0 any
+access-list 133 deny   ip 10.0.0.0 0.255.255.255 255.0.0.0 0.255.255.255
+access-list 133 deny   ip 127.0.0.0 0.255.255.255 255.0.0.0 0.255.255.255
+access-list 133 deny   ip 128.0.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 133 deny   ip 169.254.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 133 deny   ip 172.16.0.0 0.15.255.255 255.240.0.0 0.15.255.255
+access-list 133 deny   ip 191.255.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 133 deny   ip 192.0.0.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 133 deny   ip 192.0.2.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 133 deny   ip 192.168.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 133 deny   ip 223.255.255.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 133 deny   ip 224.0.0.0 31.255.255.255 224.0.0.0 31.255.255.255
+access-list 133 permit ip 59.100.0.0 0.1.255.252 255.254.0.0 0.1.255.252
+access-list 133 permit ip 59.102.0.0 0.0.127.252 255.255.128.0 0.0.127.252
+access-list 133 permit ip 61.68.0.0 0.1.255.252 255.254.0.0 0.1.255.252
+access-list 133 permit ip 192.94.41.0 0.0.0.252 255.255.255.0 0.0.0.252
+access-list 133 permit ip 192.189.54.0 0.0.0.252 255.255.255.0 0.0.0.252
+access-list 133 permit ip 202.2.61.0 0.0.0.252 255.255.255.0 0.0.0.252
+access-list 133 permit ip 202.21.8.0 0.0.7.252 255.255.248.0 0.0.7.252
+access-list 133 permit ip 203.8.176.0 0.0.7.252 255.255.248.0 0.0.7.252
+access-list 133 permit ip 203.63.0.0 0.0.255.252 255.255.0.0 0.0.255.252
+access-list 133 permit ip 210.8.0.0 0.3.255.252 255.252.0.0 0.3.255.252
+access-list 133 deny   ip any any
+access-list 134 deny   ip host 0.0.0.0 any
+access-list 134 deny   ip 10.0.0.0 0.255.255.255 255.0.0.0 0.255.255.255
+access-list 134 deny   ip 127.0.0.0 0.255.255.255 255.0.0.0 0.255.255.255
+access-list 134 deny   ip 128.0.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 134 deny   ip 169.254.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 134 deny   ip 172.16.0.0 0.15.255.255 255.240.0.0 0.15.255.255
+access-list 134 deny   ip 191.255.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 134 deny   ip 192.0.0.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 134 deny   ip 192.0.2.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 134 deny   ip 192.168.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 134 deny   ip 223.255.255.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 134 deny   ip 224.0.0.0 31.255.255.255 224.0.0.0 31.255.255.255
+access-list 134 permit ip 59.100.0.0 0.1.255.255 255.255.0.0 0.0.255.255
+access-list 134 permit ip 59.102.0.0 0.0.127.255 255.255.192.0 0.0.63.255
+access-list 134 permit ip 61.68.0.0 0.1.255.255 255.255.0.0 0.0.255.255
+access-list 134 permit ip 192.94.41.0 0.0.0.255 255.255.255.128 0.0.0.127
+access-list 134 permit ip 192.189.54.0 0.0.0.255 255.255.255.128 0.0.0.127
+access-list 134 permit ip 202.2.61.0 0.0.0.255 255.255.255.128 0.0.0.127
+access-list 134 permit ip 202.21.8.0 0.0.7.255 255.255.252.0 0.0.3.255
+access-list 134 permit ip 203.8.176.0 0.0.7.255 255.255.252.0 0.0.3.255
+access-list 134 permit ip 203.63.0.0 0.0.255.255 255.255.128.0 0.0.127.255
+access-list 134 permit ip 210.8.0.0 0.3.255.255 255.254.0.0 0.1.255.255
+access-list 134 deny   ip any any
+access-list 135 deny   ip host 0.0.0.0 any
+access-list 135 deny   ip 10.0.0.0 0.255.255.255 255.0.0.0 0.255.255.255
+access-list 135 deny   ip 127.0.0.0 0.255.255.255 255.0.0.0 0.255.255.255
+access-list 135 deny   ip 128.0.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 135 deny   ip 169.254.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 135 deny   ip 172.16.0.0 0.15.255.255 255.240.0.0 0.15.255.255
+access-list 135 deny   ip 191.255.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 135 deny   ip 192.0.0.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 135 deny   ip 192.0.2.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 135 deny   ip 192.168.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 135 deny   ip 223.255.255.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 135 deny   ip 224.0.0.0 31.255.255.255 224.0.0.0 31.255.255.255
+access-list 135 permit ip 203.94.52.0 0.0.3.255 255.255.254.0 0.0.1.255
+access-list 135 permit ip 203.94.56.0 0.0.7.255 255.255.252.0 0.0.3.255
+access-list 135 permit ip 203.193.194.0 0.0.1.255 255.255.255.128 0.0.0.127
+access-list 135 permit ip 203.193.202.0 0.0.1.255 255.255.255.0 0.0.0.255
+access-list 135 permit ip 203.193.204.0 0.0.0.255 255.255.255.128 0.0.0.127
+access-list 135 permit ip 203.193.214.0 0.0.0.255 255.255.255.128 0.0.0.127
+access-list 135 deny   ip any any
+access-list 136 deny   ip host 0.0.0.0 any
+access-list 136 deny   ip 10.0.0.0 0.255.255.255 255.0.0.0 0.255.255.255
+access-list 136 deny   ip 127.0.0.0 0.255.255.255 255.0.0.0 0.255.255.255
+access-list 136 deny   ip 128.0.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 136 deny   ip 169.254.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 136 deny   ip 172.16.0.0 0.15.255.255 255.240.0.0 0.15.255.255
+access-list 136 deny   ip 191.255.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 136 deny   ip 192.0.0.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 136 deny   ip 192.0.2.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 136 deny   ip 192.168.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 136 deny   ip 223.255.255.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 136 deny   ip 224.0.0.0 31.255.255.255 224.0.0.0 31.255.255.255
+access-list 136 permit ip 203.193.194.0 0.0.1.255 255.255.255.128 0.0.0.127
+access-list 136 permit ip 203.193.202.0 0.0.1.255 255.255.255.0 0.0.0.255
+access-list 136 permit ip 203.193.204.0 0.0.0.255 255.255.255.128 0.0.0.127
+access-list 136 permit ip 203.193.214.0 0.0.0.255 255.255.255.128 0.0.0.127
+access-list 136 deny   ip any any
+access-list 137 deny   ip host 0.0.0.0 any
+access-list 137 deny   ip 10.0.0.0 0.255.255.255 255.0.0.0 0.255.255.255
+access-list 137 deny   ip 127.0.0.0 0.255.255.255 255.0.0.0 0.255.255.255
+access-list 137 deny   ip 128.0.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 137 deny   ip 169.254.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 137 deny   ip 172.16.0.0 0.15.255.255 255.240.0.0 0.15.255.255
+access-list 137 deny   ip 191.255.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 137 deny   ip 192.0.0.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 137 deny   ip 192.0.2.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 137 deny   ip 192.168.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 137 deny   ip 223.255.255.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 137 deny   ip 224.0.0.0 31.255.255.255 224.0.0.0 31.255.255.255
+access-list 137 permit ip 61.68.0.0 0.1.255.255 255.255.0.0 0.0.255.255
+access-list 137 permit ip 202.2.61.0 0.0.0.255 255.255.255.128 0.0.0.127
+access-list 137 permit ip 202.21.8.0 0.0.7.255 255.255.252.0 0.0.3.255
+access-list 137 permit ip 203.8.176.0 0.0.7.255 255.255.252.0 0.0.3.255
+access-list 137 permit ip 203.63.0.0 0.0.255.255 255.255.128.0 0.0.127.255
+access-list 137 permit ip 210.8.0.0 0.3.255.255 255.254.0.0 0.1.255.255
+access-list 137 deny   ip any any
+access-list 138 deny   ip host 0.0.0.0 any
+access-list 138 deny   ip 10.0.0.0 0.255.255.255 255.0.0.0 0.255.255.255
+access-list 138 deny   ip 127.0.0.0 0.255.255.255 255.0.0.0 0.255.255.255
+access-list 138 deny   ip 128.0.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 138 deny   ip 169.254.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 138 deny   ip 172.16.0.0 0.15.255.255 255.240.0.0 0.15.255.255
+access-list 138 deny   ip 191.255.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 138 deny   ip 192.0.0.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 138 deny   ip 192.0.2.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 138 deny   ip 192.168.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 138 deny   ip 223.255.255.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 138 deny   ip 224.0.0.0 31.255.255.255 224.0.0.0 31.255.255.255
+access-list 138 permit ip 61.68.0.0 0.1.255.255 255.255.0.0 0.0.255.255
+access-list 138 permit ip 202.2.61.0 0.0.0.255 255.255.255.128 0.0.0.127
+access-list 138 permit ip 202.21.8.0 0.0.7.255 255.255.252.0 0.0.3.255
+access-list 138 permit ip 203.8.176.0 0.0.7.255 255.255.252.0 0.0.3.255
+access-list 138 permit ip 203.63.0.0 0.0.255.255 255.255.128.0 0.0.127.255
+access-list 138 permit ip 210.8.0.0 0.3.255.255 255.254.0.0 0.1.255.255
+access-list 138 deny   ip any any
+access-list 139 deny   ip host 0.0.0.0 any
+access-list 139 deny   ip 10.0.0.0 0.255.255.255 255.0.0.0 0.255.255.255
+access-list 139 deny   ip 127.0.0.0 0.255.255.255 255.0.0.0 0.255.255.255
+access-list 139 deny   ip 128.0.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 139 deny   ip 169.254.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 139 deny   ip 172.16.0.0 0.15.255.255 255.240.0.0 0.15.255.255
+access-list 139 deny   ip 191.255.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 139 deny   ip 192.0.0.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 139 deny   ip 192.0.2.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 139 deny   ip 192.168.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 139 deny   ip 223.255.255.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 139 deny   ip 224.0.0.0 31.255.255.255 224.0.0.0 31.255.255.255
+access-list 139 permit ip 202.2.61.0 0.0.0.255 255.255.255.128 0.0.0.127
+access-list 139 permit ip 202.21.8.0 0.0.7.255 255.255.252.0 0.0.3.255
+access-list 139 permit ip 203.8.176.0 0.0.7.255 255.255.252.0 0.0.3.255
+access-list 139 permit ip 203.63.0.0 0.0.255.255 255.255.128.0 0.0.127.255
+access-list 139 permit ip 210.8.0.0 0.3.255.255 255.254.0.0 0.1.255.255
+access-list 139 deny   ip any any
+access-list 140 deny   ip host 0.0.0.0 any
+access-list 140 deny   ip 10.0.0.0 0.255.255.255 255.0.0.0 0.255.255.255
+access-list 140 deny   ip 127.0.0.0 0.255.255.255 255.0.0.0 0.255.255.255
+access-list 140 deny   ip 128.0.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 140 deny   ip 169.254.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 140 deny   ip 172.16.0.0 0.15.255.255 255.240.0.0 0.15.255.255
+access-list 140 deny   ip 191.255.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 140 deny   ip 192.0.0.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 140 deny   ip 192.0.2.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 140 deny   ip 192.168.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 140 deny   ip 223.255.255.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 140 deny   ip 224.0.0.0 31.255.255.255 224.0.0.0 31.255.255.255
+access-list 140 permit ip 202.2.61.0 0.0.0.255 255.255.255.128 0.0.0.127
+access-list 140 permit ip 202.21.8.0 0.0.7.255 255.255.252.0 0.0.3.255
+access-list 140 permit ip 203.8.176.0 0.0.7.255 255.255.252.0 0.0.3.255
+access-list 140 permit ip 203.63.0.0 0.0.255.255 255.255.128.0 0.0.127.255
+access-list 140 permit ip 210.8.0.0 0.3.255.255 255.254.0.0 0.1.255.255
+access-list 140 deny   ip any any
+access-list 141 deny   ip host 0.0.0.0 any
+access-list 141 deny   ip 10.0.0.0 0.255.255.255 255.0.0.0 0.255.255.255
+access-list 141 deny   ip 127.0.0.0 0.255.255.255 255.0.0.0 0.255.255.255
+access-list 141 deny   ip 128.0.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 141 deny   ip 169.254.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 141 deny   ip 172.16.0.0 0.15.255.255 255.240.0.0 0.15.255.255
+access-list 141 deny   ip 191.255.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 141 deny   ip 192.0.0.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 141 deny   ip 192.0.2.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 141 deny   ip 192.168.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 141 deny   ip 223.255.255.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 141 deny   ip 224.0.0.0 31.255.255.255 224.0.0.0 31.255.255.255
+access-list 141 permit ip 202.2.61.0 0.0.0.255 255.255.255.128 0.0.0.127
+access-list 141 permit ip 202.21.8.0 0.0.7.255 255.255.252.0 0.0.3.255
+access-list 141 permit ip 203.8.176.0 0.0.7.255 255.255.252.0 0.0.3.255
+access-list 141 permit ip 203.63.0.0 0.0.255.255 255.255.128.0 0.0.127.255
+access-list 141 permit ip 210.8.0.0 0.3.255.255 255.254.0.0 0.1.255.255
+access-list 141 deny   ip any any
+access-list 161 deny   53 any any log
+access-list 161 deny   55 any any log
+access-list 161 deny   77 any any log
+access-list 161 deny   pim any any log
+access-list 161 deny   udp any any eq snmp log
+access-list 161 deny   udp any any eq snmptrap log
+access-list 161 permit ip any any
+access-list 1100 deny   0000.0000.0000 ffff.ffff.ffff 0000.0000.0000 ffff.ffff.ffff 0x5 1 eq 0x14
+access-list 1100 permit 0000.0000.0000 ffff.ffff.ffff 0000.0000.0000 ffff.ffff.ffff
+dialer-list 1 protocol ip permit
+no cdp run
+route-map STATIC-EXPORT permit 5
+ description iProvide RFC1918 address ranges
+ match ip address 126
+ set community 2764:65202 2764:65293 2764:65472 no-export
+!
+route-map STATIC-EXPORT permit 10
+ match ip address 130
+ set community 2764:7 2764:14 2764:65202 2764:65293 2764:65408 2764:65472
+!
+route-map STATIC-EXPORT permit 20
+ match ip address 131
+ set community 2764:7 2764:65202 2764:65293 2764:65408 2764:65472
+!
+route-map STATIC-EXPORT permit 30
+ match ip address 132
+ set community 2764:65202 2764:65293 2764:65408 2764:65472
+!
+route-map STATIC-EXPORT permit 40
+ match ip address 133
+ set community 2764:65202 2764:65293 2764:65407 2764:65472
+!
+route-map STATIC-EXPORT permit 50
+ match ip address 134
+ set community 2764:65202 2764:65293 2764:65407 2764:65472 no-export
+!
+route-map STATIC-EXPORT permit 60
+ match ip address 135
+ set community 2764:65202 2764:65293 2764:65407 2764:65472 no-export
+!
+route-map TRUNK-IMPORT permit 10
+ match community 3
+!
+snmp-server community 8yzq2kdp7gm9 RO 97
+snmp-server community CCASQNET RW 99
+snmp-server community aaptn~balla RO 50
+snmp-server community ccanet RO 60
+snmp-server trap-source Loopback0
+snmp-server packetsize 1024
+snmp-server location Ballarat
+snmp-server contact AAPT Support 1300731111
+snmp-server enable traps snmp
+snmp-server enable traps config
+snmp-server enable traps entity
+snmp-server enable traps envmon
+snmp-server enable traps bgp
+snmp-server host 203.63.11.27 version 2c ccatrap 
+snmp-server tftp-server-list 96
+!
+radius-server host 192.189.54.199 auth-port 1812 acct-port 1813
+radius-server retransmit 3
+radius-server key AaPT145Rad!
+bridge 33 protocol ieee
+banner motd ^C
+
+Access to this system is restricted solely to employees of AAPT Pty Ltd and authorised service personnel.
+
+WARNING:  It is a criminal offence to:
+i. Obtain access to data without authority 
+   (Penalty 2 years imprisonment)                     
+ii Damage, delete, alter or insert data without authority 
+   (Penalty 10 years imprisonment)
+
+^C
+alias exec cc clear counters
+alias exec cl clear log
+alias exec trunklmi sh fr lmi int s0:1
+alias exec trunkport sh int s0:1
+alias exec trunkpvc sh fr pvc int s0:1
+alias exec trunkqu sh queue s0:1
+!
+line con 0
+ exec-timeout 15 0
+ password 7 13061E010803
+ logging synchronous
+ login authentication console-access
+ transport preferred none
+ transport output telnet
+line 1 60
+ access-class 60 in
+ exec-timeout 1 0
+ login authentication dial-access
+ modem Dialin
+ transport input all
+ escape-character BREAK
+ autoselect during-login
+ autoselect ppp
+ telnet transparent
+line aux 0
+ access-class 60 in
+ no exec
+ password 7 121A0C041104
+ login authentication console-access
+ transport input all
+ escape-character BREAK
+ databits 7
+ parity space
+ stopbits 1
+line vty 0 4
+ access-class 60 in
+ password 7 14141B180F0B
+ logging synchronous
+ login authentication vty-access
+ transport preferred none
+ transport input telnet
+ transport output telnet
+!
+ntp server 172.30.247.254
+ntp server 192.189.54.17 prefer
+ntp server 192.189.54.33
+end

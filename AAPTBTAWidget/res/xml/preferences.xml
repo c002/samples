@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" android:summary="Sum prefScreen" android:title="AAPT BTA Usage Widget">
+    <PreferenceCategory android:title="Configuration">
+        <EditTextPreference android:title="Username" android:key="username" android:summary="As used for http://tools.connect.com.au"/>
+        <EditTextPreference android:title="Password" android:key="password" android:inputType="textPassword" android:summary="Password for that username"/>
+        <EditTextPreference android:title="DataOrder ID" android:key="dataorder" android:summary="DataOrder to track"/>
+    </PreferenceCategory>
+
+</PreferenceScreen>

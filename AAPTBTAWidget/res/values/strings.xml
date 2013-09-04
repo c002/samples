@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">AAPT BTA Usage widget</string>
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+    <string name="dataorder">DataOrder</string>
+    <string name="save">Save</string>
+    <string name="version">1.0</string>
+    <string name="icon_label"> v1.0b</string>
+    <string name="prefsinfo">Widget data is updated every 6hrs. The DataOrder id can be found at http://tools.connect.com.au.  Touch widget for more details.</string>
+</resources>

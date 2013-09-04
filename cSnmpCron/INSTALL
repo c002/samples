@@ -1,0 +1,37 @@
+Version 1.0 Nov-2006
+
+A Multithreaded modular snmp collector tool.
+
+Short version:
+* a UNIX box of some sort
+* Need GNU make
+* Need libtool
+* Need net-snmp (probably version >= 5) 
+
+ 	mkdir build; cd build
+	../configure
+	gmake install
+
+* When running configure, you prolly want to use --prefix and --with-snmp
+eg. ../configure --prefix=/opt/snmp/cSnmp --with-snmp=/opt/snmp/net531
+
+* To run, you need a config file to make it do something useful.
+  See example in etc/sample.conf
+
+  eg. /opt/snmp/cSnmp/bin/cSnmpCron -c /opt/snmp/cSnmp/etc/sample.conf 
+
+  ./cSnmpCron [-n] [-r] [-h] [-v] -c configfile
+        -c configfile = Where Configfile contains target lists and thread limits.
+        -n = Don't run as daemon.
+        -r = respawn daily. Bugs in snmplib workaround
+        -h = this help.
+        -v = version string.
+
+  Some additional thread debugging can be done using: --with-trace  on
+  the configure
+
+* SunPro compiler.
+  Prefix PATH with /opt/SUNwPro:/usr/ccs/bin:/usr/local/bin
+  configure line 2503  add "" in the for ac_lib
+
+  See 'doc' for some usage info and config file details.

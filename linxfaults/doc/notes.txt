@@ -1,0 +1,37 @@
+Create a new keystore from a new PFX (PKCS12)
+
+1) Use pfx2jks.sh
+
+or
+
+2a) import it into Internet Explorer:
+
+   Tools->Internet Options->Content->Certificates->import
+
+    Accept empty password and mark key as exportable (or it won't enable the export private key later)
+    After "Finish", should say successful import.
+
+2b) Export this key
+
+   as .PFX and include all certificates and uncheck "enable strong encryption", although I don't think this really
+   matters. It will want a password for exporting the private component. Set this to "testing" and save the file somewhere.
+
+2c) Import this PFX into its own java keystore
+
+   pfx2jks.sh PFX_File JKS_File
+
+   It is suggested to use a common prefix for all the keystores that are to
+   be used.  These can then be easily and auto globbed during daily runs.
+
+2d) Drop this JKS file into the "resources" dir and it will be picked
+   up by the linxfaults.sh script that should run daily (may depend on prefix)
+
+============================================================
+   BrowserVersion.INTERNET_EXPLORER_8 =
+    "Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.0)"
+
+   BrowserVersion.INTERNET_EXPLORER_7 =
+        "Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1)"
+
+   BrowserVersion.FIREFOX_3_6 =
+    "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.2.3) Gecko/20100401 Firefox/3.6.3"

@@ -1,0 +1,14 @@
+INSTALL=install
+PREFIX=@prefix@
+VPATH=../../etc
+
+all: sample.conf
+
+install:
+	$(INSTALL) -d $(PREFIX)/etc
+	$(INSTALL) sample.conf $(PREFIX)/etc
+	$(INSTALL) bw_rtrlist $(PREFIX)/etc
+
+sample.conf: template.conf
+	sed 's#ModuleBase=PREFIX#ModuleBase=$(PREFIX)/modules#g' $< > sample.conf	
+	cp $(VPATH)/bw_rtrlist  .

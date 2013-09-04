@@ -1,0 +1,46 @@
+# Generated automatically from Makefile.in by configure.
+CC=gcc
+LIBTOOL=libtool
+SNMP=@SNMP@
+PREFIX=@prefix@
+#LIBS=@LIBS@ @SSL@
+LIBS=@LIBS@
+TRACE=@TRACE@
+VPATH=../../modlib:../../include
+
+INCHASH=-I../lib/hashtable -I../../lib/hashtable
+
+INC=-I../include -I../../include  -I$(SNMP)/include $(INCHASH)
+#CFLAGS=-g -fpic $(INC) -D_REENTRANT -DDMALLOC
+CFLAGS=-g $(TRACE) $(PROF) $(INC)
+
+TSRCS=rtrCallsTest.c rtrInfoTest.c rtrOctetsTest.c
+SRCS=snmpbulk.c snmpget.c rtrOctets.c rtrInfo.c rtrCalls.c 
+#xsnmp_sess_synch_response.c
+OBJS:=$(SRCS:%.c=%.o)
+LOBJS:= $(OBJS:%.o=%.lo)
+
+MYLIBS=$(LIBS) -L./ -lsnmpmod -L../lib -lutil -L$(SNMP)/lib -lnetsnmp -static -lgcc -rpath $(SNMP)/lib
+
+all: libsnmpmod.a rtrCalls rtrInfo rtrOctets
+
+distclean: 
+	$(MAKE) clean; rm -f rtrOctets rtrInfo rtrCalls
+
+clean:
+	rm -rf *.o *.so *.lo *.a .libs
+
+rtrCalls: rtrCallsTest.c
+	$(LIBTOOL) --mode=link $(CC) -g $(PROF) -DMAIN $(INC) $(INCHASH) $< -lsnmpmod $(MYLIBS) -o rtrCalls 
+
+rtrInfo: rtrInfoTest.c
+	$(LIBTOOL) --mode=link $(CC) -g $(PROF) -DMAIN $(INC) $< -L./ -lsnmpmod $(MYLIBS) -o rtrInfo 
+
+rtrOctets: rtrOctetsTest.c
+	$(LIBTOOL) --mode=link $(CC) -g $(PROF) -DMAIN $(INC) $(INCHASH) $< $(MYLIBS) -o rtrOctets 
+
+%.o: %.c
+	$(LIBTOOL) --mode=compile $(CC) $(CFLAGS) -c $<
+
+libsnmpmod.a: $(OBJS)
+	$(LIBTOOL) --mode=link $(CC) -o libsnmpmod.la $(LOBJS)

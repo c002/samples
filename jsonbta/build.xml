@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="jsonbta" default="build">
+    <condition property="property.file" value="config/application.properties" else="config/application.properties">
+        <os family="unix"/>
+    </condition>
+
+  <property file="${property.file}"/>
+ 
+  <path id="classpath">
+      <fileset dir="${basedir}/WebContent/WEB-INF/lib" includes="*.jar" />
+      <pathelement location="${basedir}/build/src"/>
+      <pathelement location="${basedir}/build/classes"/>
+      <pathelement location="${basedir}/build"/>
+      <!-- pathelement path="${basedir}/lib/groovy-all-1.7.10.jar" /-->
+   </path>
+
+  <path id="tomcat.classpath">
+         <fileset dir="${tomcat.home}/common/lib" includes="mail.jar,activation.jar,servlet-api.jar" />
+	      
+	   </path>
+
+	
+   <pathconvert pathsep=" " property="jar.classpath">
+         <path refid="classpath"/>
+        <chainedmapper>
+            <flattenmapper/>
+            <globmapper from="*" to="lib/*"/>
+        </chainedmapper>
+      </pathconvert>
+
+
+    <target name="clean" description="Delete editor backup files, generated files and class files">
+        <delete dir="${basedir}/build"/>
+        <delete dir="${basedir}/dist"/>
+    <delete>
+            <fileset dir="${basedir}" includes="**/*~" defaultexcludes="no" />
+            <fileset dir="${basedir}" includes="**/*.bak" defaultexcludes="no" />
+            <fileset dir="${basedir}" includes="**/*.class" defaultexcludes="no" />
+            <fileset dir="${basedir}" includes="**/*.log" defaultexcludes="no" />
+        </delete>
+    </target>
+
+
+     <target name="compile">
+     	  <mkdir dir="${basedir}/build/"/>
+          <mkdir dir="${basedir}/build/classes"/>
+         
+
+          <javac debug="true" srcdir="${basedir}/src"
+            destdir="${basedir}/build/classes"
+            excludes="**/~*.java"
+            includeantruntime="false">
+              <classpath>
+                  <path refid="classpath"/>
+              	  <path refid="tomcat.classpath"/>
+                  <fileset dir="${basedir}/WebContent/WEB-INF/lib" includes="**/*.jar" defaultexcludes="no" />
+              </classpath>
+              <include name="**/*.java"/>
+          </javac>
+      </target>
+
+  <target name="war">
+     <mkdir dir="${basedir}/build/dist"/>
+
+    <mkdir dir="${basedir}/build/dist/META-INF"/>
+  	
+    <mkdir dir="${basedir}/build/dist/WEB-INF/classes"/>
+  	<mkdir dir="${basedir}/build/dist/WEB-INF/lib"/>
+    <delete>
+            <!-- fileset dir="${basedir}/build/dist/aapt" includes="**/*.class" defaultexcludes="no" /-->
+      <!--fileset dir="${basedir}/build/dist/powertel" includes="**/*.class" defaultexcludes="no" /-->
+
+      <fileset dir="${basedir}/build/dist/META-INF" includes="**/*.xsd" defaultexcludes="no" />
+    </delete>
+    
+    <copy todir="${basedir}/build/dist/WEB-INF/classes/" overwrite="true">
+        <fileset dir="${basedir}/build/classes"/>
+    </copy>
+
+    <copy todir="${basedir}/build/dist/WEB-INF/classes/" overwrite="true">
+      <fileset dir="${basedir}/config" includes="application.properties"/>
+    </copy>
+
+    <copy todir="${basedir}/build/dist/WEB-INF/classes" overwrite="true">
+      <fileset dir="${basedir}/config" includes="log4j.properties"/>
+    </copy>
+
+    <copy todir="${basedir}/build/dist/WEB-INF" overwrite="true">
+      <fileset dir="${basedir}/WebContent/WEB-INF"/>
+    </copy>
+  	<copy todir="${basedir}/build/dist/META-INF" overwrite="true">
+  	      <fileset dir="${basedir}/WebContent/META-INF"/>
+  	 </copy>
+  	
+  	<!-- <replace file="${basedir}/build/dist/META-INF/services.xml" token="aapt.ipnd" value="aapt.IPNDGate.impl" />
+    -->
+    <jar destfile="${basedir}/build/jsonbta.war" basedir="${basedir}/build/dist" />
+  </target>
+
+
+   <target name="xwar">
+        <mkdir dir="${basedir}/build/META-INF"/>
+       <mkdir dir="${basedir}/dist"/>
+      <jar destfile="dist/${dist.jar}"
+            basedir="${basedir}/build"
+         compress="false"
+         excludes="**/*.java"
+         includes="**/*.class">
+         <manifest>
+            <attribute name="Built-By" value="fred"/>
+              <attribute name="Main-Class" value="${main.class}"/>
+            <attribute name="Class-Path" value="${jar.classpath}"/>
+           </manifest>
+
+      </jar>
+    </target>
+
+  <!-- Loose junit test frame work , a bit experimental only ... -->
+  <target name="compileTest">
+    <delete dir="${basedir}/testbuild/tests"/>
+    <mkdir dir="${basedir}/testbuild/tests"/>
+        <copy todir="${basedir}/testbuild">
+            <fileset dir="${basedir}/testsrc/data"/>
+        </copy>
+    <mkdir dir="${basedir}/testbuild/testoutput"/>
+    <javac fork="yes" depend="compile" includeantruntime="false"
+        srcdir="${basedir}/testsrc" includes="**/*.java"
+        destdir="${basedir}/testbuild">
+    <classpath>
+             <path refid="axis.classpath"/>
+         <path refid="classpath"/>
+
+      <pathelement path="${basedir}/testlib/junit-4.8.2.jar" />
+      <pathelement path="${basedir}/testlib/mockito-all-1.8.4.jar"/>
+      <pathelement path="${basedir}/testlib/hamcrest-all-1.2.jar"/>
+      <pathelement path="${basedir}/build"/>
+      <pathelement path="${basedir}/testbuild"/>
+
+    </classpath>
+    </javac>
+
+    <!-- junit printsummary="yes"-->
+    <junit>
+
+        <classpath>
+              <path refid="axis.classpath"/>
+               <path refid="classpath"/>
+
+        <pathelement path="${basedir}/testlib/junit-4.8.2.jar" />
+        <pathelement path="${basedir}/testlib/mockito-all-1.8.4.jar"/>
+        <pathelement path="${basedir}/testlib/hamcrest-all-1.2.jar"/>
+          <pathelement path="${basedir}/build" />
+        <pathelement path="${basedir}/config" />	<!-- config propertyfile -->
+
+          <pathelement path="${basedir}/testbuild" />
+          <pathelement path="${java.class.path}"/>
+        </classpath>
+
+      <!--
+        <test name="my.test.TestCase" haltonfailure="no" outfile="result">
+          <formatter type="xml"/>
+        </test>
+      -->
+
+        <batchtest fork="yes" todir="${basedir}/testbuild/testoutput">
+          <!-- show me the output -->
+          <!-- -->
+            <!--formatter type="brief" usefile="false"/-->
+         <formatter type="xml" usefile="true"/>
+          <!-- -->
+          <fileset dir="${basedir}/testsrc">
+            <include name="**/*.java"/>
+            <exclude name="**/Base*.java"/>
+          </fileset>
+        </batchtest>
+
+    </junit>
+
+  </target>
+
+    <target name="deploy">
+        <copy todir="${tomcat.classes}">
+            <fileset dir="${basedir}/build">
+                <include name="**/*.class"/>
+            </fileset>
+        </copy>
+
+        <copy todir="${tomcat.lib}">
+            <fileset dir="${basedir}/WEB-INF/lib">
+                <include name="*.jar"/>
+            </fileset>
+        </copy>
+
+        <copy todir="${tomcat.classes}">
+            <fileset dir="${basedir}/config">
+                <include name="bta4web.properties"/>
+            </fileset>
+        </copy>
+        <copy todir="${tomcat.home}/bin">
+            <fileset dir="${basedir}">
+                <include name="log4j.properties"/>
+            </fileset>
+        </copy>
+     <adminclient url="http://localhost:${deployment.target.port}/axis/services/AdminService" xmlfile="build/au/com/aapt/bta4/deploy.wsdd" />
+     <!--adminclient url="http://localhost:${deployment.target.port}/axis/services/AdminService" xmlfile="src/powertel/oasis/deploy.wsdd" /-->
+    </target>
+
+    <target name="undeploy">
+        <!--adminclient url="http://localhost:${deployment.target.port}/axis/services/AdminService" xmlfile="src/powertel/oasis/undeploy.wsdd" /-->
+        <adminclient url="http://localhost:${deployment.target.port}/axis/services/AdminService" xmlfile="build/au/com/aapt/bta4/undeploy.wsdd" />
+        <delete dir="${tomcat.classes}/powertel"/>
+    </target>
+
+     <target name="junit.build">
+            <delete dir="${basedir}/testbuild"/>
+            <mkdir dir="${basedir}/testbuild"/>
+            <javac debug="true" srcdir="${basedir}/junit"
+              destdir="${basedir}/testbuild" excludes="**/~*.java">
+                <classpath>
+                    <path refid="axis2.classpath"/>
+                    <path refid="classpath"/>
+
+                    <pathelement path="${basedir}/testlib/junit-4.8.2.jar" />
+                    <pathelement path="${basedir}/testlib/hamcrest-all-1.2.jar"/>
+                    <pathelement path="${basedir}/testlib/mockito-all-1.8.4.jar"/>
+                  <pathelement path="${basedir}/build/classes"/>
+                  <pathelement path="${basedir}/testbuild"/>
+
+                </classpath>
+                <include name="**/*.java"/>
+            </javac>
+        </target>
+
+  <target name="run-soapui-tests" description="runs all functional SoapUI  tests">
+        <mkdir dir="${basedir}/reports"/>
+          <exec dir="${soapui-location}" executable="cmd.exe" failonerror="true">
+              <arg line="/c testrunner.bat -j -f${basedir}/${reports} -r -a ${soapui-project-xml-location}"/>
+          </exec>
+  </target>
+
+  <target name="generate-junit-report" description="creates JUnit-compatible xml reports">
+      <junitreport todir="${basedir}/${reports}">
+          <fileset dir="${basedir}/${reports}">
+              <include name="TEST-*.xml"/>
+          </fileset>
+          <report format="frames" todir="${basedir}/${reports}\\html"/>
+          </junitreport>
+  </target>
+
+    <target name="build">
+       <antcall target="clean" />
+       <antcall target="compile" />
+       <antcall target="war" />
+      <!-- antcall target="jar" /-->
+      <!-- antcall target="dist" /-->
+      <!-- antcall target="compileTest" /-->
+    </target>
+
+</project>

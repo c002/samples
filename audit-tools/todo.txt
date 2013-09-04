@@ -1,0 +1,22 @@
+Routes.
+
+See if db ipcidr gateway resolves via an ipblock to an interface on router
+via a ip route line ie:
+
+ip route 210.11.72.0 255.255.248.0 ATM6/0.13
+
+--
+
+Cisco Config
+
+ip route 210.11.72.0 255.255.248.0 ATM6/0.13
+
+--
+Audit tool
+
+28-Apr-2005 13:02:00:   Router has: Router=hay-cor2 Route=203.63.31.64/28 Gateway=ATM6/0.13  remotegw=210.9.197.225,
+28-Apr-2005 13:02:00:       db has: cust=138459/1 203.63.31.64/28 gw=210.11.72.109,
+
+--
+Need to resolve db-gw=210.11.72.109 to ATM6/0.13
+

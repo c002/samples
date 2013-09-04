@@ -1,0 +1,37 @@
+Network and BTA audit tools.
+
+Looks at Cisco configs and BTA configs and attempts to report
+various discrepencies. 
+It wraps the data representation of BTA, SNMP, Flowrules and DB
+into classes.  You can run this with a subset of cisco config
+files.  Having all the cisco configs can take a while to run
+this stuff. I generally do a pop at a time. ie. grab all the
+Haymarket configs only.
+
+cisco_view.py     
+db_view.py        
+flowrule_view.py  
+snmp_view.py
+
+1. Report interfaces that are 'up' on routers and missing in bta 
+
+   ./audit.py -i
+
+2. Check static routing in config against bta. For interface routes
+   that are /30, the other end is reported.
+   
+   ./audit.py -r
+
+3. Report customer link discrepancies between bta and router
+   This reports 'all'. ie. interfaces and routes
+
+   ./audit.py -a
+
+4. Check the flowrules Makefile for routers that should
+   have netflow 'on' and check the interfaces listed for
+   those routers in the group sections of the monolithic 
+   flowrules.conf file.
+
+   ./getcfg.sh   = Retrieve current router config files from wocha
+   ./netflow_check.py  > report.out
+

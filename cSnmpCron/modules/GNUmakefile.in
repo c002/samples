@@ -1,0 +1,65 @@
+# Generated automatically from Makefile.in by configure.
+#
+# 
+# 
+
+CC=gcc
+LIBTOOL=libtool
+SNMP=@SNMP@
+#LIBS=@LIBS@ @SSL@
+LIBS=@LIBS@
+PREFIX=@prefix@
+VPATH=../../modules:../../include
+
+PROF=
+VER=0:0:0
+LIBHASHINC=-I../lib/hashtable
+INC=-I./ -I../include -I../../include -I$(SNMP)/include
+CFLAGS=-g $(TRACE) $(INC) $(LIBHASHINC)
+LIBSNMPMOD=../modlib/libsnmpmod.la
+LIBUTIL=../lib/libutil.la
+INSTALL=install
+
+MYLIBS=$(LIBS) -L$(SNMP)/lib -lnetsnmp $(LIBSNMPMOD) $(LIBUTIL)
+
+SRCS=callhist.c spread.c uptime.c module.c module2.c module3.c interfaces.c
+LOBJS:= $(SRCS:%.c=%.lo)
+SOS:= $(SRCS:%.c=%.so)
+MODULES:= $(SRCS:%.c=%)
+LAS:= $(SRCS:%.c=%.la)
+
+.PHONEY: all
+all: modules callhist spread uptime interfaces
+
+distclean:
+	$(MAKE) clean; rm -f *.so interfaces uptime spread
+clean:
+	rm -rf *.o *.la *.lo .libs
+
+install: $(LAS)
+	$(INSTALL) -d $(PREFIX)/modules
+	$(LIBTOOL) --mode=install $(INSTALL) $^ $(PREFIX)/modules
+
+spread: spreadTest.c spread.o $(LIBSNMPMOD) $(LIBUTIL)
+	$(LIBTOOL) --mode=link $(CC) -g $(INC)  $< spread.o \
+		$(MYLIBS) -o spread
+
+uptime: uptimeTest.c uptime.o $(LIBSNMPMOD) $(LIBUTIL)
+	$(LIBTOOL) --mode=link $(CC) -g $(INC) $< uptime.o \
+		$(MYLIBS) -o uptime
+
+interfaces: interfacesTest.c interfaces.o $(LIBSNMPMOD) $(LIBUTIL)
+	$(LIBTOOL) --mode=link $(CC) -g $(INC) $< interfaces.o \
+		$(MYLIBS) -o interfaces
+
+callhist: callhistTest.c callhist.o $(LIBSNMPMOD) $(LIBUTIL)
+	$(LIBTOOL) --mode=link $(CC) -g $(INC) $< callhist.o \
+		$(MYLIBS) -o callhist
+
+modules: $(SRCS) $(LIBSNMPMOD) $(LIBUTIL)
+	@for mod in $(MODULES); do \
+		echo "===> $${mod}.so"; \
+		$(LIBTOOL) --mode=compile $(CC) $(CFLAGS) -c ../../modules/$$mod.c; \
+		$(LIBTOOL) --mode=link $(CC) -module -version-info $(VER) $(MYLIBS) \
+			-XCClinker -static-libgcc  -c $$mod.lo -o $$mod.la -rpath $(PREFIX)/modules ; \
+	done

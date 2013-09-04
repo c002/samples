@@ -1,0 +1,16 @@
+CC=gcc
+CFLAGS=-g
+LIBTOOL=libtool
+VPATH=../../../lib/hashtable
+
+SRCS:=hashtable_itr.c  hashtable.c 
+OBJS:= $(SRCS:%.c=%.o)
+
+all: $(OBJS)
+
+.PHONY: clean
+clean:
+	rm -rf *.o *.lo .libs
+
+%.o: %.c
+	$(LIBTOOL) --mode=compile $(CC) $(CFLAGS) -c $<

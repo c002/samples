@@ -1,0 +1,20 @@
+Notes Jun-2011
+
+What it is:
+
+A multithreaded SNMP poller based on Net-SNMP that is designed 
+to poll many interfaces and routers quickly and often.  
+It is customizable with modules that target OID's of interest.
+
+It is config file driven and a crontab like syntax to specify what
+needs polling when.  It stores the results in flat text files
+which can be easily manipulated.
+
+This project dates back to 2006 with some mods in 2008.
+It is still used in 2011 and has been stable. It runs on 
+a bunch of Sparc Solaris hosts collecting usage data from
+all router interfaces on the ISP Company (what is now a legacy) network. 
+
+I find it usefull and would hate to see usefull things dissappear.
+Perhaps others may get some use out of this also. 
+

@@ -1,0 +1,13 @@
+# Just a small sample, 4 routers
+#
+# A single routerlist file for all hosts running cSnmpCron
+#
+# The 'cSnmpCron' on host 'marka' will just read its 2 routers
+# and 'thomp' will read its 2 
+
+!marka
+		arm-cor1.connect.com.au
+		bat-cor1.connect.com.au
+!thomp
+		bri-bdr1.connect.com.au
+		bri-bdr2.connect.com.au

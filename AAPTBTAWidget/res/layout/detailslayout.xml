@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/details_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/myshape"
+    android:orientation="vertical"
+    android:padding="@dimen/widget_margin" >
+
+    <TextView
+        android:id="@+id/textView1"
+        style="@style/detailsmall"
+        android:text="textView1" />
+
+    <View
+    android:layout_width="match_parent"
+    android:layout_height="2dp"
+    android:background="@android:color/black" />
+
+    <TextView
+        android:id="@+id/textView_trafincluded"
+       style="@style/detailsmall"
+        android:text="trafficIncluded" />
+
+    <TextView
+        android:id="@+id/textView_trafficto"
+        style="@style/detailsmall"
+        android:text="trafficto" />
+    <TextView
+        android:id="@+id/textView_username"
+        style="@style/detailsmall"
+        android:text="username" />
+     <TextView
+        android:id="@+id/textView_dataorderid"
+         style="@style/detailsmall"
+        android:text="dataorderid" />
+     <TextView
+        android:id="@+id/textView_dataordername"
+         style="@style/detailsmall"
+        android:text="dataorderName" />
+
+     <View
+    android:layout_width="match_parent"
+    android:layout_height="2dp"
+    android:background="@android:color/black" />
+
+    <TextView
+        android:id="@+id/textView_url"
+        style="@style/detailsmall"
+        android:text="url" />
+
+   <TextView
+        android:id="@+id/textView_lastupdate"
+        style="@style/detailsmall"
+        android:text="lastupdate" />
+    <TextView
+        android:id="@+id/textView_response"
+        style="@style/detailsmall"
+        android:text="response" />
+
+</LinearLayout>

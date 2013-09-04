@@ -1,0 +1,45 @@
+#
+# 
+# 
+
+CC=gcc
+SRC=cSnmpCron.c
+LIBS=@LIBS@
+PREFIX=@prefix@
+LIBTOOL=libtool
+INSTALL=install
+SNMP=@SNMP@
+TRACE=@TRACE@
+VPATH=../../src:../../include
+
+SNMPINC=-I$(SNMP)/include
+INC=-I../include -I../../include $(SNMPINC)
+CFLAGS=$(TRACE) -DTEST -g -D_POSIX_PTHREAD_SEMANTICS $(INC)
+
+SNMPLIBS=-L$(SNMP)/lib -lnetsnmp
+
+#MYLIBS=$(LIBS) -L../lib -lutil -L../modlib -lsnmpmod -L../iniparser-2.15 -liniparser $(SNMPLIBS) -pthreads -XCClinker -static-libgcc 
+MYLIBS=$(LIBS) -L../lib -lutil -L../modlib -lsnmpmod -L../iniparser-2.15 -liniparser $(SNMPLIBS) -XCClinker -static-libgcc 
+
+OBJS=cSnmpCron.o init_config.o scheduler.o buildjoblist.o config.o filetargets.o
+LOBJS:= $(OBJS:%.o=%.lo)
+
+all: cSnmpCron
+	
+distclean:
+	$(MAKE) clean; rm -f cSnmpCron
+
+.PHONY: clean
+clean:
+	rm -rf *.o *.lo core .libs
+
+install:
+	$(INSTALL) -d $(PREFIX)/bin
+	$(INSTALL) cSnmpCron $(PREFIX)/bin
+	$(INSTALL) -d $(PREFIX)/etc
+
+%.lo: %.c
+	$(LIBTOOL) --mode=compile $(CC) $(CFLAGS) $(INC) -c $<
+
+cSnmpCron: $(LOBJS)
+	   $(LIBTOOL) --mode=link $(CC) $^ $(MYLIBS) -o cSnmpCron

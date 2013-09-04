@@ -1,0 +1,29 @@
+#
+# $Source: /usr/local/cvsroot/cSnmpCron/lib/GNUmakefile.in,v $
+# $Id: GNUmakefile.in,v 1.1.1.1 2008/05/29 05:21:37 harry Exp $
+
+CC=gcc
+CFLAGS=-g -I../include -I../../include
+LIBTOOL=libtool
+TRACE=@TRACE@
+PREFIX=@prefix@
+VPATH=../../lib:../../include
+
+all: libutil.a
+
+distclean:
+	$(MAKE) clean; rm -f libutil.a
+
+.PHONY: clean
+clean:
+	rm -rf libutil.a *.o *.lo *.la .libs core
+
+OBJS:= retools.o exception.o mkdeepdir.o strip.o hashtable/hashtable.o hashtable/hashtable_itr.o
+LOBJS:= $(OBJS:%.o=%.lo)
+
+#$(OBJS): %.o: %.c
+%.o: %.c
+	$(LIBTOOL) --mode=compile $(CC) $(CFLAGS) -c $<
+
+libutil.a: $(OBJS)
+	$(LIBTOOL) --mode=link $(CC) -o libutil.la $(LOBJS)

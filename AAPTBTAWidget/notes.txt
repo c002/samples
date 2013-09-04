@@ -1,0 +1,40 @@
+
+AVD launch option:
+
+    --http-proxy="http://kalta.off.connect.com.au:8080"
+
+    Sample users:
+    137839 do=2336807
+    143156 do=693308
+
+    encoded customer URL:
+        http://tools.connect.com.au:8080/jsonbta?customer=HhYcUk1ZQVZLVhk1EBAXVAkCF1J-PzNeGhkIGQFESAQNARVVAUEBEgoWRAMdTxJrfGQVWVk%3D%0A
+
+How it Works:
+
+
+xml/widget_info.xml
+
+<?xml version="1.0" encoding="utf-8"?>
+<appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+    android:initialLayout="@layout/widget_layout"
+    android:minHeight="72dp"
+    android:minWidth="146dp"
+    android:updatePeriodMillis="1800000"
+    android:configure="nu.flacco.android.bta.MyPreferencesActivity">
+</appwidget-provider>
+
+--------------
+Market Desc:
+
+Displays current usage for AAPT business customers in Australia
+in the form of a widget.
+It will only serve customers that can get their usage 
+from http://tools.connect.com.au and have a "DataOrder".
+
+On instance creation you will be asked to provide your 
+username, password and dataorder for monitoring.
+
+Note that this application or author is not affiliated with AAPT.
+
+-------------

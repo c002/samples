@@ -1,0 +1,92 @@
+A Threaded SNMP collecter in C.
+
+0. Intro
+
+The goal was to create a scalable and fast SNMP poller app with a low
+overhead and able to poll 100's of routers with 100's of interfaces. 
+A threaded application in C is likely to give the best performance.
+
+Typically runs as a daemon where it runs jobs at scheduled times.
+A job runs a task against given target hosts.
+The jobs, target hosts and run times are specified in a config file.
+
+Each job and task gets its own thread.  The run times of each job 
+have equal probability of executing at its designated run time.  
+That is task threads all start running at the same time.  
+The idea being that a large number of hosts can be polled at the same time.
+The bottleneck is in waiting for the responses. Threads are also cheap.
+
+A job is provided through an external loadable module (a shared lib).  
+This contains a 'run' function and a 'store' function.  
+These are intended to provide extendable SNMP functionality. By using 
+the provided library routines and exsiting modules as templates, new 
+jobs can be quickly defined. 
+
+1. modules.
+
+Several modules exist. These are all based on SNMPv2c requests.  This is enables
+the use of snmpbulk requests. These are focused on get interface input and output
+octets. The format of storing the data is in a flat file which needs 
+to be processed by something else.
+
+2. configfile
+
+This is in the format of a classic 'ini' file with sections and key = value pairs.
+There is one required section which is the [main] section that describes application
+specific parameters.  Each job gets its own section.
+
+Main config options go in section [Main]:
+
+[Main]
+maxworkers=60			# Max number of threads to use
+maxload=4			# Maximum allowed system load (not implemented)
+community=public		# The snmp community to us in requests.
+ModuleBase=/opt/snmp/cSnmp/modules	# Where the modules are stored.
+LogLevel=4              # 0,1,2,3,4,5	# Amount of noise in the logfile
+logfile=/var/log/snmp/csnmp.log		# Path and name of logfile
+datadir=/var/log/snmp/ready		# Where to store the results.
+roll=1					# use Daily logfile roll
+
+[SnmpBW]				# A job called 'SnmpBW', arbitrary name.
+prefix=SnmpBW				# prefix to use on output files.
+LoadModule=interfaces.so		# The name of the loadable module.
+ModuleName=interfaces			# The function prefix. ie. interfaces_run()
+runtime=0,5,10,15,20,25,30,35,40,45,50,55 *	# When to run: Minutes,... Hours,... where * is wild.
+targets=file:/opt/snmp/etc/bw_rtrlist		# Targets listed in file, targets=file:/path
+#targets=host1,host1,host3			# or Targets explicitly listed.
+
+[SnmpCH]				# A job called 'SnmpCH'
+prefix=SnmpCH
+LoadModule=callhist.so
+ModuleName=callhist
+runtime=0,5,10,15,20,25,30,35,40,45,50,55 *
+targets=file:/opt/snmp/etc/bw_rtrlist
+
+---
+The targets can be specified in a seperate file. ie. 'targets=file:'
+This allows the config file to remain relatively small and stable. Also , targets
+are often the same between different jobs.   The format of this file has its
+origins on the predessor of cSnmpCron.
+
+Appendix. A. Example use
+
+This app has been used for over 2 years at AAPT and is the source for the 'bandwidth stats' 
+on all customer links.  It runs on Solaris systems in the network hub sites around Australia.  
+Each hub site may have 1 to 4 hosts for the main purpose of 
+network metrics (The also do netflow collecting).
+the targets of each of these hosts is given in a database.  This in turn drives the 
+target configuration file which is automatically distributed when changes take place.
+
+Appendix. B. Some stats
+
+Here are some response times.
+
+marka: SunOS 5.8 UltraAX-i2 at 648 MHz 
+	18 targets , 610 interfaces = 4 seconds.
+thomp: SunOS 5.8 UltraAX-i2 at 500 MHz,
+	23 targets, 1424 interfaces = 7 seconds
+
+A Python threaded version doing the same thing ran at 1.3 avg daily system load,
+the C version runs at 0.3 avg daily system load.
+	
+configfile in use: etc/cSnmp.conf.dist

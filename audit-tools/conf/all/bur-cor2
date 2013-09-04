@@ -1,0 +1,2892 @@
+!RANCID-CONTENT-TYPE: cisco
+!
+!Chassis type: Cat6k-MSFC2 - a Cat6k-MSFC2 router
+!CPU: R7000, R7000 CPU at 300Mhz, impl 39, Rev 2.1, 256KB L2, 1024KB L3 Cache
+!
+!Memory: main 114688K/16384K
+!Memory: nvram 509K
+!Memory: bootflash 16384K
+!
+!Processor ID: SAD051806G3
+!
+!
+!Image: Software: C6MSFC2-PSV-M, 12.1(8b)E15, EARLY DEPLOYMENT RELEASE SOFTWARE (fc1)
+!Image: Compiled: Thu 17-Jul-03 23:45 by hqluong
+!
+!ROM Bootstrap: Version 12.1(3r)E2, RELEASE SOFTWARE (fc1)
+!BOOTFLASH: Version 12.1(8b)E15, EARLY DEPLOYMENT RELEASE SOFTWARE (fc1)
+!
+!
+!
+!BootFlash: BOOT variable = bootflash:c6msfc2-psv-mz.121-8b.E15.bin,1
+!BootFlash: CONFIG_FILE variable does not exist
+!BootFlash: BOOTLDR variable = bootflash:c6msfc2-boot-mz.121-8b.E15.bin
+!BootFlash: Configuration register is 0x102
+!
+!BootFlash: BOOT variable = bootflash:c6msfc2-psv-mz.121-8b.E15.bin,1
+!BootFlash: CONFIG_FILE variable does not exist
+!BootFlash: BOOTLDR variable = bootflash:c6msfc2-boot-mz.121-8b.E15.bin
+!BootFlash: Configuration register is 0x102
+!
+!Flash: nvram: Directory of nvram:/
+!Flash: nvram:     1  -rw-       27272              <no date>  startup-config
+!Flash: nvram:     2  ----          47              <no date>  private-config
+!Flash: nvram:     3  -rw-       27272              <no date>  underlying-config
+!Flash: nvram: 522200 bytes total (494928 bytes free)
+!
+!Flash: bootflash: Directory of bootflash:/
+!Flash: bootflash:     1  -rw-    10993844   Sep 18 2003 07:42:06  c6msfc2-psv-mz.121-8b.E15.bin
+!Flash: bootflash:     2  -rw-     1703448   Sep 18 2003 07:44:04  c6msfc2-boot-mz.121-8b.E15.bin
+!Flash: bootflash: 15204352 bytes total (2506804 bytes free)
+!
+!
+!
+config-register 0x102
+version 12.1
+service nagle
+no service pad
+service timestamps debug datetime msec localtime show-timezone
+service timestamps log datetime msec localtime show-timezone
+service password-encryption
+service linenumber
+service compress-config
+no service dhcp
+!
+hostname bur-cor2
+!
+boot system flash bootflash:c6msfc2-psv-mz.121-8b.E15.bin
+boot bootldr bootflash:c6msfc2-boot-mz.121-8b.E15.bin
+logging buffered 65536 warnings
+no logging console
+logging facility local4
+logging source-interface Loopback0
+logging 192.94.41.1
+logging 192.94.41.2
+logging 203.63.11.27
+aaa new-model
+aaa authentication login default group tacacs+ local enable
+aaa authentication login vty-access group tacacs+ local enable
+aaa authentication login console-access group tacacs+ local enable
+aaa authentication enable default none
+aaa authorization exec default group tacacs+ if-authenticated
+aaa authorization commands 1 default group tacacs+ if-authenticated
+aaa authorization commands 15 default group tacacs+ if-authenticated
+aaa authorization network default none
+aaa accounting exec default stop-only group tacacs+
+aaa accounting commands 1 default stop-only group tacacs+
+aaa accounting commands 15 default stop-only group tacacs+
+enable secret 5 $1$yBgX$OpOF7P19pqLmlj4QX/R/2/
+enable password 7 06271C28585D5058
+!
+username admin password 7 122D06161B0A18003E
+clock timezone AEST 10
+clock summer-time AEDT recurring last Sun Oct 2:00 last Sun Mar 3:00
+ip subnet-zero
+no ip source-route
+ip flow-cache timeout active 10
+!
+ip tcp selective-ack
+ip tcp mss 1460
+ip tcp window-size 65535
+ip tcp queuemax 50
+ip tcp path-mtu-discovery
+ip tftp source-interface Loopback0
+ip domain-list off.connect.com.au
+ip domain-list connect.com.au
+ip domain-list .
+ip domain-name connect.com.au
+ip name-server 203.8.183.1
+ip name-server 192.189.54.33
+!
+no ip bootp server
+!
+interface Loopback0
+ ip address 210.8.1.6 255.255.255.255
+ no ip mroute-cache
+!
+interface Vlan1
+ description CIC Switch Management
+ ip address 210.8.236.253 255.255.255.0
+ no ip redirects
+ rate-limit input 1000000000 1000000 2000000 conform-action set-prec-transmit 1 exceed-action set-prec-transmit 1
+ ip route-cache flow
+ ip ospf authentication-key 7 1414110A1E0B3F3F21
+ no cdp enable
+ standby priority 50 preempt delay 300
+ standby ip 210.8.236.254
+!
+interface Vlan2
+ description Link to bur-bdr1
+ ip address 210.8.219.113 255.255.255.248
+ ip access-group 129 out
+ no ip redirects
+ rate-limit input 1000000000 1000000 2000000 conform-action set-prec-transmit 2 exceed-action set-prec-transmit 2
+ ip route-cache flow
+ ip ospf authentication-key 7 1414110A1E0B3F3F21
+ ip ospf cost 23
+ no cdp enable
+!
+interface Vlan3
+ description Link to bur-bdr2
+ ip address 210.8.219.121 255.255.255.248
+ ip access-group 129 out
+ no ip redirects
+ rate-limit input 1000000000 1000000 2000000 conform-action set-prec-transmit 3 exceed-action set-prec-transmit 3
+ ip route-cache flow
+ ip ospf authentication-key 7 1414110A1E0B3F3F21
+ ip ospf cost 23
+ no cdp enable
+!
+interface Vlan16
+ ip address 210.11.66.253 255.255.255.0 secondary
+ ip address 210.11.63.253 255.255.248.0
+ no ip redirects
+ no ip unreachables
+ ip local-proxy-arp
+ ip route-cache same-interface
+ ip route-cache flow
+ no cdp enable
+ standby priority 110 preempt delay 300
+ standby authentication ccaroute
+ standby ip 210.11.63.254
+ standby 1 priority 110 preempt delay 300
+ standby 1 authentication ccaroute
+ standby 1 ip 210.11.66.254
+!
+router ospf 1
+ log-adjacency-changes
+ area 4 authentication
+ network 210.8.1.6 0.0.0.0 area 4
+ network 210.8.219.112 0.0.0.7 area 4
+ network 210.8.219.120 0.0.0.7 area 4
+ network 210.8.236.0 0.0.0.255 area 4
+!
+router bgp 2764
+ no synchronization
+ bgp router-id 210.8.1.6
+ no bgp fast-external-fallover
+ bgp log-neighbor-changes
+ network 210.8.1.6 mask 255.255.255.255
+ redistribute connected route-map STATIC-EXPORT
+ redistribute static route-map STATIC-EXPORT
+ neighbor ibgp_local_mesh peer-group
+ neighbor ibgp_local_mesh remote-as 2764
+ neighbor ibgp_local_mesh update-source Loopback0
+ neighbor ibgp_local_mesh next-hop-self
+ neighbor ibgp_local_mesh send-community
+ neighbor ibgp_dist_new peer-group
+ neighbor ibgp_dist_new remote-as 2764
+ neighbor ibgp_dist_new password 7 112B3E3529333849567D7D70
+ neighbor ibgp_dist_new update-source Loopback0
+ neighbor ibgp_dist_new next-hop-self
+ neighbor ibgp_dist_new send-community
+ neighbor 202.10.12.198 peer-group ibgp_dist_new
+ neighbor 202.10.12.199 peer-group ibgp_dist_new
+ neighbor 210.8.1.7 peer-group ibgp_local_mesh
+ neighbor 210.11.56.10 remote-as 46069
+ neighbor 210.11.56.10 description Catholic Education Office - Melbourne
+ neighbor 210.11.56.10 default-originate
+ neighbor 210.11.56.10 remove-private-AS
+ neighbor 210.11.56.10 soft-reconfiguration inbound
+ neighbor 210.11.56.10 route-map AS46069-IMPORT in
+ neighbor 210.11.56.10 route-map AS46069-EXPORT out
+ neighbor 210.11.57.34 remote-as 10092
+ neighbor 210.11.57.34 description .AU Domain Administration Limited
+ neighbor 210.11.57.34 send-community
+ neighbor 210.11.57.34 default-originate
+ neighbor 210.11.57.34 remove-private-AS
+ neighbor 210.11.57.34 soft-reconfiguration inbound
+ neighbor 210.11.57.34 route-map AS10092-IMPORT in
+ neighbor 210.11.57.34 route-map AS10092-EXPORT out
+ neighbor 210.11.57.48 remote-as 17987
+ neighbor 210.11.57.48 description .AU Domain Administration Limited
+ neighbor 210.11.57.48 send-community
+ neighbor 210.11.57.48 default-originate
+ neighbor 210.11.57.48 remove-private-AS
+ neighbor 210.11.57.48 soft-reconfiguration inbound
+ neighbor 210.11.57.48 route-map AS17987-2-IMPORT in
+ neighbor 210.11.57.48 route-map AS17987-2-EXPORT out
+ neighbor 210.11.57.61 remote-as 17987
+ neighbor 210.11.57.61 description .AU Domain Administration Limited
+ neighbor 210.11.57.61 send-community
+ neighbor 210.11.57.61 default-originate
+ neighbor 210.11.57.61 remove-private-AS
+ neighbor 210.11.57.61 soft-reconfiguration inbound
+ neighbor 210.11.57.61 route-map AS17987-IMPORT in
+ neighbor 210.11.57.61 route-map AS17987-EXPORT out
+ neighbor 210.11.58.48 remote-as 38611
+ neighbor 210.11.58.48 description Bendigo Community Telco Ltd
+ neighbor 210.11.58.48 remove-private-AS
+ neighbor 210.11.58.48 soft-reconfiguration inbound
+ neighbor 210.11.58.48 route-map AS38611-IMPORT in
+ neighbor 210.11.58.48 route-map AS38611-EXPORT out
+ neighbor 210.11.58.73 remote-as 38611
+ neighbor 210.11.58.73 description Bendigo Community Telco Ltd
+ neighbor 210.11.58.73 remove-private-AS
+ neighbor 210.11.58.73 soft-reconfiguration inbound
+ neighbor 210.11.58.73 route-map AS38611-2-IMPORT in
+ neighbor 210.11.58.73 route-map AS38611-2-EXPORT out
+ neighbor 210.11.58.168 remote-as 64604
+ neighbor 210.11.58.168 description Europcar
+ neighbor 210.11.58.168 default-originate
+ neighbor 210.11.58.168 remove-private-AS
+ neighbor 210.11.58.168 soft-reconfiguration inbound
+ neighbor 210.11.58.168 route-map AS64604-IMPORT in
+ neighbor 210.11.58.168 route-map AS64604-EXPORT out
+ neighbor 210.11.58.187 remote-as 64604
+ neighbor 210.11.58.187 description Europcar
+ neighbor 210.11.58.187 remove-private-AS
+ neighbor 210.11.58.187 soft-reconfiguration inbound
+ neighbor 210.11.58.187 route-map AS64604-2-IMPORT in
+ neighbor 210.11.58.187 route-map AS64604-2-EXPORT out
+ neighbor 210.11.58.195 remote-as 23718
+ neighbor 210.11.58.195 description GPM Internet Pty Ltd
+ neighbor 210.11.58.195 default-originate
+ neighbor 210.11.58.195 remove-private-AS
+ neighbor 210.11.58.195 soft-reconfiguration inbound
+ neighbor 210.11.58.195 route-map AS23718-IMPORT in
+ neighbor 210.11.58.195 route-map AS23718-EXPORT out
+ neighbor 210.11.59.24 remote-as 18210
+ neighbor 210.11.59.24 description AusRegistry
+ neighbor 210.11.59.24 default-originate
+ neighbor 210.11.59.24 remove-private-AS
+ neighbor 210.11.59.24 soft-reconfiguration inbound
+ neighbor 210.11.59.24 route-map AS18210-2-IMPORT in
+ neighbor 210.11.59.24 route-map AS18210-2-EXPORT out
+ neighbor 210.11.59.138 remote-as 18210
+ neighbor 210.11.59.138 description AusRegistry
+ neighbor 210.11.59.138 default-originate
+ neighbor 210.11.59.138 remove-private-AS
+ neighbor 210.11.59.138 soft-reconfiguration inbound
+ neighbor 210.11.59.138 route-map AS18210-IMPORT in
+ neighbor 210.11.59.138 route-map AS18210-EXPORT out
+ neighbor 210.11.60.38 remote-as 64965
+ neighbor 210.11.60.38 description Aerarius Indicium Pty Ltd
+ neighbor 210.11.60.38 default-originate
+ neighbor 210.11.60.38 remove-private-AS
+ neighbor 210.11.60.38 soft-reconfiguration inbound
+ neighbor 210.11.60.38 route-map AS64965-IMPORT in
+ neighbor 210.11.60.38 route-map AS64965-EXPORT out
+ neighbor 210.11.60.44 remote-as 9314
+ neighbor 210.11.60.44 description Melbourne PC User Group
+ neighbor 210.11.60.44 send-community
+ neighbor 210.11.60.44 remove-private-AS
+ neighbor 210.11.60.44 soft-reconfiguration inbound
+ neighbor 210.11.60.44 route-map AS9314-IMPORT in
+ neighbor 210.11.60.44 route-map AS9314-EXPORT out
+ neighbor 210.11.66.10 remote-as 46069
+ neighbor 210.11.66.10 description Catholic Education Office - Melbourne
+ neighbor 210.11.66.10 default-originate
+ neighbor 210.11.66.10 remove-private-AS
+ neighbor 210.11.66.10 soft-reconfiguration inbound
+ neighbor 210.11.66.10 route-map AS46069-2-IMPORT in
+ neighbor 210.11.66.10 route-map AS46069-2-EXPORT out
+ neighbor 210.11.66.11 remote-as 64586
+ neighbor 210.11.66.11 description Logitel Communications Pty Ltd
+ neighbor 210.11.66.11 remove-private-AS
+ neighbor 210.11.66.11 soft-reconfiguration inbound
+ neighbor 210.11.66.11 route-map AS64586-IMPORT in
+ neighbor 210.11.66.11 route-map AS64586-EXPORT out
+ no auto-summary
+!
+ip classless
+ip route 61.69.72.0 255.255.248.0 210.11.66.5
+ip route 61.69.124.0 255.255.255.0 210.11.66.5
+ip route 61.69.125.0 255.255.255.0 210.11.66.5
+ip route 61.69.127.0 255.255.255.0 210.11.66.5
+ip route 192.0.2.1 255.255.255.255 Null0
+ip route 202.2.60.32 255.255.255.248 210.11.58.33
+ip route 202.2.60.232 255.255.255.248 210.11.59.30
+ip route 202.2.61.40 255.255.255.252 210.11.58.33
+ip route 203.16.229.0 255.255.255.0 210.11.57.4
+ip route 203.18.56.129 255.255.255.255 210.11.59.7
+ip route 203.18.56.133 255.255.255.255 210.11.59.7
+ip route 203.21.125.0 255.255.255.0 210.11.57.140
+ip route 203.30.148.0 255.255.255.0 210.11.58.37
+ip route 203.63.5.128 255.255.255.128 210.11.60.23
+ip route 203.63.21.96 255.255.255.240 210.11.58.38
+ip route 203.63.38.0 255.255.255.0 210.11.58.192
+ip route 203.63.39.0 255.255.255.0 210.11.58.192
+ip route 203.63.55.96 255.255.255.224 210.11.58.47
+ip route 203.63.99.0 255.255.255.0 210.11.57.138
+ip route 203.63.101.32 255.255.255.224 210.11.60.35
+ip route 203.63.107.80 255.255.255.240 210.11.58.47
+ip route 203.63.129.56 255.255.255.248 210.11.57.175
+ip route 203.63.131.0 255.255.255.240 210.11.58.132
+ip route 203.63.132.12 255.255.255.252 210.11.58.11
+ip route 203.63.132.120 255.255.255.248 210.11.58.31
+ip route 203.63.133.144 255.255.255.248 210.11.57.133
+ip route 203.63.148.0 255.255.255.0 210.11.57.135
+ip route 203.63.210.128 255.255.255.192 210.11.58.36
+ip route 203.63.210.192 255.255.255.192 210.11.58.36
+ip route 203.63.212.224 255.255.255.240 210.11.56.65
+ip route 203.63.228.72 255.255.255.248 210.11.57.174
+ip route 203.63.248.160 255.255.255.240 210.11.57.1
+ip route 203.63.250.0 255.255.255.128 210.11.56.43
+ip route 203.63.252.32 255.255.255.224 210.11.57.20
+ip route 203.63.253.176 255.255.255.248 210.11.58.189
+ip route 203.63.253.208 255.255.255.248 210.11.57.144
+ip route 203.63.254.0 255.255.255.128 21.11.57.13
+ip route 207.44.130.37 255.255.255.255 Null0
+ip route 210.8.18.0 255.255.255.0 210.11.57.5
+ip route 210.8.23.128 255.255.255.128 210.11.58.159
+ip route 210.8.40.252 255.255.255.252 210.11.58.187
+ip route 210.8.67.224 255.255.255.240 210.11.58.131
+ip route 210.8.93.224 255.255.255.224 210.11.58.130
+ip route 210.8.121.0 255.255.255.224 210.11.58.149
+ip route 210.8.122.96 255.255.255.248 210.11.58.159
+ip route 210.8.130.224 255.255.255.240 210.11.58.30
+ip route 210.8.131.100 255.255.255.255 210.11.57.95
+ip route 210.8.132.0 255.255.255.0 210.11.58.193
+ip route 210.8.175.0 255.255.255.192 210.11.58.51
+ip route 210.8.184.0 255.255.255.192 210.11.60.23
+ip route 210.8.196.48 255.255.255.240 210.11.57.51
+ip route 210.8.196.152 255.255.255.248 210.11.58.177
+ip route 210.8.196.192 255.255.255.224 210.11.58.131
+ip route 210.8.213.32 255.255.255.224 210.11.58.202
+ip route 210.8.223.80 255.255.255.240 210.11.57.2
+ip route 210.8.249.168 255.255.255.248 210.11.60.10
+ip route 210.9.9.224 255.255.255.224 210.11.57.140
+ip route 210.9.58.32 255.255.255.224 210.11.58.31
+ip route 210.9.62.128 255.255.255.240 210.11.58.36
+ip route 210.9.75.16 255.255.255.240 210.11.58.47
+ip route 210.9.75.64 255.255.255.224 210.11.58.167
+ip route 210.9.78.192 255.255.255.248 210.11.60.52
+ip route 210.9.89.240 255.255.255.252 210.11.58.1
+ip route 210.9.112.32 255.255.255.240 210.11.58.168
+ip route 210.9.115.168 255.255.255.248 210.11.58.159
+ip route 210.9.117.152 255.255.255.248 210.10.59.48
+ip route 210.9.173.8 255.255.255.248 210.11.57.180
+ip route 210.9.182.240 255.255.255.248 210.11.58.138
+ip route 210.9.200.0 255.255.255.224 210.11.58.38
+ip route 210.9.203.216 255.255.255.248 210.11.59.2
+ip route 210.9.226.128 255.255.255.248 210.11.58.14
+ip route 210.10.43.224 255.255.255.224 210.11.58.147
+ip route 210.10.53.16 255.255.255.240 210.11.57.168
+ip route 210.10.107.0 255.255.255.0 210.11.66.11
+ip route 210.10.115.0 255.255.255.224 210.11.58.38
+ip route 210.11.37.128 255.255.255.240 210.11.59.20
+ip route 210.11.37.224 255.255.255.248 210.11.57.180
+ip route 210.11.37.236 255.255.255.252 210.11.59.20
+ip route 210.11.129.112 255.255.255.248 210.11.57.25
+ip flow-export source Loopback0
+ip flow-export version 6 peer-as
+ip flow-export destination 210.8.231.40 9991
+no ip http server
+ip tacacs source-interface Loopback0
+ip bgp-community new-format
+ip community-list 1 permit 2764:2
+ip community-list 2 permit 2764:65353
+ip community-list 30 permit 2764:65408
+ip community-list 30 permit 2764:65409
+ip community-list 30 permit 2764:65410
+ip community-list 31 permit 2764:20
+ip community-list 31 permit 2764:25
+ip community-list 31 permit 2764:30
+ip community-list 31 permit 2764:40
+ip community-list 31 permit 2764:41
+ip community-list 31 permit 2764:61439
+ip community-list 31 permit 2764:61441
+ip community-list 31 permit 2764:61442
+ip community-list 31 permit 2764:61443
+ip community-list 31 permit 2764:61444
+ip community-list 31 permit 2764:61445
+ip community-list 31 permit 2764:61446
+ip community-list 31 permit 2764:61447
+ip community-list 31 permit 2764:61448
+ip community-list 31 permit 2764:61449
+ip community-list 31 permit 2764:61450
+ip community-list 31 permit 2764:61451
+ip community-list 31 permit 2764:61452
+ip community-list 31 permit 2764:65200
+ip community-list 31 permit 2764:65201
+ip community-list 31 permit 2764:65202
+ip community-list 31 permit 2764:65203
+ip community-list 31 permit 2764:65204
+ip community-list 31 permit 2764:65205
+ip community-list 31 permit 2764:65206
+ip community-list 31 permit 2764:65207
+ip community-list 31 permit 2764:65208
+ip community-list 31 permit 2764:65209
+ip community-list 31 permit 2764:65210
+ip community-list 31 permit 2764:65211
+ip community-list 31 permit 2764:65212
+ip community-list 31 permit 2764:65213
+ip community-list 31 permit 2764:65280
+ip community-list 31 permit 2764:65281
+ip community-list 31 permit 2764:65282
+ip community-list 31 permit 2764:65283
+ip community-list 31 permit 2764:65284
+ip community-list 31 permit 2764:65285
+ip community-list 31 permit 2764:65286
+ip community-list 31 permit 2764:65287
+ip community-list 31 permit 2764:65288
+ip community-list 31 permit 2764:65289
+ip community-list 31 permit 2764:65290
+ip community-list 31 permit 2764:65291
+ip community-list 31 permit 2764:65292
+ip community-list 31 permit 2764:65293
+ip community-list 31 permit 2764:65294
+ip community-list 31 permit 2764:65295
+ip community-list 31 permit 2764:65296
+ip community-list 31 permit 2764:65297
+ip community-list 31 permit 2764:65298
+ip community-list 31 permit 2764:65299
+ip community-list 31 permit 2764:65300
+ip community-list 31 permit 2764:65301
+ip community-list 31 permit 2764:65302
+ip community-list 31 permit 2764:65303
+ip community-list 31 permit 2764:65304
+ip community-list 31 permit 2764:65305
+ip community-list 31 permit 2764:65306
+ip community-list 31 permit 2764:65307
+ip community-list 31 permit 2764:65308
+ip community-list 31 permit 2764:65309
+ip community-list 31 permit 2764:65310
+ip community-list 31 permit 2764:65311
+ip community-list 31 permit 2764:65312
+ip community-list 31 permit 2764:65313
+ip community-list 31 permit 2764:65314
+ip community-list 31 permit 2764:65315
+ip community-list 31 permit 2764:65316
+ip community-list 31 permit 2764:65317
+ip community-list 31 permit 2764:65318
+ip community-list 31 permit 2764:65319
+ip community-list 31 permit 2764:65320
+ip community-list 31 permit 2764:65321
+ip community-list 31 permit 2764:65322
+ip community-list 31 permit 2764:65323
+ip community-list 31 permit 2764:65324
+ip community-list 31 permit 2764:65325
+ip community-list 31 permit 2764:65326
+ip community-list 31 permit 2764:65327
+ip community-list 31 permit 2764:65328
+ip community-list 31 permit 2764:65329
+ip community-list 31 permit 2764:65330
+ip community-list 31 permit 2764:65331
+ip community-list 31 permit 2764:65332
+ip community-list 31 permit 2764:65333
+ip community-list 31 permit 2764:65334
+ip community-list 31 permit 2764:65335
+ip community-list 31 permit 2764:65336
+ip community-list 31 permit 2764:65337
+ip community-list 31 permit 2764:65338
+ip community-list 31 permit 2764:65339
+ip community-list 31 permit 2764:65340
+ip community-list 31 permit 2764:65341
+ip community-list 31 permit 2764:65342
+ip community-list 31 permit 2764:65343
+ip community-list 31 permit 2764:65344
+ip community-list 31 permit 2764:65345
+ip community-list 31 permit 2764:65346
+ip community-list 31 permit 2764:65347
+ip community-list 31 permit 2764:65348
+ip community-list 31 permit 2764:65349
+ip community-list 31 permit 2764:65350
+ip community-list 31 permit 2764:65351
+ip community-list 31 permit 2764:65352
+ip community-list 31 permit 2764:65353
+ip community-list 31 permit 2764:65354
+ip community-list 31 permit 2764:65355
+ip community-list 31 permit 2764:65356
+ip community-list 31 permit 2764:65357
+ip community-list 31 permit 2764:65358
+ip community-list 31 permit 2764:65359
+ip community-list 31 permit 2764:65361
+ip community-list 31 permit 2764:65362
+ip community-list 31 permit 2764:65363
+ip community-list 31 permit 2764:65364
+ip community-list 31 permit 2764:65365
+ip community-list 31 permit 2764:65366
+ip community-list 31 permit 2764:65367
+ip community-list 31 permit 2764:65368
+ip community-list 31 permit 2764:65369
+ip community-list 31 permit 2764:65370
+ip community-list 31 permit 2764:65371
+ip community-list 31 permit 2764:65391
+ip community-list 31 permit 2764:65392
+ip community-list 31 permit 2764:65393
+ip community-list 31 permit 2764:65394
+ip community-list 31 permit 2764:65395
+ip community-list 31 permit 2764:65396
+ip community-list 31 permit 2764:65397
+ip community-list 31 permit 2764:65398
+ip community-list 31 permit 2764:65399
+ip community-list 31 permit 2764:65400
+ip community-list 31 permit 2764:65401
+ip community-list 31 permit 2764:65407
+ip community-list 31 permit 2764:65408
+ip community-list 31 permit 2764:65409
+ip community-list 31 permit 2764:65410
+ip community-list 31 permit 2764:65411
+ip community-list 31 permit 2764:65412
+ip community-list 31 permit 2764:65413
+ip community-list 31 permit 2764:65414
+ip community-list 31 permit 2764:65415
+ip community-list 31 permit 2764:65416
+ip community-list 31 permit 2764:65417
+ip community-list 31 permit 2764:65418
+ip community-list 31 permit 2764:65419
+ip community-list 31 permit 2764:65420
+ip community-list 31 permit 2764:65472
+ip community-list 31 permit 2764:65473
+ip community-list 31 permit 2764:65474
+ip community-list 31 permit 2764:65475
+ip community-list 31 permit 2764:65476
+ip community-list 31 permit 2764:65477
+ip community-list 31 permit 2764:65478
+ip community-list 31 permit 2764:65479
+ip community-list 31 permit 2764:65480
+ip community-list 31 permit 2764:65481
+ip community-list 31 permit 2764:65482
+ip community-list 31 permit 2764:65483
+ip community-list 31 permit 2764:65484
+ip community-list 31 permit 2764:65485
+ip community-list 31 permit 2764:65486
+ip community-list 31 permit 2764:65487
+ip community-list 31 permit 2764:65488
+ip community-list 31 permit 2764:65489
+ip community-list 31 permit 2764:65490
+ip community-list 31 permit 2764:65491
+ip community-list 31 permit 2764:65492
+ip community-list 31 permit 2764:65496
+ip community-list 31 permit 2764:65497
+ip community-list 31 permit 2764:65498
+ip community-list 31 permit 2764:65499
+ip community-list 31 permit 2764:65500
+ip community-list 31 permit 2764:65501
+ip community-list 31 permit 2764:65505
+ip community-list 31 permit 2764:65508
+ip community-list 31 permit 2764:9837
+ip community-list 32 permit 2764:3
+ip community-list 33 permit 2764:4
+ip community-list 34 permit 2764:5
+ip community-list 35 permit 2764:65414
+ip community-list 36 permit 2764:2
+ip community-list 36 permit 2764:6
+ip community-list 36 permit 2764:7
+ip community-list 36 permit 2764:15
+ip community-list 36 permit no-export
+ip community-list 36 permit no-advertise
+ip community-list 37 permit 2764:65414
+ip as-path access-list 130 permit ^(_9314)+$
+ip as-path access-list 131 permit ^(_17987)+$
+ip as-path access-list 132 permit ^(_23718)+$
+ip as-path access-list 133 permit ^(_23718)+(_(23751))+$
+ip as-path access-list 133 permit ^(_23718)+(_(24099))+$
+ip as-path access-list 134 permit ^(_23718)+(_24099)+(_(23751))*$
+ip as-path access-list 134 permit ^(_23718)+(_24099)+(_(24099))*$
+ip as-path access-list 135 permit ^(_38611)+$
+ip as-path access-list 136 permit ^(_38611)+(_(7492))+$
+ip as-path access-list 136 permit ^(_38611)+(_(45852))+$
+ip as-path access-list 137 permit ^(_38611)+(_(7492|45852))+(_(7492))*$
+ip as-path access-list 137 permit ^(_38611)+(_(7492|45852))+(_(45852))*$
+ip as-path access-list 138 permit ^(_46069)+$
+ip as-path access-list 139 permit ^(_64604)+$
+ip as-path access-list 140 permit ^(_64965)+$
+ip as-path access-list 141 permit ^(_64604)+$
+!
+ip prefix-list AS64528-IMPORT permit 203.9.35.0/24
+ip prefix-list AS64528-IMPORT permit 203.9.124.0/24
+ip prefix-list AS64528-IMPORT permit 203.9.125.0/24
+ip prefix-list AS64528-IMPORT permit 203.9.126.0/24
+ip prefix-list AS64528-IMPORT permit 203.9.127.0/24
+ip prefix-list AS64528-IMPORT permit 203.11.81.0/24
+!
+ip prefix-list HOSTROUTES permit 0.0.0.0/0 le 31
+!
+ip prefix-list medium-prefix permit 0.0.0.0/0 ge 22 le 23
+!
+ip prefix-list root-servers description root name server networks
+ip prefix-list root-servers permit 128.8.0.0/16
+ip prefix-list root-servers permit 128.9.0.0/16
+ip prefix-list root-servers permit 128.63.0.0/16
+ip prefix-list root-servers permit 192.5.4.0/23
+ip prefix-list root-servers permit 192.33.4.0/24
+ip prefix-list root-servers permit 192.36.148.0/24
+ip prefix-list root-servers permit 192.112.36.0/24
+ip prefix-list root-servers permit 192.203.230.0/24
+ip prefix-list root-servers permit 193.0.14.0/24
+ip prefix-list root-servers permit 198.32.64.0/24
+ip prefix-list root-servers permit 198.41.0.0/24
+ip prefix-list root-servers permit 202.12.27.0/24
+!
+ip prefix-list small-prefix permit 0.0.0.0/0 ge 24
+!
+ip access-list extended DSL-L2
+ permit udp any any eq 1701
+ permit udp any any eq domain
+ permit icmp any any
+ permit tcp any any eq bgp
+ deny   ip any any
+access-list 66 deny   any
+access-list 95 permit 64.104.197.49
+access-list 95 remark *** SNMP RO ACL ***
+access-list 95 permit 192.94.41.0 0.0.0.255
+access-list 95 permit 192.189.54.0 0.0.0.255
+access-list 95 permit 203.8.183.0 0.0.0.255
+access-list 95 permit 203.63.11.0 0.0.0.63
+access-list 95 permit 210.8.231.40 0.0.0.1
+access-list 96 permit 192.189.54.17
+access-list 96 permit 203.8.183.1
+access-list 96 remark *** TFTP source ***
+access-list 96 permit 192.94.41.2
+access-list 98 permit 202.92.113.211
+access-list 98 remark *** Telnet ***
+access-list 98 permit 64.104.197.49
+access-list 98 permit 192.94.41.0 0.0.0.255
+access-list 98 permit 202.92.113.209
+access-list 98 permit 203.63.11.0 0.0.0.63
+access-list 98 permit 203.131.52.0 0.0.0.255
+access-list 99 remark *** SNMP ACL RW ***
+access-list 99 permit 192.94.41.2
+access-list 99 permit 203.63.11.0 0.0.0.63
+access-list 126 permit ip 10.64.0.0 0.3.255.255 255.252.0.0 0.3.255.255
+access-list 129 deny   udp any 224.0.0.0 31.255.255.255 eq snmp log
+access-list 129 deny   udp any host 0.0.0.0 eq snmp log
+access-list 129 deny   udp any 192.94.41.0 0.0.0.255 eq snmp log
+access-list 129 deny   udp any 192.189.54.0 0.0.0.255 eq snmp log
+access-list 129 deny   udp any 202.2.61.72 0.0.0.7 eq snmp log
+access-list 129 deny   udp any 202.21.9.0 0.0.0.255 eq snmp log
+access-list 129 deny   udp any 203.8.183.0 0.0.0.255 eq snmp log
+access-list 129 deny   udp any 203.63.68.0 0.0.1.255 eq snmp log
+access-list 129 deny   udp any 203.63.80.0 0.0.0.255 eq snmp log
+access-list 129 deny   udp any 203.63.112.0 0.0.1.255 eq snmp log
+access-list 129 deny   udp any 203.63.176.0 0.0.0.255 eq snmp log
+access-list 129 deny   udp any 210.8.0.0 0.0.1.255 eq snmp log
+access-list 129 deny   udp any 210.8.3.0 0.0.0.255 eq snmp log
+access-list 129 deny   udp any 210.8.219.0 0.0.0.255 eq snmp log
+access-list 129 deny   udp any 210.8.224.0 0.0.0.255 eq snmp log
+access-list 129 deny   udp any 210.8.230.0 0.0.1.255 eq snmp log
+access-list 129 deny   udp any 210.8.232.0 0.0.0.255 eq snmp log
+access-list 129 deny   udp any 210.8.236.0 0.0.0.255 eq snmp log
+access-list 129 deny   udp any 210.9.64.0 0.0.0.63 eq snmp log
+access-list 129 deny   udp any 210.9.170.0 0.0.0.255 eq snmp log
+access-list 129 deny   udp any host 139.130.49.82 eq snmp log
+access-list 129 deny   udp any host 202.139.7.6 eq snmp log
+access-list 129 deny   udp any host 203.89.195.253 eq snmp log
+access-list 129 deny   udp any host 203.63.74.198 eq snmp log
+access-list 129 deny   udp any host 210.9.88.62 eq snmp log
+access-list 129 deny   udp any host 198.9.200.42 eq snmp log
+access-list 129 deny   udp any host 202.50.116.202 eq snmp log
+access-list 129 deny   udp any host 202.50.116.115 eq snmp log
+access-list 129 deny   udp any host 202.139.7.70 eq snmp log
+access-list 129 deny   udp any host 203.166.43.174 eq snmp log
+access-list 129 deny   udp any host 203.208.152.6 eq snmp log
+access-list 129 deny   udp any host 203.208.148.206 eq snmp log
+access-list 129 deny   udp any host 139.130.32.6 eq snmp log
+access-list 129 deny   udp any host 202.50.119.98 eq snmp log
+access-list 129 deny   udp any host 203.63.116.246 eq snmp log
+access-list 129 deny   udp any host 139.130.3.10 eq snmp log
+access-list 129 deny   udp any host 139.130.3.14 eq snmp log
+access-list 129 deny   udp any host 202.139.18.94 eq snmp log
+access-list 129 permit ip any any
+access-list 129 permit ip host 210.8.32.231 host 139.130.4.5 log
+access-list 130 deny   ip host 0.0.0.0 any
+access-list 130 deny   ip 10.0.0.0 0.255.255.255 255.0.0.0 0.255.255.255
+access-list 130 deny   ip 127.0.0.0 0.255.255.255 255.0.0.0 0.255.255.255
+access-list 130 deny   ip 128.0.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 130 deny   ip 169.254.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 130 deny   ip 172.16.0.0 0.15.255.255 255.240.0.0 0.15.255.255
+access-list 130 deny   ip 191.255.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 130 deny   ip 192.0.0.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 130 deny   ip 192.0.2.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 130 deny   ip 192.168.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 130 deny   ip 223.255.255.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 130 deny   ip 224.0.0.0 31.255.255.255 224.0.0.0 31.255.255.255
+access-list 130 permit ip host 202.2.61.0 host 255.255.255.0
+access-list 130 deny   ip any any
+access-list 131 deny   ip host 0.0.0.0 any
+access-list 131 deny   ip 10.0.0.0 0.255.255.255 255.0.0.0 0.255.255.255
+access-list 131 deny   ip 127.0.0.0 0.255.255.255 255.0.0.0 0.255.255.255
+access-list 131 deny   ip 128.0.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 131 deny   ip 169.254.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 131 deny   ip 172.16.0.0 0.15.255.255 255.240.0.0 0.15.255.255
+access-list 131 deny   ip 191.255.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 131 deny   ip 192.0.0.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 131 deny   ip 192.0.2.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 131 deny   ip 192.168.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 131 deny   ip 223.255.255.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 131 deny   ip 224.0.0.0 31.255.255.255 224.0.0.0 31.255.255.255
+access-list 131 permit ip host 29.8.0.0 host 255.255.0.0
+access-list 131 permit ip host 123.255.208.0 host 255.255.248.0
+access-list 131 permit ip host 202.2.60.32 host 255.255.255.248
+access-list 131 permit ip host 202.2.60.56 host 255.255.255.248
+access-list 131 permit ip host 202.2.60.116 host 255.255.255.252
+access-list 131 permit ip host 202.2.60.232 host 255.255.255.248
+access-list 131 permit ip host 202.2.61.0 host 255.255.255.0
+access-list 131 permit ip 202.2.63.160 0.0.0.4 host 255.255.255.252
+access-list 131 permit ip 202.10.6.128 0.0.0.56 host 255.255.255.248
+access-list 131 permit ip host 202.10.6.192 host 255.255.255.240
+access-list 131 permit ip host 202.10.6.209 host 255.255.255.255
+access-list 131 permit ip host 202.10.6.210 host 255.255.255.255
+access-list 131 permit ip 202.10.6.212 0.0.0.3 host 255.255.255.255
+access-list 131 permit ip host 202.10.6.217 host 255.255.255.255
+access-list 131 permit ip 202.10.7.248 0.0.0.4 host 255.255.255.252
+access-list 131 permit ip host 202.10.8.0 host 255.255.255.0
+access-list 131 permit ip host 202.37.133.240 host 255.255.255.248
+access-list 131 permit ip host 202.91.206.1 host 255.255.255.255
+access-list 131 permit ip host 202.137.160.34 host 255.255.255.255
+access-list 131 permit ip host 203.14.180.240 host 255.255.255.248
+access-list 131 permit ip host 203.15.34.70 host 255.255.255.255
+access-list 131 permit ip host 203.15.34.137 host 255.255.255.255
+access-list 131 permit ip host 203.18.56.129 host 255.255.255.255
+access-list 131 permit ip host 203.23.159.197 host 255.255.255.255
+access-list 131 permit ip host 203.23.159.198 host 255.255.255.255
+access-list 131 permit ip host 203.23.236.41 host 255.255.255.255
+access-list 131 permit ip host 203.27.96.216 host 255.255.255.248
+access-list 131 permit ip host 203.27.96.232 host 255.255.255.248
+access-list 131 permit ip host 203.27.96.240 host 255.255.255.248
+access-list 131 permit ip 203.30.148.0 0.0.0.128 host 255.255.255.128
+access-list 131 permit ip host 203.34.175.113 host 255.255.255.255
+access-list 131 permit ip host 203.56.220.0 host 255.255.255.0
+access-list 131 permit ip host 203.57.132.0 host 255.255.255.0
+access-list 131 permit ip host 203.142.159.250 host 255.255.255.255
+access-list 131 permit ip host 203.185.210.64 host 255.255.255.192
+access-list 131 permit ip host 210.55.234.0 host 255.255.255.0
+access-list 131 permit ip host 222.153.222.112 host 255.255.255.240
+access-list 131 permit ip host 222.153.222.160 host 255.255.255.240
+access-list 131 permit ip host 222.153.222.208 host 255.255.255.240
+access-list 131 deny   ip any any
+access-list 132 deny   ip host 0.0.0.0 any
+access-list 132 deny   ip 10.0.0.0 0.255.255.255 255.0.0.0 0.255.255.255
+access-list 132 deny   ip 127.0.0.0 0.255.255.255 255.0.0.0 0.255.255.255
+access-list 132 deny   ip 128.0.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 132 deny   ip 169.254.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 132 deny   ip 172.16.0.0 0.15.255.255 255.240.0.0 0.15.255.255
+access-list 132 deny   ip 191.255.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 132 deny   ip 192.0.0.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 132 deny   ip 192.0.2.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 132 deny   ip 192.168.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 132 deny   ip 223.255.255.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 132 deny   ip 224.0.0.0 31.255.255.255 224.0.0.0 31.255.255.255
+access-list 132 permit ip host 58.84.208.0 host 255.255.240.0
+access-list 132 permit ip host 59.100.0.0 host 255.254.0.0
+access-list 132 permit ip host 59.102.0.0 host 255.255.128.0
+access-list 132 permit ip host 61.8.96.0 host 255.255.224.0
+access-list 132 permit ip host 61.8.117.0 host 255.255.255.0
+access-list 132 permit ip host 61.68.0.0 host 255.254.0.0
+access-list 132 permit ip host 103.1.108.0 host 255.255.252.0
+access-list 132 permit ip host 103.1.192.0 host 255.255.252.0
+access-list 132 permit ip host 103.1.212.0 host 255.255.252.0
+access-list 132 permit ip host 103.1.216.0 host 255.255.252.0
+access-list 132 permit ip host 117.121.242.0 host 255.255.255.0
+access-list 132 permit ip host 119.252.184.0 host 255.255.248.0
+access-list 132 permit ip host 120.20.0.0 host 255.255.0.0
+access-list 132 permit ip 122.100.4.0 0.0.1.0 host 255.255.255.0
+access-list 132 permit ip 122.100.10.0 0.0.1.0 host 255.255.255.0
+access-list 132 permit ip host 123.136.44.0 host 255.255.255.0
+access-list 132 permit ip host 125.168.0.0 host 255.255.0.0
+access-list 132 permit ip host 125.214.80.0 host 255.255.248.0
+access-list 132 permit ip 140.168.128.0 0.0.3.0 host 255.255.255.0
+access-list 132 permit ip host 141.162.113.0 host 255.255.255.0
+access-list 132 permit ip host 146.178.12.0 host 255.255.255.0
+access-list 132 permit ip host 149.176.0.0 host 255.255.0.0
+access-list 132 permit ip host 149.176.253.0 host 255.255.255.0
+access-list 132 permit ip host 158.45.0.0 host 255.255.252.0
+access-list 132 permit ip 158.45.12.0 0.0.1.0 host 255.255.255.0
+access-list 132 permit ip host 158.45.14.0 host 255.255.255.0
+access-list 132 permit ip host 158.45.60.0 host 255.255.252.0
+access-list 132 permit ip host 158.45.60.0 host 255.255.255.0
+access-list 132 permit ip host 158.45.201.0 host 255.255.255.0
+access-list 132 permit ip 158.45.202.0 0.0.1.0 host 255.255.255.0
+access-list 132 permit ip host 158.45.204.0 host 255.255.255.0
+access-list 132 permit ip host 158.45.206.0 host 255.255.255.0
+access-list 132 permit ip host 158.45.208.0 host 255.255.255.0
+access-list 132 permit ip host 158.116.206.0 host 255.255.255.0
+access-list 132 permit ip host 165.142.240.0 host 255.255.240.0
+access-list 132 permit ip host 168.186.0.0 host 255.255.0.0
+access-list 132 permit ip host 169.208.0.0 host 255.255.0.0
+access-list 132 permit ip host 184.86.222.0 host 255.255.255.0
+access-list 132 permit ip host 192.94.41.0 host 255.255.255.0
+access-list 132 permit ip host 192.189.54.0 host 255.255.255.0
+access-list 132 permit ip host 192.231.135.0 host 255.255.255.0
+access-list 132 permit ip host 202.0.90.0 host 255.255.255.0
+access-list 132 permit ip host 202.1.3.0 host 255.255.255.0
+access-list 132 permit ip host 202.3.34.0 host 255.255.255.0
+access-list 132 permit ip host 202.10.0.0 host 255.255.224.0
+access-list 132 permit ip host 202.10.6.0 host 255.255.254.0
+access-list 132 permit ip host 202.21.8.0 host 255.255.248.0
+access-list 132 permit ip host 202.45.97.0 host 255.255.255.0
+access-list 132 permit ip host 202.45.98.0 host 255.255.254.0
+access-list 132 permit ip host 202.45.122.0 host 255.255.255.0
+access-list 132 permit ip host 202.62.32.0 host 255.255.224.0
+access-list 132 permit ip host 202.72.147.250 host 255.255.255.255
+access-list 132 permit ip host 202.87.4.0 host 255.255.252.0
+access-list 132 permit ip host 202.94.71.0 host 255.255.255.0
+access-list 132 permit ip 202.146.24.0 0.0.1.0 host 255.255.255.0
+access-list 132 permit ip host 202.147.74.0 host 255.255.254.0
+access-list 132 permit ip host 203.0.31.0 host 255.255.255.0
+access-list 132 permit ip host 203.0.37.0 host 255.255.255.0
+access-list 132 permit ip host 203.0.238.0 host 255.255.255.0
+access-list 132 permit ip host 203.3.44.0 host 255.255.255.0
+access-list 132 permit ip host 203.4.224.0 host 255.255.255.0
+access-list 132 permit ip host 203.8.163.0 host 255.255.255.0
+access-list 132 permit ip host 203.8.176.0 host 255.255.248.0
+access-list 132 permit ip host 203.8.188.0 host 255.255.254.0
+access-list 132 permit ip host 203.8.200.0 host 255.255.255.0
+access-list 132 permit ip host 203.8.221.0 host 255.255.255.0
+access-list 132 permit ip host 203.9.35.0 host 255.255.255.0
+access-list 132 permit ip 203.9.124.0 0.0.3.0 host 255.255.255.0
+access-list 132 permit ip 203.9.128.0 0.0.1.0 host 255.255.255.0
+access-list 132 permit ip host 203.10.126.0 host 255.255.254.0
+access-list 132 permit ip host 203.11.81.0 host 255.255.255.0
+access-list 132 permit ip host 203.11.83.0 host 255.255.255.0
+access-list 132 permit ip host 203.12.31.0 host 255.255.255.0
+access-list 132 permit ip host 203.13.144.0 host 255.255.255.0
+access-list 132 permit ip host 203.14.180.0 host 255.255.255.0
+access-list 132 permit ip host 203.14.230.0 host 255.255.255.0
+access-list 132 permit ip host 203.15.222.0 host 255.255.255.0
+access-list 132 permit ip host 203.16.164.0 host 255.255.255.0
+access-list 132 permit ip host 203.16.207.0 host 255.255.255.0
+access-list 132 permit ip 203.16.224.0 0.0.1.0 host 255.255.255.0
+access-list 132 permit ip host 203.16.229.0 host 255.255.255.0
+access-list 132 permit ip host 203.17.125.0 host 255.255.255.0
+access-list 132 permit ip host 203.18.56.0 host 255.255.255.0
+access-list 132 permit ip host 203.18.82.0 host 255.255.254.0
+access-list 132 permit ip host 203.18.246.0 host 255.255.255.0
+access-list 132 permit ip host 203.19.80.210 host 255.255.255.255
+access-list 132 permit ip host 203.19.235.0 host 255.255.255.0
+access-list 132 permit ip host 203.20.64.0 host 255.255.255.0
+access-list 132 permit ip host 203.21.125.0 host 255.255.255.0
+access-list 132 permit ip host 203.23.57.0 host 255.255.255.0
+access-list 132 permit ip host 203.23.60.0 host 255.255.255.0
+access-list 132 permit ip host 203.23.97.0 host 255.255.255.0
+access-list 132 permit ip host 203.23.156.0 host 255.255.254.0
+access-list 132 permit ip host 203.23.175.0 host 255.255.255.0
+access-list 132 permit ip host 203.24.26.0 host 255.255.255.0
+access-list 132 permit ip host 203.25.79.0 host 255.255.255.0
+access-list 132 permit ip host 203.27.76.0 host 255.255.255.0
+access-list 132 permit ip host 203.27.93.0 host 255.255.255.0
+access-list 132 permit ip host 203.27.226.0 host 255.255.255.0
+access-list 132 permit ip host 203.27.242.0 host 255.255.255.0
+access-list 132 permit ip host 203.28.116.0 host 255.255.252.0
+access-list 132 permit ip host 203.28.123.0 host 255.255.255.0
+access-list 132 permit ip host 203.28.222.0 host 255.255.254.0
+access-list 132 permit ip host 203.28.238.0 host 255.255.255.0
+access-list 132 permit ip host 203.29.38.0 host 255.255.254.0
+access-list 132 permit ip host 203.29.92.0 host 255.255.255.0
+access-list 132 permit ip host 203.29.191.0 host 255.255.255.0
+access-list 132 permit ip host 203.30.148.0 host 255.255.255.0
+access-list 132 permit ip host 203.30.165.0 host 255.255.255.0
+access-list 132 permit ip host 203.30.208.0 host 255.255.255.0
+access-list 132 permit ip host 203.30.212.0 host 255.255.255.0
+access-list 132 permit ip host 203.31.95.0 host 255.255.255.0
+access-list 132 permit ip host 203.31.169.0 host 255.255.255.0
+access-list 132 permit ip host 203.31.182.0 host 255.255.255.0
+access-list 132 permit ip host 203.32.27.0 host 255.255.255.0
+access-list 132 permit ip host 203.32.61.0 host 255.255.255.0
+access-list 132 permit ip host 203.32.207.0 host 255.255.255.0
+access-list 132 permit ip host 203.32.220.0 host 255.255.255.0
+access-list 132 permit ip host 203.33.193.0 host 255.255.255.0
+access-list 132 permit ip host 203.34.62.0 host 255.255.255.0
+access-list 132 permit ip host 203.34.93.0 host 255.255.255.0
+access-list 132 permit ip host 203.34.156.0 host 255.255.254.0
+access-list 132 permit ip host 203.34.158.0 host 255.255.255.0
+access-list 132 permit ip host 203.34.189.0 host 255.255.255.0
+access-list 132 permit ip host 203.34.236.0 host 255.255.255.0
+access-list 132 permit ip 203.55.54.0 0.0.1.0 255.255.254.0 0.0.1.0
+access-list 132 permit ip host 203.55.77.0 host 255.255.255.0
+access-list 132 permit ip host 203.55.83.0 host 255.255.255.0
+access-list 132 permit ip host 203.55.105.0 host 255.255.255.0
+access-list 132 permit ip host 203.56.32.0 host 255.255.255.0
+access-list 132 permit ip host 203.56.94.0 host 255.255.255.0
+access-list 132 permit ip host 203.56.122.0 host 255.255.255.0
+access-list 132 permit ip host 203.56.128.0 host 255.255.252.0
+access-list 132 permit ip host 203.56.234.0 host 255.255.255.0
+access-list 132 permit ip host 203.57.30.0 host 255.255.254.0
+access-list 132 permit ip host 203.57.38.0 host 255.255.255.0
+access-list 132 permit ip host 203.57.192.0 host 255.255.254.0
+access-list 132 permit ip host 203.63.0.0 host 255.255.0.0
+access-list 132 permit ip host 203.82.174.0 host 255.255.255.0
+access-list 132 permit ip host 203.90.31.0 host 255.255.255.0
+access-list 132 permit ip host 203.102.202.0 host 255.255.255.0
+access-list 132 permit ip host 203.161.144.0 host 255.255.255.0
+access-list 132 permit ip host 203.210.102.0 host 255.255.255.0
+access-list 132 permit ip host 203.210.105.0 host 255.255.255.0
+access-list 132 permit ip host 210.8.0.0 host 255.252.0.0
+access-list 132 permit ip host 210.56.80.0 host 255.255.240.0
+access-list 132 permit ip 210.56.84.0 0.0.3.0 host 255.255.255.0
+access-list 132 permit ip host 210.56.88.0 host 255.255.248.0
+access-list 132 permit ip host 220.253.140.0 host 255.255.252.0
+access-list 132 deny   ip any any
+access-list 133 deny   ip host 0.0.0.0 any
+access-list 133 deny   ip 10.0.0.0 0.255.255.255 255.0.0.0 0.255.255.255
+access-list 133 deny   ip 127.0.0.0 0.255.255.255 255.0.0.0 0.255.255.255
+access-list 133 deny   ip 128.0.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 133 deny   ip 169.254.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 133 deny   ip 172.16.0.0 0.15.255.255 255.240.0.0 0.15.255.255
+access-list 133 deny   ip 191.255.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 133 deny   ip 192.0.0.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 133 deny   ip 192.0.2.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 133 deny   ip 192.168.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 133 deny   ip 223.255.255.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 133 deny   ip 224.0.0.0 31.255.255.255 224.0.0.0 31.255.255.255
+access-list 133 permit ip 59.100.0.0 0.1.255.252 255.254.0.0 0.1.255.252
+access-list 133 permit ip 59.102.0.0 0.0.127.252 255.255.128.0 0.0.127.252
+access-list 133 permit ip 61.68.0.0 0.1.255.252 255.254.0.0 0.1.255.252
+access-list 133 permit ip 192.94.41.0 0.0.0.252 255.255.255.0 0.0.0.252
+access-list 133 permit ip 192.189.54.0 0.0.0.252 255.255.255.0 0.0.0.252
+access-list 133 permit ip 202.2.61.0 0.0.0.252 255.255.255.0 0.0.0.252
+access-list 133 permit ip 202.21.8.0 0.0.7.252 255.255.248.0 0.0.7.252
+access-list 133 permit ip 203.8.176.0 0.0.7.252 255.255.248.0 0.0.7.252
+access-list 133 permit ip 203.63.0.0 0.0.255.252 255.255.0.0 0.0.255.252
+access-list 133 permit ip 210.8.0.0 0.3.255.252 255.252.0.0 0.3.255.252
+access-list 133 deny   ip any any
+access-list 134 deny   ip host 0.0.0.0 any
+access-list 134 deny   ip 10.0.0.0 0.255.255.255 255.0.0.0 0.255.255.255
+access-list 134 deny   ip 127.0.0.0 0.255.255.255 255.0.0.0 0.255.255.255
+access-list 134 deny   ip 128.0.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 134 deny   ip 169.254.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 134 deny   ip 172.16.0.0 0.15.255.255 255.240.0.0 0.15.255.255
+access-list 134 deny   ip 191.255.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 134 deny   ip 192.0.0.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 134 deny   ip 192.0.2.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 134 deny   ip 192.168.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 134 deny   ip 223.255.255.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 134 deny   ip 224.0.0.0 31.255.255.255 224.0.0.0 31.255.255.255
+access-list 134 permit ip 59.100.0.0 0.1.255.255 255.255.0.0 0.0.255.255
+access-list 134 permit ip 59.102.0.0 0.0.127.255 255.255.192.0 0.0.63.255
+access-list 134 permit ip 61.68.0.0 0.1.255.255 255.255.0.0 0.0.255.255
+access-list 134 permit ip 192.94.41.0 0.0.0.255 255.255.255.128 0.0.0.127
+access-list 134 permit ip 192.189.54.0 0.0.0.255 255.255.255.128 0.0.0.127
+access-list 134 permit ip 202.2.61.0 0.0.0.255 255.255.255.128 0.0.0.127
+access-list 134 permit ip 202.21.8.0 0.0.7.255 255.255.252.0 0.0.3.255
+access-list 134 permit ip 203.8.176.0 0.0.7.255 255.255.252.0 0.0.3.255
+access-list 134 permit ip 203.63.0.0 0.0.255.255 255.255.128.0 0.0.127.255
+access-list 134 permit ip 210.8.0.0 0.3.255.255 255.254.0.0 0.1.255.255
+access-list 134 deny   ip any any
+access-list 135 deny   ip host 0.0.0.0 any
+access-list 135 deny   ip 10.0.0.0 0.255.255.255 255.0.0.0 0.255.255.255
+access-list 135 deny   ip 127.0.0.0 0.255.255.255 255.0.0.0 0.255.255.255
+access-list 135 deny   ip 128.0.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 135 deny   ip 169.254.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 135 deny   ip 172.16.0.0 0.15.255.255 255.240.0.0 0.15.255.255
+access-list 135 deny   ip 191.255.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 135 deny   ip 192.0.0.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 135 deny   ip 192.0.2.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 135 deny   ip 192.168.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 135 deny   ip 223.255.255.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 135 deny   ip 224.0.0.0 31.255.255.255 224.0.0.0 31.255.255.255
+access-list 135 permit ip 203.94.52.0 0.0.3.255 255.255.254.0 0.0.1.255
+access-list 135 permit ip 203.94.56.0 0.0.7.255 255.255.252.0 0.0.3.255
+access-list 135 permit ip 203.193.194.0 0.0.1.255 255.255.255.128 0.0.0.127
+access-list 135 permit ip 203.193.202.0 0.0.1.255 255.255.255.0 0.0.0.255
+access-list 135 permit ip 203.193.204.0 0.0.0.255 255.255.255.128 0.0.0.127
+access-list 135 permit ip 203.193.214.0 0.0.0.255 255.255.255.128 0.0.0.127
+access-list 135 deny   ip any any
+access-list 136 deny   ip host 0.0.0.0 any
+access-list 136 deny   ip any host 255.255.255.255
+access-list 136 deny   ip 10.0.0.0 0.255.255.255 255.0.0.0 0.255.255.255
+access-list 136 deny   ip 127.0.0.0 0.255.255.255 255.0.0.0 0.255.255.255
+access-list 136 deny   ip 128.0.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 136 deny   ip 169.254.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 136 deny   ip 172.16.0.0 0.15.255.255 255.240.0.0 0.15.255.255
+access-list 136 deny   ip 191.255.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 136 deny   ip 192.0.0.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 136 deny   ip 192.0.2.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 136 deny   ip 192.168.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 136 deny   ip 223.255.255.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 136 deny   ip 224.0.0.0 31.255.255.255 224.0.0.0 31.255.255.255
+access-list 136 permit ip any any
+access-list 137 deny   ip host 0.0.0.0 any
+access-list 137 deny   ip 10.0.0.0 0.255.255.255 255.0.0.0 0.255.255.255
+access-list 137 deny   ip 127.0.0.0 0.255.255.255 255.0.0.0 0.255.255.255
+access-list 137 deny   ip 128.0.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 137 deny   ip 169.254.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 137 deny   ip 172.16.0.0 0.15.255.255 255.240.0.0 0.15.255.255
+access-list 137 deny   ip 191.255.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 137 deny   ip 192.0.0.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 137 deny   ip 192.0.2.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 137 deny   ip 192.168.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 137 deny   ip 223.255.255.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 137 deny   ip 224.0.0.0 31.255.255.255 224.0.0.0 31.255.255.255
+access-list 137 permit ip host 203.5.48.0 host 255.255.254.0
+access-list 137 permit ip host 203.5.48.0 host 255.255.255.0
+access-list 137 permit ip host 203.12.104.0 host 255.255.248.0
+access-list 137 permit ip host 203.12.152.0 host 255.255.248.0
+access-list 137 deny   ip any any
+access-list 138 deny   ip host 0.0.0.0 any
+access-list 138 deny   ip 10.0.0.0 0.255.255.255 255.0.0.0 0.255.255.255
+access-list 138 deny   ip 127.0.0.0 0.255.255.255 255.0.0.0 0.255.255.255
+access-list 138 deny   ip 128.0.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 138 deny   ip 169.254.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 138 deny   ip 172.16.0.0 0.15.255.255 255.240.0.0 0.15.255.255
+access-list 138 deny   ip 191.255.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 138 deny   ip 192.0.0.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 138 deny   ip 192.0.2.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 138 deny   ip 192.168.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 138 deny   ip 223.255.255.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 138 deny   ip 224.0.0.0 31.255.255.255 224.0.0.0 31.255.255.255
+access-list 138 permit ip host 58.65.248.0 host 255.255.255.0
+access-list 138 permit ip 58.65.254.0 0.0.1.0 host 255.255.255.0
+access-list 138 permit ip host 203.29.5.0 host 255.255.255.0
+access-list 138 deny   ip any any
+access-list 139 deny   ip host 0.0.0.0 any
+access-list 139 deny   ip 10.0.0.0 0.255.255.255 255.0.0.0 0.255.255.255
+access-list 139 deny   ip 127.0.0.0 0.255.255.255 255.0.0.0 0.255.255.255
+access-list 139 deny   ip 128.0.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 139 deny   ip 169.254.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 139 deny   ip 172.16.0.0 0.15.255.255 255.240.0.0 0.15.255.255
+access-list 139 deny   ip 191.255.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 139 deny   ip 192.0.0.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 139 deny   ip 192.0.2.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 139 deny   ip 192.168.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 139 deny   ip 223.255.255.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 139 deny   ip 224.0.0.0 31.255.255.255 224.0.0.0 31.255.255.255
+access-list 139 permit ip host 202.91.192.0 host 255.255.240.0
+access-list 139 permit ip host 202.91.192.0 host 255.255.248.0
+access-list 139 permit ip 202.91.192.0 0.0.7.0 host 255.255.255.0
+access-list 139 permit ip host 202.91.200.0 host 255.255.252.0
+access-list 139 permit ip 202.91.200.0 0.0.3.0 host 255.255.255.0
+access-list 139 permit ip 202.91.204.0 0.0.1.0 255.255.254.0 0.0.1.0
+access-list 139 permit ip host 202.91.206.0 host 255.255.255.0
+access-list 139 permit ip host 203.18.247.0 host 255.255.255.0
+access-list 139 permit ip 203.23.88.0 0.0.1.0 255.255.254.0 0.0.1.0
+access-list 139 deny   ip any any
+access-list 140 deny   ip host 0.0.0.0 any
+access-list 140 deny   ip 10.0.0.0 0.255.255.255 255.0.0.0 0.255.255.255
+access-list 140 deny   ip 127.0.0.0 0.255.255.255 255.0.0.0 0.255.255.255
+access-list 140 deny   ip 128.0.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 140 deny   ip 169.254.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 140 deny   ip 172.16.0.0 0.15.255.255 255.240.0.0 0.15.255.255
+access-list 140 deny   ip 191.255.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 140 deny   ip 192.0.0.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 140 deny   ip 192.0.2.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 140 deny   ip 192.168.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 140 deny   ip 223.255.255.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 140 deny   ip 224.0.0.0 31.255.255.255 224.0.0.0 31.255.255.255
+access-list 140 permit ip host 202.91.207.0 host 255.255.255.0
+access-list 140 deny   ip any any
+access-list 141 deny   ip host 0.0.0.0 any
+access-list 141 deny   ip 10.0.0.0 0.255.255.255 255.0.0.0 0.255.255.255
+access-list 141 deny   ip 127.0.0.0 0.255.255.255 255.0.0.0 0.255.255.255
+access-list 141 deny   ip 128.0.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 141 deny   ip 169.254.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 141 deny   ip 172.16.0.0 0.15.255.255 255.240.0.0 0.15.255.255
+access-list 141 deny   ip 191.255.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 141 deny   ip 192.0.0.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 141 deny   ip 192.0.2.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 141 deny   ip 192.168.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 141 deny   ip 223.255.255.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 141 deny   ip 224.0.0.0 31.255.255.255 224.0.0.0 31.255.255.255
+access-list 141 permit ip any host 255.255.255.255
+access-list 141 deny   ip any any
+access-list 142 deny   ip host 0.0.0.0 any
+access-list 142 deny   ip 10.0.0.0 0.255.255.255 255.0.0.0 0.255.255.255
+access-list 142 deny   ip 127.0.0.0 0.255.255.255 255.0.0.0 0.255.255.255
+access-list 142 deny   ip 128.0.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 142 deny   ip 169.254.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 142 deny   ip 172.16.0.0 0.15.255.255 255.240.0.0 0.15.255.255
+access-list 142 deny   ip 191.255.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 142 deny   ip 192.0.0.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 142 deny   ip 192.0.2.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 142 deny   ip 192.168.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 142 deny   ip 223.255.255.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 142 deny   ip 224.0.0.0 31.255.255.255 224.0.0.0 31.255.255.255
+access-list 142 permit ip host 180.92.208.0 host 255.255.252.0
+access-list 142 permit ip 180.92.208.0 0.0.3.0 host 255.255.255.0
+access-list 142 permit ip host 202.0.90.0 host 255.255.255.0
+access-list 142 permit ip host 202.124.32.0 host 255.255.240.0
+access-list 142 permit ip host 203.16.207.0 host 255.255.255.0
+access-list 142 permit ip 203.16.224.0 0.0.1.0 255.255.254.0 0.0.1.0
+access-list 142 permit ip host 203.27.93.0 host 255.255.255.0
+access-list 142 permit ip host 203.29.191.0 host 255.255.255.0
+access-list 142 permit ip host 203.63.212.8 host 255.255.255.248
+access-list 142 permit ip host 203.193.192.0 host 255.255.224.0
+access-list 142 permit ip host 203.193.192.0 host 255.255.240.0
+access-list 142 permit ip host 203.193.192.0 host 255.255.254.0
+access-list 142 permit ip host 203.193.196.0 host 255.255.252.0
+access-list 142 permit ip host 203.193.196.0 host 255.255.254.0
+access-list 142 permit ip host 203.193.200.0 host 255.255.254.0
+access-list 142 permit ip host 203.193.205.0 host 255.255.255.0
+access-list 142 permit ip host 203.193.206.0 host 255.255.254.0
+access-list 142 permit ip 203.193.208.0 0.0.8.0 host 255.255.248.0
+access-list 142 permit ip host 203.193.208.0 host 255.255.252.0
+access-list 142 permit ip host 203.193.212.0 host 255.255.254.0
+access-list 142 permit ip host 203.193.215.0 host 255.255.255.0
+access-list 142 permit ip host 210.8.93.64 host 255.255.255.224
+access-list 142 permit ip host 210.8.245.220 host 255.255.255.252
+access-list 142 permit ip host 210.9.11.28 host 255.255.255.252
+access-list 142 permit ip host 210.9.11.208 host 255.255.255.240
+access-list 142 permit ip host 210.9.194.0 host 255.255.254.0
+access-list 142 permit ip host 210.9.238.0 host 255.255.255.0
+access-list 142 deny   ip any any
+access-list 143 deny   ip host 0.0.0.0 any
+access-list 143 deny   ip 10.0.0.0 0.255.255.255 255.0.0.0 0.255.255.255
+access-list 143 deny   ip 127.0.0.0 0.255.255.255 255.0.0.0 0.255.255.255
+access-list 143 deny   ip 128.0.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 143 deny   ip 169.254.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 143 deny   ip 172.16.0.0 0.15.255.255 255.240.0.0 0.15.255.255
+access-list 143 deny   ip 191.255.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 143 deny   ip 192.0.0.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 143 deny   ip 192.0.2.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 143 deny   ip 192.168.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 143 deny   ip 223.255.255.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 143 deny   ip 224.0.0.0 31.255.255.255 224.0.0.0 31.255.255.255
+access-list 143 permit ip 202.47.32.0 0.0.16.0 255.255.224.0 0.0.16.0
+access-list 143 permit ip 202.47.40.0 0.0.4.0 host 255.255.252.0
+access-list 143 permit ip host 202.47.47.0 host 255.255.255.0
+access-list 143 permit ip host 202.47.56.0 host 255.255.252.0
+access-list 143 permit ip host 202.47.56.0 host 255.255.255.0
+access-list 143 permit ip host 202.47.59.0 host 255.255.255.0
+access-list 143 permit ip host 202.47.60.0 host 255.255.255.0
+access-list 143 permit ip host 202.124.32.0 host 255.255.240.0
+access-list 143 permit ip host 202.171.238.0 host 255.255.255.0
+access-list 143 permit ip host 203.1.72.0 host 255.255.252.0
+access-list 143 permit ip host 203.16.227.0 host 255.255.255.0
+access-list 143 permit ip host 203.18.94.0 host 255.255.255.0
+access-list 143 permit ip host 203.22.247.0 host 255.255.255.0
+access-list 143 permit ip host 203.24.22.0 host 255.255.255.0
+access-list 143 permit ip host 203.27.50.0 host 255.255.255.0
+access-list 143 permit ip host 203.31.226.0 host 255.255.255.0
+access-list 143 permit ip host 203.33.60.0 host 255.255.254.0
+access-list 143 permit ip host 203.55.174.0 host 255.255.254.0
+access-list 143 permit ip host 203.62.138.0 host 255.255.255.0
+access-list 143 permit ip host 203.62.184.0 host 255.255.252.0
+access-list 143 permit ip host 203.62.184.0 host 255.255.255.0
+access-list 143 permit ip host 203.94.32.0 host 255.255.224.0
+access-list 143 permit ip host 203.94.63.0 host 255.255.255.0
+access-list 143 permit ip 203.193.194.0 0.0.1.0 255.255.254.0 0.0.1.0
+access-list 143 permit ip host 203.193.202.0 host 255.255.254.0
+access-list 143 permit ip 203.193.204.0 0.0.2.0 host 255.255.254.0
+access-list 143 permit ip 203.193.204.0 0.0.1.0 host 255.255.255.0
+access-list 143 permit ip host 203.193.214.0 host 255.255.254.0
+access-list 143 permit ip host 203.193.214.0 host 255.255.255.0
+access-list 143 permit ip host 203.193.221.0 host 255.255.255.0
+access-list 143 permit ip host 203.193.222.0 host 255.255.255.0
+access-list 143 deny   ip any any
+access-list 144 deny   ip host 0.0.0.0 any
+access-list 144 deny   ip 10.0.0.0 0.255.255.255 255.0.0.0 0.255.255.255
+access-list 144 deny   ip 127.0.0.0 0.255.255.255 255.0.0.0 0.255.255.255
+access-list 144 deny   ip 128.0.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 144 deny   ip 169.254.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 144 deny   ip 172.16.0.0 0.15.255.255 255.240.0.0 0.15.255.255
+access-list 144 deny   ip 191.255.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 144 deny   ip 192.0.0.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 144 deny   ip 192.0.2.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 144 deny   ip 192.168.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 144 deny   ip 223.255.255.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 144 deny   ip 224.0.0.0 31.255.255.255 224.0.0.0 31.255.255.255
+access-list 144 permit ip host 203.63.212.8 host 255.255.255.248
+access-list 144 permit ip host 210.8.93.64 host 255.255.255.224
+access-list 144 permit ip host 210.8.245.220 host 255.255.255.252
+access-list 144 permit ip host 210.9.11.28 host 255.255.255.252
+access-list 144 permit ip host 210.9.11.208 host 255.255.255.240
+access-list 144 permit ip host 210.9.194.0 host 255.255.254.0
+access-list 144 permit ip host 210.9.238.0 host 255.255.255.0
+access-list 144 deny   ip any any
+access-list 145 deny   ip host 0.0.0.0 any
+access-list 145 deny   ip 10.0.0.0 0.255.255.255 255.0.0.0 0.255.255.255
+access-list 145 deny   ip 127.0.0.0 0.255.255.255 255.0.0.0 0.255.255.255
+access-list 145 deny   ip 128.0.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 145 deny   ip 169.254.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 145 deny   ip 172.16.0.0 0.15.255.255 255.240.0.0 0.15.255.255
+access-list 145 deny   ip 191.255.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 145 deny   ip 192.0.0.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 145 deny   ip 192.0.2.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 145 deny   ip 192.168.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 145 deny   ip 223.255.255.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 145 deny   ip 224.0.0.0 31.255.255.255 224.0.0.0 31.255.255.255
+access-list 145 permit ip host 180.92.208.0 host 255.255.252.0
+access-list 145 permit ip 180.92.208.0 0.0.3.0 host 255.255.255.0
+access-list 145 permit ip host 202.0.90.0 host 255.255.255.0
+access-list 145 permit ip host 202.124.32.0 host 255.255.240.0
+access-list 145 permit ip host 203.16.207.0 host 255.255.255.0
+access-list 145 permit ip 203.16.224.0 0.0.1.0 255.255.254.0 0.0.1.0
+access-list 145 permit ip host 203.27.93.0 host 255.255.255.0
+access-list 145 permit ip host 203.29.191.0 host 255.255.255.0
+access-list 145 permit ip host 203.193.192.0 host 255.255.224.0
+access-list 145 permit ip host 203.193.192.0 host 255.255.240.0
+access-list 145 permit ip host 203.193.192.0 host 255.255.254.0
+access-list 145 permit ip host 203.193.196.0 host 255.255.252.0
+access-list 145 permit ip host 203.193.196.0 host 255.255.254.0
+access-list 145 permit ip host 203.193.200.0 host 255.255.254.0
+access-list 145 permit ip host 203.193.205.0 host 255.255.255.0
+access-list 145 permit ip host 203.193.206.0 host 255.255.254.0
+access-list 145 permit ip 203.193.208.0 0.0.8.0 host 255.255.248.0
+access-list 145 permit ip host 203.193.208.0 host 255.255.252.0
+access-list 145 permit ip host 203.193.212.0 host 255.255.254.0
+access-list 145 permit ip host 203.193.215.0 host 255.255.255.0
+access-list 145 deny   ip any any
+access-list 146 deny   ip host 0.0.0.0 any
+access-list 146 deny   ip 10.0.0.0 0.255.255.255 255.0.0.0 0.255.255.255
+access-list 146 deny   ip 127.0.0.0 0.255.255.255 255.0.0.0 0.255.255.255
+access-list 146 deny   ip 128.0.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 146 deny   ip 169.254.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 146 deny   ip 172.16.0.0 0.15.255.255 255.240.0.0 0.15.255.255
+access-list 146 deny   ip 191.255.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 146 deny   ip 192.0.0.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 146 deny   ip 192.0.2.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 146 deny   ip 192.168.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 146 deny   ip 223.255.255.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 146 deny   ip 224.0.0.0 31.255.255.255 224.0.0.0 31.255.255.255
+access-list 146 permit ip host 61.69.10.0 host 255.255.254.0
+access-list 146 permit ip host 61.69.12.0 host 255.255.252.0
+access-list 146 permit ip host 180.95.16.0 host 255.255.248.0
+access-list 146 permit ip host 180.95.24.0 host 255.255.255.0
+access-list 146 permit ip host 180.95.35.0 host 255.255.255.0
+access-list 146 permit ip host 180.95.36.0 host 255.255.252.0
+access-list 146 permit ip host 180.95.40.0 host 255.255.252.0
+access-list 146 permit ip host 203.63.78.0 host 255.255.255.0
+access-list 146 permit ip host 210.8.206.0 host 255.255.255.0
+access-list 146 permit ip host 210.9.78.136 host 255.255.255.252
+access-list 146 deny   ip any any
+access-list 147 deny   ip host 0.0.0.0 any
+access-list 147 deny   ip 10.0.0.0 0.255.255.255 255.0.0.0 0.255.255.255
+access-list 147 deny   ip 127.0.0.0 0.255.255.255 255.0.0.0 0.255.255.255
+access-list 147 deny   ip 128.0.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 147 deny   ip 169.254.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 147 deny   ip 172.16.0.0 0.15.255.255 255.240.0.0 0.15.255.255
+access-list 147 deny   ip 191.255.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 147 deny   ip 192.0.0.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 147 deny   ip 192.0.2.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 147 deny   ip 192.168.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 147 deny   ip 223.255.255.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 147 deny   ip 224.0.0.0 31.255.255.255 224.0.0.0 31.255.255.255
+access-list 147 permit ip host 61.69.10.0 host 255.255.254.0
+access-list 147 permit ip host 61.69.12.0 host 255.255.252.0
+access-list 147 permit ip host 203.63.78.0 host 255.255.255.0
+access-list 147 permit ip host 210.8.206.0 host 255.255.255.0
+access-list 147 permit ip host 210.9.78.136 host 255.255.255.252
+access-list 147 deny   ip any any
+access-list 148 deny   ip host 0.0.0.0 any
+access-list 148 deny   ip 10.0.0.0 0.255.255.255 255.0.0.0 0.255.255.255
+access-list 148 deny   ip 127.0.0.0 0.255.255.255 255.0.0.0 0.255.255.255
+access-list 148 deny   ip 128.0.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 148 deny   ip 169.254.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 148 deny   ip 172.16.0.0 0.15.255.255 255.240.0.0 0.15.255.255
+access-list 148 deny   ip 191.255.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 148 deny   ip 192.0.0.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 148 deny   ip 192.0.2.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 148 deny   ip 192.168.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 148 deny   ip 223.255.255.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 148 deny   ip 224.0.0.0 31.255.255.255 224.0.0.0 31.255.255.255
+access-list 148 permit ip host 180.95.16.0 host 255.255.248.0
+access-list 148 permit ip host 180.95.24.0 host 255.255.255.0
+access-list 148 permit ip host 180.95.35.0 host 255.255.255.0
+access-list 148 permit ip host 180.95.36.0 host 255.255.252.0
+access-list 148 permit ip host 180.95.40.0 host 255.255.252.0
+access-list 148 deny   ip any any
+access-list 149 deny   ip host 0.0.0.0 any
+access-list 149 deny   ip 10.0.0.0 0.255.255.255 255.0.0.0 0.255.255.255
+access-list 149 deny   ip 127.0.0.0 0.255.255.255 255.0.0.0 0.255.255.255
+access-list 149 deny   ip 128.0.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 149 deny   ip 169.254.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 149 deny   ip 172.16.0.0 0.15.255.255 255.240.0.0 0.15.255.255
+access-list 149 deny   ip 191.255.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 149 deny   ip 192.0.0.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 149 deny   ip 192.0.2.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 149 deny   ip 192.168.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 149 deny   ip 223.255.255.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 149 deny   ip 224.0.0.0 31.255.255.255 224.0.0.0 31.255.255.255
+access-list 149 permit ip host 203.63.208.0 host 255.255.255.0
+access-list 149 permit ip host 210.8.40.252 host 255.255.255.252
+access-list 149 permit ip host 210.9.112.32 host 255.255.255.240
+access-list 149 deny   ip any any
+access-list 150 deny   ip host 0.0.0.0 any
+access-list 150 deny   ip 10.0.0.0 0.255.255.255 255.0.0.0 0.255.255.255
+access-list 150 deny   ip 127.0.0.0 0.255.255.255 255.0.0.0 0.255.255.255
+access-list 150 deny   ip 128.0.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 150 deny   ip 169.254.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 150 deny   ip 172.16.0.0 0.15.255.255 255.240.0.0 0.15.255.255
+access-list 150 deny   ip 191.255.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 150 deny   ip 192.0.0.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 150 deny   ip 192.0.2.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 150 deny   ip 192.168.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 150 deny   ip 223.255.255.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 150 deny   ip 224.0.0.0 31.255.255.255 224.0.0.0 31.255.255.255
+access-list 150 permit ip host 210.9.10.16 host 255.255.255.240
+access-list 150 deny   ip any any
+access-list 151 deny   ip host 0.0.0.0 any
+access-list 151 deny   ip 10.0.0.0 0.255.255.255 255.0.0.0 0.255.255.255
+access-list 151 deny   ip 127.0.0.0 0.255.255.255 255.0.0.0 0.255.255.255
+access-list 151 deny   ip 128.0.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 151 deny   ip 169.254.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 151 deny   ip 172.16.0.0 0.15.255.255 255.240.0.0 0.15.255.255
+access-list 151 deny   ip 191.255.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 151 deny   ip 192.0.0.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 151 deny   ip 192.0.2.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 151 deny   ip 192.168.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 151 deny   ip 223.255.255.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 151 deny   ip 224.0.0.0 31.255.255.255 224.0.0.0 31.255.255.255
+access-list 151 permit ip host 203.63.208.0 host 255.255.255.0
+access-list 151 permit ip host 210.8.40.252 host 255.255.255.252
+access-list 151 permit ip host 210.9.112.32 host 255.255.255.240
+access-list 151 deny   ip any any
+access-list 152 deny   ip host 0.0.0.0 any
+access-list 152 deny   ip 10.0.0.0 0.255.255.255 255.0.0.0 0.255.255.255
+access-list 152 deny   ip 127.0.0.0 0.255.255.255 255.0.0.0 0.255.255.255
+access-list 152 deny   ip 128.0.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 152 deny   ip 169.254.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 152 deny   ip 172.16.0.0 0.15.255.255 255.240.0.0 0.15.255.255
+access-list 152 deny   ip 191.255.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 152 deny   ip 192.0.0.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 152 deny   ip 192.0.2.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 152 deny   ip 192.168.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 152 deny   ip 223.255.255.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 152 deny   ip 224.0.0.0 31.255.255.255 224.0.0.0 31.255.255.255
+access-list 152 permit ip host 210.9.10.16 host 255.255.255.240
+access-list 152 deny   ip any any
+access-list 153 deny   ip host 0.0.0.0 any
+access-list 153 deny   ip 10.0.0.0 0.255.255.255 255.0.0.0 0.255.255.255
+access-list 153 deny   ip 127.0.0.0 0.255.255.255 255.0.0.0 0.255.255.255
+access-list 153 deny   ip 128.0.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 153 deny   ip 169.254.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 153 deny   ip 172.16.0.0 0.15.255.255 255.240.0.0 0.15.255.255
+access-list 153 deny   ip 191.255.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 153 deny   ip 192.0.0.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 153 deny   ip 192.0.2.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 153 deny   ip 192.168.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 153 deny   ip 223.255.255.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 153 deny   ip 224.0.0.0 31.255.255.255 224.0.0.0 31.255.255.255
+access-list 153 permit ip host 180.95.16.0 host 255.255.248.0
+access-list 153 permit ip host 180.95.35.0 host 255.255.255.0
+access-list 153 permit ip host 180.95.36.0 host 255.255.252.0
+access-list 153 permit ip host 180.95.40.0 host 255.255.252.0
+access-list 153 deny   ip any any
+access-list 154 deny   ip host 0.0.0.0 any
+access-list 154 deny   ip 10.0.0.0 0.255.255.255 255.0.0.0 0.255.255.255
+access-list 154 deny   ip 127.0.0.0 0.255.255.255 255.0.0.0 0.255.255.255
+access-list 154 deny   ip 128.0.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 154 deny   ip 169.254.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 154 deny   ip 172.16.0.0 0.15.255.255 255.240.0.0 0.15.255.255
+access-list 154 deny   ip 191.255.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 154 deny   ip 192.0.0.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 154 deny   ip 192.0.2.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 154 deny   ip 192.168.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 154 deny   ip 223.255.255.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 154 deny   ip 224.0.0.0 31.255.255.255 224.0.0.0 31.255.255.255
+access-list 154 permit ip host 203.63.208.0 host 255.255.255.0
+access-list 154 permit ip host 210.8.40.252 host 255.255.255.252
+access-list 154 permit ip host 210.9.112.32 host 255.255.255.240
+access-list 154 deny   ip any any
+access-list 155 deny   ip host 0.0.0.0 any
+access-list 155 deny   ip 10.0.0.0 0.255.255.255 255.0.0.0 0.255.255.255
+access-list 155 deny   ip 127.0.0.0 0.255.255.255 255.0.0.0 0.255.255.255
+access-list 155 deny   ip 128.0.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 155 deny   ip 169.254.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 155 deny   ip 172.16.0.0 0.15.255.255 255.240.0.0 0.15.255.255
+access-list 155 deny   ip 191.255.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 155 deny   ip 192.0.0.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 155 deny   ip 192.0.2.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 155 deny   ip 192.168.0.0 0.0.255.255 255.255.0.0 0.0.255.255
+access-list 155 deny   ip 223.255.255.0 0.0.0.255 255.255.255.0 0.0.0.255
+access-list 155 deny   ip 224.0.0.0 31.255.255.255 224.0.0.0 31.255.255.255
+access-list 155 permit ip host 210.8.218.248 host 255.255.255.248
+access-list 155 permit ip host 210.9.10.16 host 255.255.255.240
+access-list 155 deny   ip any any
+arp 210.10.57.67 0004.9aee.51e0 ARPA
+arp 210.10.60.34 0002.b3a4.a3e7 ARPA
+arp 210.11.56.7 0080.1cc9.2000 ARPA
+arp 210.11.56.10 0026.8801.7b80 ARPA
+arp 210.11.56.34 0018.8bfa.00e3 ARPA
+arp 210.11.56.65 0000.24c8.b310 ARPA
+arp 210.11.56.100 0018.8bc5.6375 ARPA
+arp 210.11.56.101 0018.8bab.26a5 ARPA
+arp 210.11.56.102 0016.3606.7e87 ARPA
+arp 210.11.57.1 0217.c551.d089 ARPA
+arp 210.11.57.2 0023.9c3b.aac0 ARPA
+arp 210.11.57.5 0002.55b7.996d ARPA
+arp 210.11.57.7 0050.fca8.463b ARPA
+arp 210.11.57.8 0014.5e30.556f ARPA
+arp 210.11.57.19 0000.0000.0000 ARPA
+arp 210.11.57.20 0090.7f32.fef2 ARPA
+arp 210.11.57.25 0012.7f4c.483b ARPA
+arp 210.11.57.29 00d0.cf03.81c2 ARPA
+arp 210.11.57.31 0030.7144.641b ARPA
+arp 210.11.57.32 0030.8801.e93b ARPA
+arp 210.11.57.34 0030.1924.10e1 ARPA
+arp 210.11.57.37 0010.db93.87f6 ARPA
+arp 210.11.57.43 001e.8ccf.4800 ARPA
+arp 210.11.57.48 001a.6d2a.abe8 ARPA
+arp 210.11.57.49 0018.b9a8.9b4c ARPA
+arp 210.11.57.51 00d0.cf09.8e15 ARPA
+arp 210.11.57.61 001a.6d2a.abb8 ARPA
+arp 210.11.57.110 0007.8576.ef02 ARPA
+arp 210.11.57.133 0000.0000.0000 ARPA
+arp 210.11.57.135 0030.190a.c500 ARPA
+arp 210.11.57.140 c47d.4f05.0680 ARPA
+arp 210.11.57.144 0002.44ba.2638 ARPA
+arp 210.11.57.168 0090.7f30.45a1 ARPA
+arp 210.11.57.171 0019.bbd0.a7a4 ARPA
+arp 210.11.57.174 00d0.cf06.9da3 ARPA
+arp 210.11.57.175 00d0.cf06.9da6 ARPA
+arp 210.11.57.180 001f.ca07.0781 ARPA
+arp 210.11.57.186 0016.b64c.d7e3 ARPA
+arp 210.11.57.189 0000.0000.0000 ARPA
+arp 210.11.58.3 000c.302c.3205 ARPA
+arp 210.11.58.6 0090.7f41.06c5 ARPA
+arp 210.11.58.7 000d.8878.5500 ARPA
+arp 210.11.58.8 000b.fdc8.d440 ARPA
+arp 210.11.58.9 0010.7b45.4681 ARPA
+arp 210.11.58.12 0024.1413.93c8 ARPA
+arp 210.11.58.13 000e.8483.ec00 ARPA
+arp 210.11.58.15 001b.c0b6.6100 ARPA
+arp 210.11.58.24 0017.df25.841b ARPA
+arp 210.11.58.26 0010.db93.3816 ARPA
+arp 210.11.58.31 0017.5a88.ab40 ARPA
+arp 210.11.58.33 0015.f9f6.8e61 ARPA
+arp 210.11.58.37 0023.ebf6.146e ARPA
+arp 210.11.58.40 0000.0000.0000 ARPA
+arp 210.11.58.48 0016.c876.4410 ARPA
+arp 210.11.58.49 0040.f482.bf73 ARPA
+arp 210.11.58.51 001b.c0b6.6105 ARPA
+arp 210.11.58.52 0000.0000.0000 ARPA
+arp 210.11.58.53 000d.6585.6e6c ARPA
+arp 210.11.58.58 00a0.8e79.43a4 ARPA
+arp 210.11.58.74 0000.0000.0000 ARPA
+arp 210.11.58.76 000f.352d.1219 ARPA
+arp 210.11.58.77 0013.c32d.0860 ARPA
+arp 210.11.58.96 0010.7bb3.e5db ARPA
+arp 210.11.58.97 000b.be57.62a7 ARPA
+arp 210.11.58.100 0014.6c02.dfc9 ARPA
+arp 210.11.58.130 0040.1011.c744 ARPA
+arp 210.11.58.131 001e.e5d6.710a ARPA
+arp 210.11.58.136 0030.e101.1404 ARPA
+arp 210.11.58.137 0018.39b8.d6c8 ARPA
+arp 210.11.58.138 0009.0f30.b8b9 ARPA
+arp 210.11.58.148 0030.949d.5fa0 ARPA
+arp 210.11.58.153 0020.ed06.96e7 ARPA
+arp 210.11.58.157 0090.7f1f.6db6 ARPA
+arp 210.11.58.167 0050.0f09.a791 ARPA
+arp 210.11.58.168 0013.7f2a.e82d ARPA
+arp 210.11.58.169 001b.d502.38a3 ARPA
+arp 210.11.58.177 000a.4149.5a60 ARPA
+arp 210.11.58.189 0009.0f03.97f0 ARPA
+arp 210.11.58.192 001c.5896.bc18 ARPA
+arp 210.11.58.193 0009.7c5e.a760 ARPA
+arp 210.11.58.195 000a.f367.0408 ARPA
+arp 210.11.58.202 0060.cf45.2b20 ARPA
+arp 210.11.58.204 0050.0f09.a792 ARPA
+arp 210.11.59.2 00b0.6481.cc20 ARPA
+arp 210.11.59.5 0000.0000.0000 ARPA
+arp 210.11.59.7 000d.289e.4bb0 ARPA
+arp 210.11.59.10 0000.0000.0000 ARPA
+arp 210.11.59.15 0040.63e4.5df9 ARPA
+arp 210.11.59.30 000d.28dc.82ee ARPA
+arp 210.11.59.48 0014.6996.5121 ARPA
+arp 210.11.59.130 0050.732c.3080 ARPA
+arp 210.11.59.131 0002.fd77.35f1 ARPA
+arp 210.11.59.138 0019.069c.3db9 ARPA
+arp 210.11.60.10 0008.da55.b915 ARPA
+arp 210.11.60.23 00e0.2011.0a34 ARPA
+arp 210.11.60.35 0030.4871.be97 ARPA
+arp 210.11.60.38 0090.2712.c7c1 ARPA
+arp 210.11.60.44 000f.f75d.73c1 ARPA
+arp 210.11.60.71 0030.4871.ac10 ARPA
+arp 210.11.60.97 0000.0000.0000 ARPA
+arp 210.11.63.33 0003.47da.d330 ARPA
+arp 210.11.66.3 0030.7144.5c38 ARPA
+arp 210.11.66.4 0000.0000.0000 ARPA
+arp 210.11.66.5 0000.0000.0000 ARPA
+arp 210.11.66.10 0026.8801.7b84 ARPA
+arp 210.11.66.11 00b0.64d8.24c2 ARPA
+no cdp run
+route-map AS10092-EXPORT deny 10
+!
+route-map AS10092-IMPORT deny 10
+!
+route-map AS17987-2-EXPORT deny 10
+!
+route-map AS17987-2-IMPORT permit 10
+ match ip address 138
+ match as-path 131
+ match community 31
+ set local-preference 100
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473
+!
+route-map AS17987-2-IMPORT permit 20
+ match ip address 138
+ match as-path 131
+ match community 32
+ set local-preference 75
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473 additive
+!
+route-map AS17987-2-IMPORT permit 30
+ match ip address 138
+ match as-path 131
+ match community 33
+ set local-preference 85
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473 additive
+!
+route-map AS17987-2-IMPORT permit 40
+ match ip address 138
+ match as-path 131
+ match community 34
+ set local-preference 95
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473 additive
+!
+route-map AS17987-2-IMPORT permit 50
+ match ip address 138
+ match as-path 131
+ set local-preference 100
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473 additive
+!
+route-map AS17987-EXPORT deny 10
+!
+route-map AS17987-IMPORT permit 10
+ match ip address 138
+ match as-path 131
+ match community 31
+ set local-preference 100
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473
+!
+route-map AS17987-IMPORT permit 20
+ match ip address 138
+ match as-path 131
+ match community 32
+ set local-preference 75
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473 additive
+!
+route-map AS17987-IMPORT permit 30
+ match ip address 138
+ match as-path 131
+ match community 33
+ set local-preference 85
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473 additive
+!
+route-map AS17987-IMPORT permit 40
+ match ip address 138
+ match as-path 131
+ match community 34
+ set local-preference 95
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473 additive
+!
+route-map AS17987-IMPORT permit 50
+ match ip address 138
+ match as-path 131
+ set local-preference 100
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473 additive
+!
+route-map AS18210-2-EXPORT permit 10
+ match ip address 136
+ match community 35
+!
+route-map AS18210-2-IMPORT permit 10
+ match ip address 139
+ match as-path 132
+ match community 31
+ set local-preference 100
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473
+!
+route-map AS18210-2-IMPORT permit 20
+ match ip address 140
+ match as-path 132
+ match community 36
+ set local-preference 100
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473
+!
+route-map AS18210-2-IMPORT permit 30
+ match ip address 141
+ match as-path 132
+ match community 32
+ set local-preference 75
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473 additive
+!
+route-map AS18210-2-IMPORT permit 40
+ match ip address 141
+ match as-path 132
+ match community 33
+ set local-preference 85
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473 additive
+!
+route-map AS18210-2-IMPORT permit 50
+ match ip address 139
+ match as-path 132
+ match community 34
+ set local-preference 95
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473 additive
+!
+route-map AS18210-2-IMPORT permit 60
+ match ip address 139
+ match as-path 132
+ set local-preference 100
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473 additive
+!
+route-map AS18210-3-EXPORT permit 10
+ match ip address 137
+ match community 35
+!
+route-map AS18210-3-EXPORT permit 20
+ match ip address 137
+ match community 35
+!
+route-map AS18210-3-IMPORT permit 10
+ match ip address 141
+ match as-path 133
+ match community 31
+ set local-preference 100
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473
+!
+route-map AS18210-3-IMPORT permit 20
+ match ip address 142
+ match as-path 133
+ match community 36
+ set local-preference 100
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473
+!
+route-map AS18210-3-IMPORT permit 30
+ match ip address 143
+ match as-path 133
+ match community 32
+ set local-preference 75
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473 additive
+!
+route-map AS18210-3-IMPORT permit 40
+ match ip address 143
+ match as-path 133
+ match community 33
+ set local-preference 85
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473 additive
+!
+route-map AS18210-3-IMPORT permit 50
+ match ip address 141
+ match as-path 133
+ match community 34
+ set local-preference 95
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473 additive
+!
+route-map AS18210-3-IMPORT permit 60
+ match ip address 141
+ match as-path 133
+ set local-preference 100
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473 additive
+!
+route-map AS18210-EXPORT permit 10
+ match ip address 136
+ match community 35
+!
+route-map AS18210-IMPORT permit 10
+ match ip address 139
+ match as-path 132
+ match community 31
+ set local-preference 100
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473
+!
+route-map AS18210-IMPORT permit 20
+ match ip address 140
+ match as-path 132
+ match community 36
+ set local-preference 100
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473
+!
+route-map AS18210-IMPORT permit 30
+ match ip address 141
+ match as-path 132
+ match community 32
+ set local-preference 75
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473 additive
+!
+route-map AS18210-IMPORT permit 40
+ match ip address 141
+ match as-path 132
+ match community 33
+ set local-preference 85
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473 additive
+!
+route-map AS18210-IMPORT permit 50
+ match ip address 139
+ match as-path 132
+ match community 34
+ set local-preference 95
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473 additive
+!
+route-map AS18210-IMPORT permit 60
+ match ip address 139
+ match as-path 132
+ set local-preference 100
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473 additive
+!
+route-map AS23718-EXPORT deny 10
+!
+route-map AS23718-IMPORT permit 10
+ match ip address 139
+ match as-path 132
+ match community 31
+ set local-preference 100
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473
+!
+route-map AS23718-IMPORT permit 20
+ match ip address 140
+ match as-path 133
+ match community 31
+ set local-preference 100
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473
+!
+route-map AS23718-IMPORT permit 30
+ match ip address 140
+ match as-path 134
+ match community 31
+ set local-preference 100
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473
+!
+route-map AS23718-IMPORT permit 40
+ match ip address 139
+ match as-path 132
+ match community 32
+ set local-preference 75
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473 additive
+!
+route-map AS23718-IMPORT permit 50
+ match ip address 140
+ match as-path 133
+ match community 32
+ set local-preference 75
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473 additive
+!
+route-map AS23718-IMPORT permit 60
+ match ip address 140
+ match as-path 134
+ match community 32
+ set local-preference 75
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473 additive
+!
+route-map AS23718-IMPORT permit 70
+ match ip address 139
+ match as-path 132
+ match community 33
+ set local-preference 85
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473 additive
+!
+route-map AS23718-IMPORT permit 80
+ match ip address 140
+ match as-path 133
+ match community 33
+ set local-preference 85
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473 additive
+!
+route-map AS23718-IMPORT permit 90
+ match ip address 140
+ match as-path 134
+ match community 33
+ set local-preference 85
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473 additive
+!
+route-map AS23718-IMPORT permit 100
+ match ip address 139
+ match as-path 132
+ match community 34
+ set local-preference 95
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473 additive
+!
+route-map AS23718-IMPORT permit 110
+ match ip address 140
+ match as-path 133
+ match community 34
+ set local-preference 95
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473 additive
+!
+route-map AS23718-IMPORT permit 120
+ match ip address 140
+ match as-path 134
+ match community 34
+ set local-preference 95
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473 additive
+!
+route-map AS23718-IMPORT permit 130
+ match ip address 139
+ match as-path 132
+ set local-preference 100
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473 additive
+!
+route-map AS23718-IMPORT permit 140
+ match ip address 140
+ match as-path 133
+ set local-preference 100
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473 additive
+!
+route-map AS23718-IMPORT permit 150
+ match ip address 140
+ match as-path 134
+ set local-preference 100
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473 additive
+!
+route-map AS23903-2-EXPORT deny 10
+!
+route-map AS23903-2-IMPORT permit 10
+ match ip address 143
+ match as-path 133
+ match community 31
+ set local-preference 100
+ set community 2764:65203 2764:65353 2764:65408
+!
+route-map AS23903-2-IMPORT permit 20
+ match ip address 144
+ match as-path 133
+ match community 32
+ set local-preference 100
+ set community 2764:65203 2764:65353 2764:65408
+!
+route-map AS23903-2-IMPORT permit 30
+ match ip address 145
+ match as-path 133
+ match community 33
+ set local-preference 75
+ set community 2764:65203 2764:65353 2764:65408 additive
+!
+route-map AS23903-2-IMPORT permit 40
+ match ip address 145
+ match as-path 133
+ match community 34
+ set local-preference 85
+ set community 2764:65203 2764:65353 2764:65408 additive
+!
+route-map AS23903-2-IMPORT permit 50
+ match ip address 143
+ match as-path 133
+ match community 35
+ set local-preference 95
+ set community 2764:65203 2764:65353 2764:65408 additive
+!
+route-map AS23903-2-IMPORT permit 60
+ match ip address 143
+ match as-path 133
+ set local-preference 100
+ set community 2764:65203 2764:65353 2764:65408 additive
+!
+route-map AS23903-EXPORT deny 10
+!
+route-map AS23903-IMPORT permit 10
+ match ip address 143
+ match as-path 133
+ match community 30
+ set local-preference 100
+ set community 2764:65203 2764:65353 2764:65408
+!
+route-map AS23903-IMPORT permit 20
+ match ip address 144
+ match as-path 133
+ match community 31
+ set local-preference 100
+ set community 2764:65203 2764:65353 2764:65408
+!
+route-map AS23903-IMPORT permit 30
+ match ip address 145
+ match as-path 133
+ match community 32
+ set local-preference 75
+ set community 2764:65203 2764:65353 2764:65408 additive
+!
+route-map AS23903-IMPORT permit 40
+ match ip address 145
+ match as-path 133
+ match community 33
+ set local-preference 85
+ set community 2764:65203 2764:65353 2764:65408 additive
+!
+route-map AS23903-IMPORT permit 50
+ match ip address 143
+ match as-path 133
+ match community 34
+ set local-preference 95
+ set community 2764:65203 2764:65353 2764:65408 additive
+!
+route-map AS23903-IMPORT permit 60
+ match ip address 143
+ match as-path 133
+ set local-preference 100
+ set community 2764:65203 2764:65353 2764:65408 additive
+!
+route-map AS24001-2-EXPORT deny 10
+!
+route-map AS24001-2-IMPORT permit 10
+ match ip address 143
+ match as-path 133
+ match community 30
+ set local-preference 100
+ set community 2764:65203 2764:65353 2764:65408
+!
+route-map AS24001-2-IMPORT permit 20
+ match ip address 144
+ match as-path 133
+ match community 31
+ set local-preference 100
+ set community 2764:65203 2764:65353 2764:65408
+!
+route-map AS24001-2-IMPORT permit 30
+ match ip address 145
+ match as-path 133
+ match community 32
+ set local-preference 75
+ set community 2764:65203 2764:65353 2764:65408 additive
+!
+route-map AS24001-2-IMPORT permit 40
+ match ip address 145
+ match as-path 133
+ match community 33
+ set local-preference 85
+ set community 2764:65203 2764:65353 2764:65408 additive
+!
+route-map AS24001-2-IMPORT permit 50
+ match ip address 143
+ match as-path 133
+ match community 34
+ set local-preference 95
+ set community 2764:65203 2764:65353 2764:65408 additive
+!
+route-map AS24001-2-IMPORT permit 60
+ match ip address 143
+ match as-path 133
+ set local-preference 100
+ set community 2764:65203 2764:65353 2764:65408 additive
+!
+route-map AS24001-EXPORT deny 10
+!
+route-map AS24001-IMPORT permit 10
+ match ip address 144
+ match as-path 134
+ match community 30
+ set local-preference 100
+ set community 2764:65203 2764:65353 2764:65408
+!
+route-map AS24001-IMPORT permit 20
+ match ip address 145
+ match as-path 134
+ match community 31
+ set local-preference 100
+ set community 2764:65203 2764:65353 2764:65408
+!
+route-map AS24001-IMPORT permit 30
+ match ip address 146
+ match as-path 134
+ match community 32
+ set local-preference 75
+ set community 2764:65203 2764:65353 2764:65408 additive
+!
+route-map AS24001-IMPORT permit 40
+ match ip address 146
+ match as-path 134
+ match community 33
+ set local-preference 85
+ set community 2764:65203 2764:65353 2764:65408 additive
+!
+route-map AS24001-IMPORT permit 50
+ match ip address 144
+ match as-path 134
+ match community 34
+ set local-preference 95
+ set community 2764:65203 2764:65353 2764:65408 additive
+!
+route-map AS24001-IMPORT permit 60
+ match ip address 144
+ match as-path 134
+ set local-preference 100
+ set community 2764:65203 2764:65353 2764:65408 additive
+!
+route-map AS24243-2-EXPORT permit 10
+ match ip address 144
+ match community 35
+!
+route-map AS24243-2-IMPORT permit 10
+ match ip address 145
+ match as-path 134
+ match community 30
+ set local-preference 100
+ set community 2764:61442 2764:65203 2764:65353 2764:65408
+!
+route-map AS24243-2-IMPORT permit 20
+ match ip address 145
+ match as-path 134
+ match community 32
+ set local-preference 75
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 additive
+!
+route-map AS24243-2-IMPORT permit 30
+ match ip address 145
+ match as-path 134
+ match community 33
+ set local-preference 85
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 additive
+!
+route-map AS24243-2-IMPORT permit 40
+ match ip address 145
+ match as-path 134
+ match community 34
+ set local-preference 95
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 additive
+!
+route-map AS24243-2-IMPORT permit 50
+ match ip address 145
+ match as-path 134
+ set local-preference 100
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 additive
+!
+route-map AS24243-EXPORT permit 10
+ match ip address 136
+ match community 30
+!
+route-map AS24243-IMPORT permit 10
+ match ip address 141
+ match as-path 135
+ match community 31
+ set local-preference 100
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473
+!
+route-map AS24243-IMPORT permit 20
+ match ip address 141
+ match as-path 135
+ match community 32
+ set local-preference 75
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473 additive
+!
+route-map AS24243-IMPORT permit 30
+ match ip address 141
+ match as-path 135
+ match community 33
+ set local-preference 85
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473 additive
+!
+route-map AS24243-IMPORT permit 40
+ match ip address 141
+ match as-path 135
+ match community 34
+ set local-preference 95
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473 additive
+!
+route-map AS24243-IMPORT permit 50
+ match ip address 141
+ match as-path 135
+ set local-preference 100
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473 additive
+!
+route-map AS38611-2-EXPORT permit 10
+ match ip address 141
+ match community 35
+!
+route-map AS38611-2-IMPORT permit 10
+ match ip address 142
+ match as-path 135
+ match community 31
+ set local-preference 100
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473
+!
+route-map AS38611-2-IMPORT permit 20
+ match ip address 143
+ match as-path 136
+ match community 31
+ set local-preference 100
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473
+!
+route-map AS38611-2-IMPORT permit 30
+ match ip address 143
+ match as-path 137
+ match community 31
+ set local-preference 100
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473
+!
+route-map AS38611-2-IMPORT permit 40
+ match ip address 144
+ match as-path 135
+ match community 36
+ set local-preference 100
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473
+!
+route-map AS38611-2-IMPORT permit 50
+ match ip address 145
+ match as-path 135
+ match community 32
+ set local-preference 75
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473 additive
+!
+route-map AS38611-2-IMPORT permit 60
+ match ip address 143
+ match as-path 136
+ match community 32
+ set local-preference 75
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473 additive
+!
+route-map AS38611-2-IMPORT permit 70
+ match ip address 143
+ match as-path 137
+ match community 32
+ set local-preference 75
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473 additive
+!
+route-map AS38611-2-IMPORT permit 80
+ match ip address 145
+ match as-path 135
+ match community 33
+ set local-preference 85
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473 additive
+!
+route-map AS38611-2-IMPORT permit 90
+ match ip address 143
+ match as-path 136
+ match community 33
+ set local-preference 85
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473 additive
+!
+route-map AS38611-2-IMPORT permit 100
+ match ip address 143
+ match as-path 137
+ match community 33
+ set local-preference 85
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473 additive
+!
+route-map AS38611-2-IMPORT permit 110
+ match ip address 142
+ match as-path 135
+ match community 34
+ set local-preference 95
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473 additive
+!
+route-map AS38611-2-IMPORT permit 120
+ match ip address 143
+ match as-path 136
+ match community 34
+ set local-preference 95
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473 additive
+!
+route-map AS38611-2-IMPORT permit 130
+ match ip address 143
+ match as-path 137
+ match community 34
+ set local-preference 95
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473 additive
+!
+route-map AS38611-2-IMPORT permit 140
+ match ip address 142
+ match as-path 135
+ set local-preference 100
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473 additive
+!
+route-map AS38611-2-IMPORT permit 150
+ match ip address 143
+ match as-path 136
+ set local-preference 100
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473 additive
+!
+route-map AS38611-2-IMPORT permit 160
+ match ip address 143
+ match as-path 137
+ set local-preference 100
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473 additive
+!
+route-map AS38611-3-EXPORT deny 10
+!
+route-map AS38611-3-IMPORT permit 10
+ match ip address 142
+ match as-path 135
+ match community 31
+ set local-preference 100
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473
+!
+route-map AS38611-3-IMPORT permit 20
+ match ip address 143
+ match as-path 135
+ match community 36
+ set local-preference 100
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473
+!
+route-map AS38611-3-IMPORT permit 30
+ match ip address 144
+ match as-path 135
+ match community 32
+ set local-preference 75
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473 additive
+!
+route-map AS38611-3-IMPORT permit 40
+ match ip address 144
+ match as-path 135
+ match community 33
+ set local-preference 85
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473 additive
+!
+route-map AS38611-3-IMPORT permit 50
+ match ip address 142
+ match as-path 135
+ match community 34
+ set local-preference 95
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473 additive
+!
+route-map AS38611-3-IMPORT permit 60
+ match ip address 142
+ match as-path 135
+ set local-preference 100
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473 additive
+!
+route-map AS38611-EXPORT permit 10
+ match ip address 141
+ match community 35
+!
+route-map AS38611-IMPORT permit 10
+ match ip address 142
+ match as-path 135
+ match community 31
+ set local-preference 100
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473
+!
+route-map AS38611-IMPORT permit 20
+ match ip address 143
+ match as-path 136
+ match community 31
+ set local-preference 100
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473
+!
+route-map AS38611-IMPORT permit 30
+ match ip address 143
+ match as-path 137
+ match community 31
+ set local-preference 100
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473
+!
+route-map AS38611-IMPORT permit 40
+ match ip address 144
+ match as-path 135
+ match community 36
+ set local-preference 100
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473
+!
+route-map AS38611-IMPORT permit 50
+ match ip address 145
+ match as-path 135
+ match community 32
+ set local-preference 75
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473 additive
+!
+route-map AS38611-IMPORT permit 60
+ match ip address 143
+ match as-path 136
+ match community 32
+ set local-preference 75
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473 additive
+!
+route-map AS38611-IMPORT permit 70
+ match ip address 143
+ match as-path 137
+ match community 32
+ set local-preference 75
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473 additive
+!
+route-map AS38611-IMPORT permit 80
+ match ip address 145
+ match as-path 135
+ match community 33
+ set local-preference 85
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473 additive
+!
+route-map AS38611-IMPORT permit 90
+ match ip address 143
+ match as-path 136
+ match community 33
+ set local-preference 85
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473 additive
+!
+route-map AS38611-IMPORT permit 100
+ match ip address 143
+ match as-path 137
+ match community 33
+ set local-preference 85
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473 additive
+!
+route-map AS38611-IMPORT permit 110
+ match ip address 142
+ match as-path 135
+ match community 34
+ set local-preference 95
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473 additive
+!
+route-map AS38611-IMPORT permit 120
+ match ip address 143
+ match as-path 136
+ match community 34
+ set local-preference 95
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473 additive
+!
+route-map AS38611-IMPORT permit 130
+ match ip address 143
+ match as-path 137
+ match community 34
+ set local-preference 95
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473 additive
+!
+route-map AS38611-IMPORT permit 140
+ match ip address 142
+ match as-path 135
+ set local-preference 100
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473 additive
+!
+route-map AS38611-IMPORT permit 150
+ match ip address 143
+ match as-path 136
+ set local-preference 100
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473 additive
+!
+route-map AS38611-IMPORT permit 160
+ match ip address 143
+ match as-path 137
+ set local-preference 100
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473 additive
+!
+route-map AS45522-EXPORT permit 10
+ match ip address 136
+ match community 35
+!
+route-map AS45522-IMPORT permit 10
+ match ip address 148
+ match as-path 137
+ match community 31
+ set local-preference 100
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473
+!
+route-map AS45522-IMPORT permit 20
+ match ip address 149
+ match as-path 137
+ match community 36
+ set local-preference 100
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473
+!
+route-map AS45522-IMPORT permit 30
+ match ip address 150
+ match as-path 137
+ match community 32
+ set local-preference 75
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473 additive
+!
+route-map AS45522-IMPORT permit 40
+ match ip address 150
+ match as-path 137
+ match community 33
+ set local-preference 85
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473 additive
+!
+route-map AS45522-IMPORT permit 50
+ match ip address 148
+ match as-path 137
+ match community 34
+ set local-preference 95
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473 additive
+!
+route-map AS45522-IMPORT permit 60
+ match ip address 148
+ match as-path 137
+ set local-preference 100
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473 additive
+!
+route-map AS46069-2-EXPORT deny 10
+!
+route-map AS46069-2-IMPORT permit 10
+ match ip address 146
+ match as-path 138
+ match community 31
+ set local-preference 100
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473
+!
+route-map AS46069-2-IMPORT permit 20
+ match ip address 147
+ match as-path 138
+ match community 36
+ set local-preference 100
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473
+!
+route-map AS46069-2-IMPORT permit 30
+ match ip address 148
+ match as-path 138
+ match community 32
+ set local-preference 75
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473 additive
+!
+route-map AS46069-2-IMPORT permit 40
+ match ip address 148
+ match as-path 138
+ match community 33
+ set local-preference 85
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473 additive
+!
+route-map AS46069-2-IMPORT permit 50
+ match ip address 146
+ match as-path 138
+ match community 34
+ set local-preference 95
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473 additive
+!
+route-map AS46069-2-IMPORT permit 60
+ match ip address 146
+ match as-path 138
+ set local-preference 100
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473 additive
+!
+route-map AS46069-EXPORT deny 10
+!
+route-map AS46069-IMPORT permit 10
+ match ip address 146
+ match as-path 138
+ match community 31
+ set local-preference 100
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473
+!
+route-map AS46069-IMPORT permit 20
+ match ip address 147
+ match as-path 138
+ match community 36
+ set local-preference 100
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473
+!
+route-map AS46069-IMPORT permit 30
+ match ip address 148
+ match as-path 138
+ match community 32
+ set local-preference 75
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473 additive
+!
+route-map AS46069-IMPORT permit 40
+ match ip address 148
+ match as-path 138
+ match community 33
+ set local-preference 85
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473 additive
+!
+route-map AS46069-IMPORT permit 50
+ match ip address 146
+ match as-path 138
+ match community 34
+ set local-preference 95
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473 additive
+!
+route-map AS46069-IMPORT permit 60
+ match ip address 146
+ match as-path 138
+ set local-preference 100
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473 additive
+!
+route-map AS64528-EXPORT deny 10
+!
+route-map AS64528-IMPORT permit 10
+ match ip address 145
+ match as-path 137
+ match community 31
+ set local-preference 100
+ set community 2764:61442 2764:65203 2764:65353 2764:65408
+!
+route-map AS64528-IMPORT permit 20
+ match ip address 145
+ match as-path 137
+ match community 32
+ set local-preference 75
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 additive
+!
+route-map AS64528-IMPORT permit 30
+ match ip address 145
+ match as-path 137
+ match community 33
+ set local-preference 85
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 additive
+!
+route-map AS64528-IMPORT permit 40
+ match ip address 145
+ match as-path 137
+ match community 34
+ set local-preference 95
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 additive
+!
+route-map AS64528-IMPORT permit 50
+ match ip address 145
+ match as-path 137
+ set local-preference 100
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 additive
+!
+route-map AS64574-2-EXPORT deny 10
+!
+route-map AS64574-2-IMPORT permit 10
+ match ip address 148
+ match as-path 137
+ match community 31
+ set local-preference 100
+ set community 2764:7 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473
+!
+route-map AS64574-2-IMPORT permit 20
+ match ip address 149
+ match as-path 137
+ match community 31
+ set local-preference 100
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473
+!
+route-map AS64574-2-IMPORT permit 30
+ match ip address 148
+ match as-path 137
+ match community 36
+ set local-preference 100
+ set community 2764:7 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473
+!
+route-map AS64574-2-IMPORT permit 40
+ match ip address 149
+ match as-path 137
+ match community 32
+ set local-preference 75
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473 additive
+!
+route-map AS64574-2-IMPORT permit 50
+ match ip address 149
+ match as-path 137
+ match community 33
+ set local-preference 85
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473 additive
+!
+route-map AS64574-2-IMPORT permit 60
+ match ip address 148
+ match as-path 137
+ match community 34
+ set local-preference 95
+ set community 2764:7 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473 additive
+!
+route-map AS64574-2-IMPORT permit 70
+ match ip address 149
+ match as-path 137
+ match community 34
+ set local-preference 95
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473 additive
+!
+route-map AS64574-2-IMPORT permit 80
+ match ip address 148
+ match as-path 137
+ set local-preference 100
+ set community 2764:7 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473 additive
+!
+route-map AS64574-2-IMPORT permit 90
+ match ip address 149
+ match as-path 137
+ set local-preference 100
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473 additive
+!
+route-map AS64574-EXPORT deny 10
+!
+route-map AS64574-IMPORT permit 10
+ match ip address 148
+ match as-path 137
+ match community 31
+ set local-preference 100
+ set community 2764:7 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473
+!
+route-map AS64574-IMPORT permit 20
+ match ip address 149
+ match as-path 137
+ match community 31
+ set local-preference 100
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473
+!
+route-map AS64574-IMPORT permit 30
+ match ip address 148
+ match as-path 137
+ match community 36
+ set local-preference 100
+ set community 2764:7 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473
+!
+route-map AS64574-IMPORT permit 40
+ match ip address 149
+ match as-path 137
+ match community 32
+ set local-preference 75
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473 additive
+!
+route-map AS64574-IMPORT permit 50
+ match ip address 149
+ match as-path 137
+ match community 33
+ set local-preference 85
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473 additive
+!
+route-map AS64574-IMPORT permit 60
+ match ip address 148
+ match as-path 137
+ match community 34
+ set local-preference 95
+ set community 2764:7 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473 additive
+!
+route-map AS64574-IMPORT permit 70
+ match ip address 149
+ match as-path 137
+ match community 34
+ set local-preference 95
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473 additive
+!
+route-map AS64574-IMPORT permit 80
+ match ip address 148
+ match as-path 137
+ set local-preference 100
+ set community 2764:7 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473 additive
+!
+route-map AS64574-IMPORT permit 90
+ match ip address 149
+ match as-path 137
+ set local-preference 100
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473 additive
+!
+route-map AS64586-EXPORT permit 10
+ match ip address 141
+ match community 35
+!
+route-map AS64586-IMPORT deny 10
+!
+route-map AS64588-EXPORT permit 10
+ match ip address 144
+ match community 35
+!
+route-map AS64588-IMPORT deny 10
+!
+route-map AS64590-EXPORT permit 10
+ match ip address 141
+ match community 35
+!
+route-map AS64590-IMPORT permit 10
+ match ip address 150
+ match as-path 138
+ match community 31
+ set local-preference 100
+ set community 2764:7 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473
+!
+route-map AS64590-IMPORT permit 20
+ match ip address 150
+ match as-path 138
+ match community 36
+ set local-preference 100
+ set community 2764:7 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473
+!
+route-map AS64590-IMPORT permit 30
+ match ip address 150
+ match as-path 138
+ match community 34
+ set local-preference 95
+ set community 2764:7 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473 additive
+!
+route-map AS64590-IMPORT permit 40
+ match ip address 150
+ match as-path 138
+ set local-preference 100
+ set community 2764:7 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473 additive
+!
+route-map AS64604-2-EXPORT permit 10
+ match ip address 141
+ match community 35
+!
+route-map AS64604-2-EXPORT permit 20
+ match ip address 141
+ match community 35
+!
+route-map AS64604-2-IMPORT permit 10
+ match ip address 149
+ match as-path 139
+ match community 31
+ set local-preference 100
+ set community 2764:7 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473
+!
+route-map AS64604-2-IMPORT permit 20
+ match ip address 149
+ match as-path 139
+ match community 36
+ set local-preference 100
+ set community 2764:7 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473
+!
+route-map AS64604-2-IMPORT permit 30
+ match ip address 149
+ match as-path 139
+ match community 34
+ set local-preference 95
+ set community 2764:7 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473 additive
+!
+route-map AS64604-2-IMPORT permit 40
+ match ip address 149
+ match as-path 139
+ set local-preference 100
+ set community 2764:7 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473 additive
+!
+route-map AS64604-3-EXPORT deny 10
+!
+route-map AS64604-3-IMPORT permit 10
+ match ip address 151
+ match as-path 138
+ match community 31
+ set local-preference 100
+ set community 2764:7 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473
+!
+route-map AS64604-3-IMPORT permit 20
+ match ip address 151
+ match as-path 138
+ match community 36
+ set local-preference 100
+ set community 2764:7 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473
+!
+route-map AS64604-3-IMPORT permit 30
+ match ip address 151
+ match as-path 138
+ match community 34
+ set local-preference 95
+ set community 2764:7 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473 additive
+!
+route-map AS64604-3-IMPORT permit 40
+ match ip address 151
+ match as-path 138
+ set local-preference 100
+ set community 2764:7 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473 additive
+!
+route-map AS64604-EXPORT deny 10
+!
+route-map AS64604-IMPORT permit 10
+ match ip address 149
+ match as-path 139
+ match community 31
+ set local-preference 100
+ set community 2764:7 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473
+!
+route-map AS64604-IMPORT permit 20
+ match ip address 149
+ match as-path 139
+ match community 36
+ set local-preference 100
+ set community 2764:7 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473
+!
+route-map AS64604-IMPORT permit 30
+ match ip address 149
+ match as-path 139
+ match community 34
+ set local-preference 95
+ set community 2764:7 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473 additive
+!
+route-map AS64604-IMPORT permit 40
+ match ip address 149
+ match as-path 139
+ set local-preference 100
+ set community 2764:7 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473 additive
+!
+route-map AS64965-EXPORT deny 10
+!
+route-map AS64965-IMPORT permit 10
+ match ip address 150
+ match as-path 140
+ match community 31
+ set local-preference 100
+ set community 2764:7 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473
+!
+route-map AS64965-IMPORT permit 20
+ match ip address 150
+ match as-path 140
+ match community 36
+ set local-preference 100
+ set community 2764:7 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473
+!
+route-map AS64965-IMPORT permit 30
+ match ip address 150
+ match as-path 140
+ match community 34
+ set local-preference 95
+ set community 2764:7 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473 additive
+!
+route-map AS64965-IMPORT permit 40
+ match ip address 150
+ match as-path 140
+ set local-preference 100
+ set community 2764:7 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473 additive
+!
+route-map AS9314-EXPORT permit 10
+ match ip address 136
+ match community 30
+!
+route-map AS9314-IMPORT permit 10
+ match ip address 137
+ match as-path 130
+ match community 31
+ set local-preference 100
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473
+!
+route-map AS9314-IMPORT permit 20
+ match ip address 137
+ match as-path 130
+ match community 32
+ set local-preference 75
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473 additive
+!
+route-map AS9314-IMPORT permit 30
+ match ip address 137
+ match as-path 130
+ match community 33
+ set local-preference 85
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473 additive
+!
+route-map AS9314-IMPORT permit 40
+ match ip address 137
+ match as-path 130
+ match community 34
+ set local-preference 95
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473 additive
+!
+route-map AS9314-IMPORT permit 50
+ match ip address 137
+ match as-path 130
+ set local-preference 100
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65473 additive
+!
+route-map BLACKHOLE deny 10
+!
+route-map STATIC-EXPORT permit 5
+ description iProvide RFC1918 address ranges
+ match ip address 126
+ set community 2764:61442 2764:65203 2764:65353 2764:65472 no-export
+!
+route-map STATIC-EXPORT permit 10
+ match ip address 130
+ set community 2764:7 2764:14 2764:61442 2764:65203 2764:65353 2764:65408 2764:65472
+!
+route-map STATIC-EXPORT permit 20
+ match ip address 131
+ set community 2764:7 2764:61442 2764:65203 2764:65353 2764:65408 2764:65472
+!
+route-map STATIC-EXPORT permit 30
+ match ip address 132
+ set community 2764:61442 2764:65203 2764:65353 2764:65408 2764:65472
+!
+route-map STATIC-EXPORT permit 40
+ match ip address 133
+ set community 2764:61442 2764:65203 2764:65353 2764:65407 2764:65472
+!
+route-map STATIC-EXPORT permit 50
+ match ip address 134
+ set community 2764:61442 2764:65203 2764:65353 2764:65407 2764:65472 no-export
+!
+route-map STATIC-EXPORT permit 60
+ match ip address 135
+ set community 2764:61442 2764:65203 2764:65353 2764:65407 2764:65472 no-export
+!
+snmp-server community CCASQNET RW 99
+snmp-server community ILMI view *ilmi RW 66
+snmp-server community ccanet RO 95
+snmp-server trap-source Loopback0
+snmp-server packetsize 8192
+snmp-server location 180 - 188 Burnley St, Richmond 3121
+snmp-server contact AAPT Support 1300731111
+snmp-server enable traps snmp
+snmp-server enable traps config
+snmp-server enable traps entity
+snmp-server enable traps bgp
+snmp-server host 203.63.11.27 version 2c ccatrap 
+snmp-server tftp-server-list 96
+!
+tftp-server bootflash:c6msfc2-psv-mz.121-8b.E15.bin
+tftp-server bootflash:c6msfc2-boot-mz.121-8b.E15.bin
+tacacs-server host 203.63.89.44 key 5P!rOlY^9t
+tacacs-server host 210.8.164.176 key 5P!rOlY^9t
+banner motd ^C
+
+Access to this system is restricted solely to employees of AAPT Pty Ltd and authorised service personnel.
+
+WARNING:  It is a criminal offence to:
+i. Obtain access to data without authority 
+   (Penalty 2 years imprisonment)                     
+ii Damage, delete, alter or insert data without authority 
+   (Penalty 10 years imprisonment)
+
+^C
+!
+line con 0
+ password 7 0330580A0F0E35485A
+ login authentication console-access
+ stopbits 1
+line vty 0 4
+ access-class 98 in
+ exec-timeout 60 0
+ password 7 122D06161B0A18003E
+ login authentication vty-access
+!
+ntp update-calendar
+ntp server 192.189.54.17
+ntp server 192.189.54.33
+end

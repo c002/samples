@@ -1,0 +1,181 @@
+dnl Process this file with autoconf to produce a configure script.
+AC_INIT(include/common.h)
+
+dnl Checks for programs.
+AC_PROG_CC
+
+# If we're building in the source directory, error.
+if test "${srcdir}" = "." ; then
+  AC_MSG_ERROR([Building in the source directory is not supported in this release. See http://gcc.gnu.org/install/configure.html for more details.])
+fi
+
+#AC_LIBTOOL_DLOPEN
+#AC_PROG_LIBTOOL
+AC_ARG_WITH(libs,
+	    [  --with-libs=LIBS                use LIBS as link time arguments to ld.],
+	        [LIBS=$with_libs; export LIBS])
+
+AC_ARG_ENABLE(silent-libtool,
+	      [  --enable-silent-libtool         Pass --silent to libtool.],
+	              LIBTOOLFLAGS=--silent)
+AC_SUBST(LIBTOOLFLAGS)
+
+#AC_DEFUN([AM_PROG_INSTALL_SH],
+#[AC_REQUIRE([AM_AUX_DIR_EXPAND])dnl
+# install_sh=${install_sh-"\$(SHELL) $am_aux_dir/install-sh"}
+# AC_SUBST(install_sh)])
+
+AC_ARG_WITH(trace,
+            [  --with-trace            use TRACE for debugging threads.],
+            [TRACE=-DTRACE; export TRACE])
+AC_SUBST(TRACE)
+
+#AC_ARG_WITH(snmp,
+#	    [  --with-snmp=SNMP            use SNMP as path to net-snmp.],
+#	    [SNMP=$with_snmp; export SNMP])
+#AC_SUBST(SNMP)
+
+AC_ARG_WITH(snmp,
+	    [  --with-snmp=SNMP    use SNMP as path to net-snmp.],
+	    [SNMP=$with_snmp; export SNMP])
+AC_SUBST(SNMP)
+
+test -f $with_snmp/lib/libnetsnmp.a -o -f $with_snmp/lib/libnetsnmp.so && SNMP_LIBDIR=$with_snmp/lib
+if test x"$SNMP_LIBDIR" = x""; then
+#  AC_MSG_ERROR( [Cannot find netsnmp lib, needed to build this package.] )
+  AC_MSG_ERROR( [Use --with-snmp= to give path to net-snmp lib.] )
+else
+  CFLAGS="$CFLAGS -I${SNMP}/include" 
+  LDFLAGS="$LDFLAGS -L${SNMP}/lib" 
+fi
+
+dnl Net/UCD-SNMP includes v3 support and insists on crypto unless 
+dnl compiled --without-openssl
+SNMP_SSL=no
+AC_MSG_CHECKING([if Net-SNMP needs crypto support])
+AC_TRY_COMPILE([#include <net-snmp/net-snmp-config.h>], [exit(USE_OPENSSL != 1);],
+  [  AC_MSG_RESULT(yes)
+     SNMP_SSL=yes ],
+  AC_MSG_RESULT(no))
+
+if test "$SNMP_SSL" = "yes"; then
+  LDFLAGS="-L/usr/local/ssl/lib $LDFLAGS"
+#  LIBS="$LIBS -lcrypto"
+#  SSL=-lssl; export SSL
+  AC_CHECK_LIB(crypto, CRYPTO_free,[],[AC_MSG_ERROR(libcrypto not found!)])
+fi
+
+AC_SUBST(SSL)
+
+#case $host_alias in
+case ac_cv_host_alias in
+*solaris*)
+    AC_DEFINE(HAVE_LONG_LONG_SCANF, 1, scanf supports long long)
+    CFLAGS="$CFLAGS -D_POSIX_PTHREAD_SEMANTICS";;
+*linux*)
+    AC_DEFINE(HAVE_LONG_LONG_SCANF, 1, scanf supports long long);;
+*freebsd*)
+    LIBS="$LIBS -pthread"
+    AC_DEFINE(HAVE_LIBPTHREAD, 1);;
+esac
+
+#AC_MSG_ERROR([target_os= ${target_os}])
+
+#AC_MSG_CHECKING([target ${target}])
+
+if test "x$prefix" = "xNONE"; then
+	  prefix=/usr/local
+fi
+
+# Search for additional paths that are suitable to include in the compilation
+for i in $prefix /usr/pkg /sw /opt /opt/local /usr/local; do
+    AC_MSG_CHECKING([for $i/include include directory])
+    if test -d $i/include; then
+        AC_MSG_RESULT([yes])
+        CPPFLAGS="$CPPFLAGS -I$i/include/"
+        CFLAGS="$CFLAGS -I$i/include/"
+    else
+        AC_MSG_RESULT([no])
+    fi
+        AC_MSG_CHECKING([for $i/lib library directory])
+    if test -d $i/lib; then
+        AC_MSG_RESULT([yes])
+        LDFLAGS="$LDFLAGS -L$i/lib/ -R$i/lib/"
+    else
+        AC_MSG_RESULT([no])
+    fi
+done
+AC_SEARCH_LIBS( [nanosleep], [rt],      [], 
+	       [AC_MSG_ERROR( [Cannot find a lib for nanosleep function, 
+		needed to build this package.] )] )
+
+#AC_SEARCH_LIBS( [snmp_sess_open],[lib/netsnmp] , [],
+#	        [AC_MSG_ERROR( [Cannot find netsnmp lib, 
+#				needed to build this package.] )] )
+
+# On some platforms (Irix) libnsl and libsocket should not be used.
+AC_CHECK_FUNC(gethostbyname, AC_DEFINE(HAVE_GETHOSTBYNAME),
+        AC_CHECK_LIB(nsl, gethostbyname, AC_DEFINE(HAVE_GETHOSTBYNAME)
+	        LIBS="${LIBS} -lnsl"))
+
+# SCO Unixware 7.1.4 finds gethostbyname() in -lsocket
+AC_CHECK_FUNC(gethostbyname, AC_DEFINE(HAVE_GETHOSTBYNAME),
+        AC_CHECK_LIB(socket, gethostbyname, AC_DEFINE(HAVE_GETHOSTBYNAME)
+	        LIBS="${LIBS} -lsocket"))
+
+AC_CHECK_FUNC(getservbyname, AC_DEFINE(HAVE_GETSERVBYNAME),
+        AC_CHECK_LIB(socket, getservbyname, AC_DEFINE(HAVE_GETSERVBYNAME)
+	        LIBS="${LIBS} -lsocket"))
+
+dnl Checks for libraries.
+#dnl Replace `main' with a function in -lcrypto:
+#AC_CHECK_LIB(crypto, EVP_DigestInit)
+dnl Replace `main' with a function in -ldl:
+AC_CHECK_LIB(dl, main)
+dnl Replace `main' with a function in -lhash:
+AC_CHECK_LIB(hash, main)
+dnl Replace `main' with a function in -liniparser:
+AC_CHECK_LIB(iniparser, main)
+dnl Replace `main' with a function in -lkstat:
+AC_CHECK_LIB(kstat, main)
+dnl Replace `main' with a function in -lm:
+AC_CHECK_LIB(m, main)
+dnl Replace `main' with a function in -lmemory:
+AC_CHECK_LIB(memory, main)
+#dnl Replace `main' with a function in -lnetsnmp:
+#AC_CHECK_LIB(netsnmp, main)
+dnl Replace `main' with a function in -lnsl:
+AC_CHECK_LIB(nsl, main)
+dnl Replace `main' with a function in -lpthread:
+AC_CHECK_LIB(pthread, main)
+dnl Replace `main' with a function in -lrt:
+AC_CHECK_LIB(rt, main)
+dnl Replace `main' with a function in -lsearch:
+AC_CHECK_LIB(search, main)
+dnl Replace `main' with a function in -lsnmpmod:
+AC_CHECK_LIB(snmpmod, main)
+dnl Replace `main' with a function in -lsocket:
+AC_CHECK_LIB(socket, main)
+dnl Replace `main' with a function in -lutil:
+AC_CHECK_LIB(util, main)
+
+dnl Checks for header files.
+AC_HEADER_STDC
+AC_CHECK_HEADERS(limits.h malloc.h unistd.h)
+
+dnl Checks for typedefs, structures, and compiler characteristics.
+AC_C_CONST
+AC_C_INLINE
+AC_TYPE_MODE_T
+AC_TYPE_SIZE_T
+AC_HEADER_TIME
+AC_STRUCT_TM
+
+dnl Checks for library functions.
+AC_FUNC_MEMCMP
+AC_TYPE_SIGNAL
+AC_FUNC_STRFTIME
+AC_FUNC_VPRINTF
+AC_CHECK_FUNCS(gethostname gettimeofday mkdir regcomp strdup strerror strtol)
+
+AC_OUTPUT(src/GNUmakefile lib/hashtable/GNUmakefile test/GNUmakefile iniparser-2.15/GNUmakefile modules/GNUmakefile modlib/GNUmakefile lib/GNUmakefile etc/GNUmakefile iniparser-2.15/test/GNUmakefile GNUmakefile)
