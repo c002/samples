@@ -1,0 +1,38 @@
+mysql "tracking"
+
+tables:
+
+CREATE TABLE `locations` (
+  `id` int(32) NOT NULL AUTO_INCREMENT,
+  `deviceid` varchar(32) NOT NULL,
+  `timestamp` bigint(20) NOT NULL,
+  `longitude` float DEFAULT NULL,
+  `lattitude` float DEFAULT NULL,
+  `altitude` float DEFAULT NULL,
+  `accuracy` float DEFAULT NULL,
+  `provider` varchar(32) DEFAULT NULL,
+  `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1;
+
+CREATE TABLE `devices` (
+  `iddevices` int(16) NOT NULL AUTO_INCREMENT,
+  `deviceid` varchar(45) DEFAULT NULL,
+  `linenumber` varchar(16) DEFAULT NULL,
+  `label` varchar(32) DEFAULT NULL,
+  `gcmid` varchar(256) DEFAULT NULL,
+  `flags` int(11) DEFAULT NULL,
+  `updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `active` tinyint(1) DEFAULT NULL,
+  `subscriberid` varchar(32) DEFAULT NULL,
+  `opname` varchar(32) DEFAULT NULL,
+  `countryiso` varchar(8) DEFAULT NULL,
+  PRIMARY KEY (`iddevices`)
+) ENGINE=InnoDB AUTO_INCREMENT=33 DEFAULT CHARSET=latin1;
+
+message
+    int messageflag         /* 0x01 Server Status Messages */
+    string message          /* 0x02 Temperature */
+                            /* 0x04 Network Status change */
+     
+                                                      
