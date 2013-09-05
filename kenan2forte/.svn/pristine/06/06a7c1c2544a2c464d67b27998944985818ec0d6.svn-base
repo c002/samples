@@ -1,0 +1,29 @@
+Basically, it works like this:
+
+Lives in nara:/opt/servicenet/kenan2forte/
+
+/opt/servicenet/kenan2forte/k2frun.sh
+./k2frun.sh [--help | --filemode | --dbmode ]
+
+Where k2frun.sh is a shell wrapper for kenan2forte.jar which is used like:
+
+/opt/servicenet/kenan2forte/k2frun.sh --help
+Options available on kenan2forte.jar:
+kenan2forte [--insert] [--debug=n] --fromdate=yyyymmdd --todate=yyyymmdd | --import=importfile [--export=exportfile]
+        --insert   , Insert data into Forte, otherwise only exercise mappings.
+        --fromdate , Startdate for records to select.
+        --todate   , Enddate for records to select.
+        --import   , Use data from file instead, Format as per docco.
+        --export   , Export data source to txt file. Format as per docco.
+        --debug    , Create noisy output. For mapping debugging use 1 .
+
+There is a config file with the DB connections in etc/application.properties
+And a log file in /var/log/kenan2forte/log
+
+Doing a manual run for while with files is prolly not a bad way to get any bugs out.
+
+Code is in CVS: nara: $CVSROOT/dev/internal/kenan2forte
+where $CVSROOT=/import/cvsroot
+
+You should have a look at the code, its all quite straight forward and be a good one
+to get your eclipse IDE working and setup.

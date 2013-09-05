@@ -1,0 +1,17 @@
+forte cron entry something like:
+35 05  * * *  /opt/servicenet/kenan2forte/k2frun.sh 2>&1 | /opt/local/bin/mail_non_empty.pl -s "Kenan to Forte daily" dev@connect.com.au
+
+---------------------------
+Tables to populate:
+
+desc cust.vforge_client
+desc cust.vforge_address
+desc vforge_contact
+desc vforge_company
+desc cust_class.master_group
+desc master_group
+desc customerdetails
+
+
+See file "kenan 2 Forte data mapping.xlsx"
+
