@@ -35,8 +35,7 @@ public class JsonServlet extends  HttpServlet {
 
    private int UPDATE_INTERVAL=60000;		// 60secs
    private enum GAMESTATE {NONE, NEW, WAITJOIN, MRXTURN, PLAYERTURN, END};
-   private String myApiKey="AIzaSyDJgf-lQ6x0rx72lONwz0HckC4dwnaZ4Os";  // api test1
-   //private String myApiKey="AIzaSyDFaJpQG-iXHBcSD5xgRBNNOEU0UmS8RFM";   // api test 2 proj=899559802508
+   private String myApiKey=null;
    
 		   //private static Database tracking_db=null;
    private static Persistence persist;
