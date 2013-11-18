@@ -1,0 +1,6 @@
+    select distinct c.customer,c.link_id,i.sub
+    from bta4.customer_routes c, bta4.customer_ip_address i
+    where c.start_time < '%s'
+    and c.end_time > '%s'
+    and c.ip_id = i.ip_id
+/

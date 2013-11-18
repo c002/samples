@@ -1,0 +1,31 @@
+#!/bin/sh
+##
+## $Source: /usr/local/cvsroot/netflow/netflow/flowd/startup,v $
+##
+
+FLOWD="/opt/meter/sbin/flowd"
+
+case "$1" in
+'start')
+        if [ -x $FLOWD -a -d /var/log/netflow/trace ]; then
+                echo "Starting flowd... \c"
+                $FLOWD -t 24 -f 300  -r 20000 -c > /dev/null &
+                echo done.
+        else
+                echo "/etc/init.d/flowd error: $FLOWD not found."
+        fi
+        ;;
+
+'restart')
+        ;;
+
+'stop')
+        ;;
+
+*)
+        echo "Usage: $0 { start | stop | restart }"
+        ;;
+esac
+
+exit 0
+

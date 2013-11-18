@@ -1,0 +1,198 @@
+/***
+ *
+ * netflow/bgp debug reader  
+ * Takes data collected by 'flowdump' and outputs in text readable form
+ *
+ * $Id: flowread.c.org,v 1.1.1.1 2004/05/29 09:06:41 harry Exp $
+ * $Source: /usr/local/cvsroot/netflow/netflow/flowd/flowread.c.org,v $
+ *
+ ***/
+
+#include <stdio.h>
+#include <time.h>
+#include <flowd.h>
+
+char *ip2str(int ip, char *ipstr);
+char *com2str(int community, char *comstr);
+void usage();
+
+char bi[]="<->";		/* for bi-rectional flows */
+char uni[]="->";		/* For uni-directional flows */
+
+main(int argc, char *argv[])
+{
+
+    FILE *f1;
+    int n,i;
+    tracedetails trace;
+    char sip[32], dip[32], t[64], *dir, proto[32];
+    char dstport[64], srcport[64], comstr[256], cstr[32];
+    int comlen;
+    struct tm *tms;
+    header head;
+    char opstr[5]={0,0,0,0,0};
+    int bgp_communities=0, flow_size;
+
+    if (argc!=2) {
+	usage();
+	exit(-1);
+    }
+
+    if ( !(f1=fopen(argv[1],"r")) ) {
+	fprintf(stderr, "Error opening file %s\n",argv[1]);
+	exit(-1);
+    }
+
+/* grab header */
+    if (! (n=fread(&head, sizeof(head), 1, f1))) {
+	fprintf(stderr,"Error reading data file.\n");
+	exit(-1);
+    }
+
+    if (head.sig1!=SIG1 || head.sig2!=SIG2 || head.sig3!=SIG3) {
+	fprintf(stderr,"Error reading data file. Unrecognized file type.\n");
+	exit(-1);
+    }
+	
+    for (i=0;i<4;i++) {
+	if (head.options[i]!='\0') 
+		switch (head.options[i]) {
+		    case 'c': bgp_communities=1;
+			      break;
+		}
+		opstr[i]=head.options[i];
+    }
+
+    printf("Version=[%d] , Options=[%s]\n",head.version, opstr);
+
+    if (bgp_communities) {
+        flow_size=sizeof(trace);
+    } else
+        flow_size=46;
+
+    while ( (n=fread(&trace, flow_size, 1, f1))) {
+        ip2str(trace.srcIP,sip); 
+  	ip2str(trace.dstIP,dip);
+	comstr[0]='\0';
+
+	if (bgp_communities) {
+	    comlen=0;
+	    if (trace.communities_len>0) {
+	        comlen = trace.communities_len>4? 4 : trace.communities_len;
+	        if (comlen>0) {
+	            com2str(trace.community1, cstr);
+		    strcat(comstr, cstr);	
+	        }
+	        if (comlen>1) {
+	            com2str(trace.community2, cstr);
+		    strcat(comstr, ",");	
+		    strcat(comstr, cstr);	
+	        }
+	        if (comlen>2) {
+	            com2str(trace.community3, cstr);
+		    strcat(comstr, ",");	
+		    strcat(comstr, cstr);	
+	        }
+	        if (comlen>3) {
+	            com2str(trace.community4, cstr);
+		    strcat(comstr, ",");	
+		    strcat(comstr, cstr);	
+	        }
+	    }
+	}
+
+
+
+	if (trace.bi==0) 
+	    dir=uni;
+	else
+	    dir=bi;
+
+
+	switch (trace.protocol) {
+	  case 1: { strcpy(proto,"icmp");
+		    break;
+		  }
+	  case 2: { strcpy(proto,"igmp");
+		    break;
+		  }
+	  case 6: { strcpy(proto,"tcp");
+		    break;
+		  }
+	  case 17: { strcpy(proto,"udp");
+		     break;
+		   }
+	  case 47: { strcpy(proto,"gre");
+		     break;
+		   }
+	  default: sprintf(proto,"%d",trace.protocol);
+	}
+
+        if (trace.protocol==1) {
+            sprintf(proto,"icmp=0x%x",trace.dstport);
+            strcpy(srcport,"");
+            strcpy(dstport,"");
+        } else {
+            sprintf(srcport,":%d",trace.srcport);
+            sprintf(dstport,":%d",trace.dstport);
+	}
+
+	tms = localtime(&trace.timestamp);
+	strftime(t,sizeof(t)-1,"%d-%b-%Y %H:%M:%S",tms);
+
+	if (bgp_communities) 
+            printf ("%s: %s%s (AS%d %s) [%d/%d] %s %s%s (AS%d) [%d/%d] %s [%d->%d] %dx\n",
+	        t,
+	        sip, srcport, trace.srcAS, comstr, trace.packets_from, trace.bytes_from, dir,
+	        dip, dstport, trace.dstAS, trace.packets_to, trace.bytes_to,
+	        proto, trace.srcIDB, trace.dstIDB, trace.flows);
+	else
+       	    printf ("%s: %s%s (AS%d) [%d/%d] %s %s%s (AS%d) [%d/%d] %s [%d->%d] %dx\n",
+	        t,
+	        sip, srcport, trace.srcAS, trace.packets_from, trace.bytes_from, dir,
+	        dip, dstport, trace.dstAS, trace.packets_to, trace.bytes_to,
+	        proto, trace.srcIDB, trace.dstIDB, trace.flows);
+    }
+
+    fclose(f1);
+}
+
+/***
+ * Convert int ip address to dotquad format
+ ***/
+char *
+ip2str(int ip, char *ipstr)
+{
+
+    register int p1, p2, p3, p4;
+   
+    p1=(ip & 0xFF000000) >> 24;
+    p2=(ip & 0xFF0000) >> 16;
+    p3=(ip & 0xFF00) >> 8;
+    p4=(ip & 0xFF);
+
+    sprintf(ipstr,"%d.%d.%d.%d",p1,p2,p3,p4);
+    return (ipstr);
+}
+
+void
+usage()
+{
+
+    printf("reader filename\n");
+    return;
+
+}
+
+/***
+ * Take a community int and format into typical bgp community style
+ ***/
+char *com2str(int community, char *comstr)
+{
+    int comm1, comm2;
+
+    comm1=(0xFFFF0000 & community) >> 16;
+    comm2=(0xFFFF & community); 
+    sprintf(comstr,"%d:%d",comm1, comm2);
+    return comstr;
+}

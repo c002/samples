@@ -1,0 +1,6 @@
+Edit the Makefile to change the installation directories.
+
+Probably only works/compiles on Solaris.
+
+make all
+make install

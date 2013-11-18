@@ -1,0 +1,61 @@
+------
+A quick summary.. 
+
+To run the BGP peer program...
+
+./bgp -d 1 -a 2764 mel-bgp1
+
+or (I think mel-bgp1 was left configured for AS4174)
+
+./bgp -d 1 -a 4174 mel-bgp1
+
+
+-a is the AS number of this peer.. You don't have to worry about the remote AS.
+
+-d is debug..
+
+-l is the name of the local hostname you would like to use, for multihomed boxes.
+
+the argument at the end is the remote peer name.
+
+
+------
+To run the test program..
+
+./bgptest
+
+LUP 128.250.0.1 32
+
+and see what route it matches.
+
+--------
+
+To use the API.. #include "bgp_api.h"
+(Note, ip2cidr is required bgp bgp_api)
+
+call bgp_db_init() once.
+
+call bgp_lookup_route(&prefix, &length) when you want to find a route.
+
+A pointer to an attribute structure will be returned..  Look in
+bgp_api.h for the various members.. The most interesting for the
+moment will be an array of communities, which are just 32bit numbers.
+
+----
+
+Other notes..
+
+Since all the BGP variables are derived from strict packet parameter
+sizes, I use strict types for sizes (such as unsigned char, when I
+mean unsigned char).. Usually ppl just use int for everything, except
+I'm a type nazi when packing bits into protocols.  Watch for types.
+
+One other problem is Solaris 2.5.1 makes a big mess of uin32_t
+definitions (they should be unsinged int, such as in Solaris 2.6 - in
+2.5.1 they are unsigned longs - I hate Sun).
+
+Enjoy.
+
+
+
+

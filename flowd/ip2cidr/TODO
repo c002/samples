@@ -1,0 +1,7 @@
+- Complete cidr_expireall() and cidr_purge()
+- Extend lock breaker to break locks for readers that get locked out.
+- Verify that the writer lock breaker is satisfactory
+- Add code to pickup `struct mpmstate' sequence number changes and force
+  a segmentation violation.
+- Add a `corrupted' tag to the `struct mpmstate' when memory corruption is
+  detected from multiple writers screwing around

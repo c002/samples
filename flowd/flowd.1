@@ -1,0 +1,179 @@
+.\" @(#) $Header: /usr/local/cvsroot/netflow/netflow/flowd/flowd.1,v 1.1.1.1 2004/05/29 09:06:41 harry Exp $
+.\"
+.TH FLOWD 1  "13 Mar 2001"
+.SH NAME
+flowd \- dump Cisco netflow data to files
+.SH SYNOPSIS
+.na
+.B flowd
+[
+.B \-chxn
+] [
+.B \-t
+.I hours
+] [
+.B \-f
+.I flush
+] [
+.B \-r
+.I ratelimit
+] 
+.br
+.ti +8
+[
+.B \-p
+.I port
+] [
+.B \-d
+.I dumpdir
+]
+.br
+.ad
+.SH DESCRIPTION
+.LP
+\fIflowd\fP dumps flows from a Cisco netflow feed to a cyclic series of files
+.I flowd.
+.LP
+Run
+.I flowd
+as root if 
+.I \-c 
+is given since it will need to attach to the BGP shared memory segment
+created by the bgp process.
+.SH OPTIONS
+.TP
+.B \-h
+Help. Show command usage
+.TP
+.B \-x
+Don't fork and run as foreground process. The default is to run as daemon
+.TP
+.B \-n
+Drop flows going to interface index 0.  These are flows of packets that have been
+dropped by the router due to its rate limiting policy. Usually as a result of a DoS
+This will also prevent huge trace files.
+.TP
+.B \-p port
+The UDP port to listen on for netflow packets. The default is 9992
+.TP
+.B \-c
+Dump BGP communities information also (4 max). This increases the data per flow
+from 46 bytes to 64 bytes.
+.TP
+.B \-t Hours
+The number of hours of history to keep. Data files will be recycled within this period.
+.TP
+.B \-f Flush
+The number of seconds to accumulate flows in memory, after which time these are flushed
+to the next data file. One good reason to flush data often, is that memory consumption
+can be an issue. You don't want this to get into a swap situation as flow collection
+may suffer.
+.TP
+.B \-d Dumpdir
+The directory where the data files are to be written. The default is /var/log/netflow/trace
+.TP
+.B \-r rate
+Rate limiting is provided to give some protection against DOS attacks and the make the
+maximum file size somewhat predictable. (64 bytes per flow with BGP communities,
+and 46 bytes without). When the rate limit is breached, netflow packets are dropped.
+This is based on a per second bases.  So within the second some but not all data will
+be lost. 
+.br
+
+To keep 24Hrs of data at a sustained flowrate of 10,000 flows/sec at 64 byte flow
+records would require approximately 55 Gbytes.
+.br
+
+Identical flows are combined by adding the octets to and from and incrementing 
+the flowcount indicator (See output Format). Flows are also tested for bi-directionality
+and combined into one. This attempts to save space.
+
+A log 
+.I flowd.log
+is written to the data directory containing various diagnostics. 
+
+.SH OUTPUT FORMAT
+
+The output is a set of binary data with the following C-structures.
+.br
+
+Firstly a small header is written
+.br
+.nf
+
+typedef struct
+{
+    char  sig1;                    /* File signature 'F' */
+    char  sig2;                    /* File signature 'O' */
+    char  sig3;                    /* File signature 'O' */
+    unsigned char  version;        /* 10 = 1.0, 44=4.4,  200=20.0  */
+    char  options[4];              /* options affecting size of struct */
+} header;
+
+This is followed by the flowdata structures as:
+
+typedef struct
+{
+    time_t    timestamp;   /* From unix_secs in the netflow header */
+    ulong_t   srcIP;       /* Source IP address */
+    ulong_t   dstIP;       /* Destination IP address */
+    ulong_t   packets_to;  /* Number of packets in the flow */
+    ulong_t   packets_from;/* Number of packets in the flow */
+    ulong_t   bytes_to;    /* Number of bytes in the flow */
+    ulong_t   bytes_from;  /* Number of bytes in the flow */
+    ushort_t  srcIDB;      /* Source interface */
+    ushort_t  dstIDB;      /* Destination interface */
+    ushort_t  srcport;     /* Source port */
+    ushort_t  dstport;     /* Destination port */
+    ushort_t  protocol;    /* Protocol number */
+    ushort_t  srcAS;       /* Peer AS of source address */
+    ushort_t  dstAS;       /* Peer AS of destination address */
+    ushort_t  bi;          /* 1=bi-directional , 0=Uni-directional */
+    ushort_t  flows;       /* Number of flows for this one */
+                           /* size = 46 */
+    ushort_t  communities_len;
+    uint32_t  community1;   
+    uint32_t  community2;   
+    uint32_t  community3;   
+    uint32_t  community4;   
+                           /* size=64 */
+} tracedetails;
+
+If no BGP communities are being collected, the first 46 bytes only are used.
+.br
+
+.fi
+
+.SH SIGNALS
+The 
+.I SIGUSR1 
+signal will immediatly flush to the next trace file.
+The 
+.I SIGUSR2 
+signal toggles debug on/off. This will create a file "debug.0"
+that is similar to the trace files but outputs the flows without tallying
+duplicates and reverse flows.
+
+.SH EXAMPLES
+.LP
+To store 24 hours of history with data being saved every 5 minutes with BGP
+communities.
+.RS
+.br
+
+.nf
+\fBflowd -t 24 -f 300 -c \fP
+.fi
+.RE
+.SH "SEE ALSO"
+.I flowread(1)
+.SH AUTHORS
+Harry Raaymakers
+.br
+Jim Crumpler ,bgp API and ip2cidr lib
+.br
+Eric Sven Ristad and Peter N. Yianilos, libpa library
+
+.br
+.SH BUGS
+Please send bug reports to harryr@connect.com.au

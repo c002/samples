@@ -1,0 +1,96 @@
+.\" @(#) $Header: /usr/local/cvsroot/netflow/netflow/flowd/flowread.1,v 1.1.1.1 2004/05/29 09:06:41 harry Exp $
+.\"
+.TH FLOWREAD 1  "13 Mar 2001"
+.SH NAME
+flowread \- read Cisco netflow data files collected by flowd
+.SH SYNOPSIS
+.na
+.B flowread
+.I inputfile
+.br
+.ad
+.SH DESCRIPTION
+.LP
+\fIflowread\fP reads flows from a Cisco netflow data file as created by
+.I flowd. 
+These files may or may not contain BGP community data. This
+is handled automatically by looking at the data file header for options
+that
+.I flowd(1) 
+was invoked with.
+.br
+
+For ICMP flows, the ICMP type and Code are printed also instead of
+the port numbers.
+.LP
+To run
+.I flowread filename
+.br
+and you probably want to redirect stdout or pipe it.
+.SH OPTIONS
+.TP
+None
+.br
+
+.SH OUTPUT FORMAT
+
+The output is a text representation of the data structure described 
+in the 
+.I flowd(1)
+manpage.
+.br
+
+The following is a flow seen 8 times of an 
+ICMP echo request.
+9 Packets and 756 bytes were sent by 
+128.11.17.223 
+to destination 
+210.8.219.54. This Source address was routed via
+AS4648.  
+The flow went from router interface index 11 to 19
+The flow is unidirectional so 0 packets and bytes were send by 210.8.219.54
+.br
+
+.nf
+.I 14-Mar-2001 16:19:14: 128.11.17.223 (AS4648 2764:65412,2764:65480) [9/756] 
+.I -> 210.8.219.54 (AS0) [0/0] icmp=0x800 [11->19] 8x
+.fi
+.br
+
+The following is a tcp flow from Source address and port 63.241.16.56:80 going to
+Destination address and port 203.63.8.2:2973
+.br
+
+.nf
+.I 14-Mar-2001 16:19:14: 63.241.16.56:80 (AS4648 2764:65412,2764:65480) [5/828] 
+.I -> 203.63.8.2:2973 (AS0) [0/0] tcp [11->21] 1x
+.fi
+.br
+
+This flow was seen both ways (<->). 205.188.248.89 send 3 packets of 128 bytes to 210.10.48.147 which
+in turn sent 5 packets of 216 bytes. The flow was observed 2 times in any direction. Note that the
+flowcount gets incremented each time a flow is seen or its reverse is seen. 
+.br
+
+.nf
+.I 15-Mar-2001 12:04:19: 205.188.248.89:80 (AS4648 2764:65412,2764:65480) [3/128] 
+.I <-> 210.10.48.147:2048 (AS0) [5/216] tcp [11->19] 2x
+
+.SH EXAMPLES
+.LP
+To produce a text dump of the binary data file
+.RS
+.br
+
+.nf
+\fBflowread trace.0 \fP
+.fi
+.RE
+.SH "SEE ALSO"
+.I flowd(1)
+.SH AUTHORS
+Harry Raaymakers
+.br
+harryr@connect.com.au
+.SH BUGS
+Please send bug reports to harryr@connect.com.au

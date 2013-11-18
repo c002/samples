@@ -1,0 +1,268 @@
+Content-type: text/html
+
+<HTML><HEAD><TITLE>Manpage of FLOWD</TITLE>
+</HEAD><BODY>
+<H1>FLOWD</H1>
+Section: User Commands  (1)<BR>Updated: 13 Mar 2001<BR><A HREF="#index">Index</A>
+<A HREF="http://localhost/cgi-bin/man/man2html">Return to Main Contents</A><HR>
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>NAME</H2>
+
+flowd - dump Cisco netflow data to files
+<A NAME="lbAC">&nbsp;</A>
+<H2>SYNOPSIS</H2>
+
+
+<B>flowd</B>
+
+[
+<B>-chx</B>
+
+] [
+<B>-t</B>
+
+<I>hours</I>
+
+] [
+<B>-f</B>
+
+<I>flush</I>
+
+] [
+<B>-r</B>
+
+<I>ratelimit</I>
+
+] 
+<BR>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+[
+<B>-p</B>
+
+<I>port</I>
+
+] [
+<B>-d</B>
+
+<I>dumpdir</I>
+
+]
+<BR>
+
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>DESCRIPTION</H2>
+
+<P>
+
+<I>flowd</I> dumps flows from a Cisco netflow feed to a cyclic series of files
+<I>flowd.</I>
+
+<P>
+
+Run
+<I>flowd</I>
+
+as root if 
+<I>-c </I>
+
+is given since it will need to attach to the BGP shared memory segment
+created by the bgp process.
+<A NAME="lbAE">&nbsp;</A>
+<H2>OPTIONS</H2>
+
+<DL COMPACT>
+<DT><B>-h</B>
+
+<DD>
+Help. Show command usage
+<DT><B>-x</B>
+
+<DD>
+Don't fork and run as foreground process. The default is to run as daemon
+<DT><B>-p port</B>
+
+<DD>
+The UDP port to listen on for netflow packets. The default is 9992
+<DT><B>-c</B>
+
+<DD>
+Dump BGP communities information also (4 max). This increases the data per flow
+from 46 bytes to 64 bytes.
+<DT><B>-t Hours</B>
+
+<DD>
+The number of hours of history to keep. Data files will be recycled within this period.
+<DT><B>-f Flush</B>
+
+<DD>
+The number of seconds to accumulate flows in memory, after which time these are flushed
+to the next data file. One good reason to flush data often, is that memory consumption
+can be an issue. You don't want this to get into a swap situation as flow collection
+may suffer.
+<DT><B>-d Dumpdir</B>
+
+<DD>
+The directory where the data files are to be written. The default is /var/log/netflow/trace
+<DT><B>-r rate</B>
+
+<DD>
+Rate limiting is provided to give some protection against DOS attacks and the make the
+maximum file size somewhat predictable. (64 bytes per flow with BGP communities,
+and 46 bytes without). When the rate limit is breached, netflow packets are dropped.
+This is based on a per second bases.  So within the second some but not all data will
+be lost. 
+<BR>
+
+<P>
+To keep 24Hrs of data at a sustained flowrate of 10,000 flows/sec at 64 byte flow
+records would require approximately 55 Gbytes.
+<BR>
+
+<P>
+Identical flows are combined by adding the octets to and from and incrementing 
+the flowcount indicator (See output Format). Flows are also tested for bi-directionality
+and combined into one. This attempts to save space.
+<P>
+A log 
+<I>flowd.log</I>
+
+is written to the data directory containing various diagnostics. 
+<P>
+</DL>
+<A NAME="lbAF">&nbsp;</A>
+<H2>OUTPUT FORMAT</H2>
+
+<P>
+The output is a set of binary data with the following C-structures.
+<BR>
+
+<P>
+Firstly a small header is written
+<BR>
+
+<PRE>
+
+typedef struct
+{
+    char  sig1;                    /* File signature 'F' */
+    char  sig2;                    /* File signature 'O' */
+    char  sig3;                    /* File signature 'O' */
+    unsigned char  version;        /* 10 = 1.0, 44=4.4,  200=20.0  */
+    char  options[4];              /* options affecting size of struct */
+} header;
+
+This is followed by the flowdata structures as:
+
+typedef struct
+{
+    time_t    timestamp;   /* From unix_secs in the netflow header */
+    ulong_t   srcIP;       /* Source IP address */
+    ulong_t   dstIP;       /* Destination IP address */
+    ulong_t   packets_to;  /* Number of packets in the flow */
+    ulong_t   packets_from;/* Number of packets in the flow */
+    ulong_t   bytes_to;    /* Number of bytes in the flow */
+    ulong_t   bytes_from;  /* Number of bytes in the flow */
+    ushort_t  srcIDB;      /* Source interface */
+    ushort_t  dstIDB;      /* Destination interface */
+    ushort_t  srcport;     /* Source port */
+    ushort_t  dstport;     /* Destination port */
+    ushort_t  protocol;    /* Protocol number */
+    ushort_t  srcAS;       /* Peer AS of source address */
+    ushort_t  dstAS;       /* Peer AS of destination address */
+    ushort_t  bi;          /* 1=bi-directional , 0=Uni-directional */
+    ushort_t  flows;       /* Number of flows for this one */
+                           /* size = 46 */
+    ushort_t  communities_len;
+    uint32_t  community1;   
+    uint32_t  community2;   
+    uint32_t  community3;   
+    uint32_t  community4;   
+                           /* size=64 */
+} tracedetails;
+
+If no BGP communities are being collected, the first 46 bytes only are used.
+<BR>
+
+</PRE>
+
+<P>
+<A NAME="lbAG">&nbsp;</A>
+<H2>SIGNALS</H2>
+
+The 
+<I>SIGUSR1 </I>
+
+signal will immediatly flush to the next trace file.
+The 
+<I>SIGUSR2 </I>
+
+signal toggles debug on/off. This will create a file &quot;debug.0&quot;
+that is similar to the trace files but outputs the flows without tallying
+duplicates and reverse flows.
+<P>
+<A NAME="lbAH">&nbsp;</A>
+<H2>EXAMPLES</H2>
+
+<P>
+
+To store 24 hours of history with data being saved every 5 minutes with BGP
+communities.
+<DL COMPACT><DT><DD>
+<BR>
+
+<P>
+<PRE>
+<B>flowd -t 24 -f 300 -c </B>
+</PRE>
+
+</DL>
+
+<A NAME="lbAI">&nbsp;</A>
+<H2>SEE ALSO</H2>
+
+<I><A HREF="http://localhost/cgi-bin/man/man2html?1+flowread">flowread</A>(1)</I>
+
+<A NAME="lbAJ">&nbsp;</A>
+<H2>AUTHORS</H2>
+
+Harry Raaymakers
+<BR>
+
+Jim Crumpler ,bgp API and ip2cidr lib
+<BR>
+
+Eric Sven Ristad and Peter N. Yianilos, libpa library
+<P>
+<BR>
+
+<A NAME="lbAK">&nbsp;</A>
+<H2>BUGS</H2>
+
+Please send bug reports to <A HREF="mailto:harryr@connect.com.au">harryr@connect.com.au</A>
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">NAME</A><DD>
+<DT><A HREF="#lbAC">SYNOPSIS</A><DD>
+<DT><A HREF="#lbAD">DESCRIPTION</A><DD>
+<DT><A HREF="#lbAE">OPTIONS</A><DD>
+<DT><A HREF="#lbAF">OUTPUT FORMAT</A><DD>
+<DT><A HREF="#lbAG">SIGNALS</A><DD>
+<DT><A HREF="#lbAH">EXAMPLES</A><DD>
+<DT><A HREF="#lbAI">SEE ALSO</A><DD>
+<DT><A HREF="#lbAJ">AUTHORS</A><DD>
+<DT><A HREF="#lbAK">BUGS</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="http://localhost/cgi-bin/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 00:56:47 GMT, March 23, 2001
+</BODY>
+</HTML>

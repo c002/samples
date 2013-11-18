@@ -1,0 +1,168 @@
+Content-type: text/html
+
+<HTML><HEAD><TITLE>Manpage of FLOWREAD</TITLE>
+</HEAD><BODY>
+<H1>FLOWREAD</H1>
+Section: User Commands  (1)<BR>Updated: 13 Mar 2001<BR><A HREF="#index">Index</A>
+<A HREF="http://localhost/cgi-bin/man/man2html">Return to Main Contents</A><HR>
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>NAME</H2>
+
+flowread - read Cisco netflow data files collected by flowd
+<A NAME="lbAC">&nbsp;</A>
+<H2>SYNOPSIS</H2>
+
+
+<B>flowread</B>
+
+<I>inputfile</I>
+
+<BR>
+
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>DESCRIPTION</H2>
+
+<P>
+
+<I>flowread</I> reads flows from a Cisco netflow data file as created by
+<I>flowd. </I>
+
+These files may or may not contain BGP community data. This
+is handled automatically by looking at the data file header for options
+that
+<I><A HREF="http://localhost/cgi-bin/man/man2html?1+flowd">flowd</A>(1) </I>
+
+was invoked with.
+<BR>
+
+<P>
+For ICMP flows, the ICMP type and Code are printed also instead of
+the port numbers.
+<P>
+
+To run
+<I>flowread filename</I>
+
+<BR>
+
+and you probably want to redirect stdout or pipe it.
+<A NAME="lbAE">&nbsp;</A>
+<H2>OPTIONS</H2>
+
+<DL COMPACT>
+<DT>None<DD>
+<BR>
+
+<P>
+</DL>
+<A NAME="lbAF">&nbsp;</A>
+<H2>OUTPUT FORMAT</H2>
+
+<P>
+The output is a text representation of the data structure described 
+in the 
+<I><A HREF="http://localhost/cgi-bin/man/man2html?1+flowd">flowd</A>(1)</I>
+
+manpage.
+<BR>
+
+<P>
+The following is a flow seen 8 times of an 
+ICMP echo request.
+9 Packets and 756 bytes were sent by 
+128.11.17.223 
+to destination 
+210.8.219.54. This Source address was routed via
+AS4648.  
+The flow went from router interface index 11 to 19
+The flow is unidirectional so 0 packets and bytes were send by 210.8.219.54
+<BR>
+
+<P>
+<PRE>
+<I>14-Mar-2001 16:19:14: 128.11.17.223 (AS4648 2764:65412,2764:65480) [9/756] </I>
+<I>-&gt; 210.8.219.54 (AS0) [0/0] icmp=0x800 [11-&gt;19] 8x</I>
+</PRE>
+
+<BR>
+
+<P>
+The following is a tcp flow from Source address and port 63.241.16.56:80 going to
+Destination address and port 203.63.8.2:2973
+<BR>
+
+<P>
+<PRE>
+<I>14-Mar-2001 16:19:14: 63.241.16.56:80 (AS4648 2764:65412,2764:65480) [5/828] </I>
+<I>-&gt; 203.63.8.2:2973 (AS0) [0/0] tcp [11-&gt;21] 1x</I>
+</PRE>
+
+<BR>
+
+<P>
+This flow was seen both ways (&lt;-&gt;). 205.188.248.89 send 3 packets of 128 bytes to 210.10.48.147 which
+in turn sent 5 packets of 216 bytes. The flow was observed 2 times in any direction. Note that the
+flowcount gets incremented each time a flow is seen or its reverse is seen. 
+<BR>
+
+<P>
+<PRE>
+<I>15-Mar-2001 12:04:19: 205.188.248.89:80 (AS4648 2764:65412,2764:65480) [3/128] </I>
+<I>&lt;-&gt; 210.10.48.147:2048 (AS0) [5/216] tcp [11-&gt;19] 2x</I>
+
+</PRE><A NAME="lbAG">&nbsp;</A>
+<H2>EXAMPLES</H2>
+
+<P>
+
+To produce a text dump of the binary data file
+<DL COMPACT><DT><DD>
+<BR>
+
+<P>
+<PRE>
+<B>flowread trace.0 </B>
+</PRE>
+
+</DL>
+
+<A NAME="lbAH">&nbsp;</A>
+<H2>SEE ALSO</H2>
+
+<I><A HREF="http://localhost/cgi-bin/man/man2html?1+flowd">flowd</A>(1)</I>
+
+<A NAME="lbAI">&nbsp;</A>
+<H2>AUTHORS</H2>
+
+Harry Raaymakers
+<BR>
+
+<A HREF="mailto:harryr@connect.com.au">harryr@connect.com.au</A>
+<A NAME="lbAJ">&nbsp;</A>
+<H2>BUGS</H2>
+
+Please send bug reports to <A HREF="mailto:harryr@connect.com.au">harryr@connect.com.au</A>
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">NAME</A><DD>
+<DT><A HREF="#lbAC">SYNOPSIS</A><DD>
+<DT><A HREF="#lbAD">DESCRIPTION</A><DD>
+<DT><A HREF="#lbAE">OPTIONS</A><DD>
+<DT><A HREF="#lbAF">OUTPUT FORMAT</A><DD>
+<DT><A HREF="#lbAG">EXAMPLES</A><DD>
+<DT><A HREF="#lbAH">SEE ALSO</A><DD>
+<DT><A HREF="#lbAI">AUTHORS</A><DD>
+<DT><A HREF="#lbAJ">BUGS</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="http://localhost/cgi-bin/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 02:04:20 GMT, March 22, 2001
+</BODY>
+</HTML>

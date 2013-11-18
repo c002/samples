@@ -1,0 +1,33 @@
+This is a Connect home grown raw netflow grabber with some code pulled from 
+netflow and libs. It dumps this data to binary files that are recycled over 
+time. There is also a reader to convert the binary data into a text representation.
+
+Source is in: /import/src/sbin/bta/v4/src/flowd
+
+Note:
+
+This contains it own copy of the ip2cidr and bgp libs. A small change in
+the API of these libraries was made that would require some change to the netflow
+tools. 
+
+Note on file space:
+
+A worst case scenario, over 24 hours at a sustained 10,000 uni-directional
+flows per second and 64 byte flowrecords requires 55 Gbytes of storage. 
+At 46 byte flowrecords this changes to 39 Gbytes.  
+
+Flowd collapses identical flows and checks for bi-directionality
+which further aids in space conservation under normal conditions (no spoofing
+or async routing games). trace files sees approx 30-40% bidirectional flows.
+
+Memory consumption is directly related to the flush interval. A 5 minute
+flush interval still sees flowd grow to around 200M mem. Probably not a good
+idea to run with much larger intervals on a little meter.
+
+Flow readers are:
+
+   flowview.py - a python implementation that is ssssslow, but easily hackable.
+   flowread    - a C implementation and quickest at this time. 
+
+
+22-Mar-2001 harryr

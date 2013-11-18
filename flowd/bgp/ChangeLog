@@ -1,0 +1,14 @@
+1998-11-18  Jim Crumpler  <Jim.Crumpler@unicity.com.au>
+
+	* bgp.c: added pending events and override for signal handling.
+
+1998-11-16  Jim Crumpler  <Jim.Crumpler@unicity.com.au>
+
+	* bgp.c: removed printf and debug call from signal handler v.bad.
+
+Wed Nov  4 12:52:42 1998  Jim Crumpler  <jgc@nara.off.connect.com.au>
+
+	* bgp_api.c: bgp_delete_route() was leaking in the shared
+ 	segment. mpm_free() was being called twice on attr->communities
+ 	instead of one for attr->as_path.
+	

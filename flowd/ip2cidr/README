@@ -1,0 +1,10 @@
+This directory contains the IP to CIDR (and CIDR to CIDR) storage and lookup
+library.
+
+It also contains the persistant memory allocation library that uses a general
+purpose memory allocation library over the top of an mmap()'ed file to
+provide persistency to allocated memory.
+
+The two files need to compiled in as:
+
+$CC $CFLAGS -o progname $CFILES ip2cidr.c mpmalloc.c -lthread $LIBRARIES
