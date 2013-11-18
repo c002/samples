@@ -1,0 +1,62 @@
+This dir contains the necessary files to compile up a 
+'net-snmp-5.08' snmpd agent that includes various netflow info
+as extracted from bdf files on meters where such an snmpd agent would
+run. It may even work with other net-snmp versions.
+
+First build the net-snmp-5.08 as per instructions.
+
+Add the module flowtagTable.[ch] to agent/mibgroups
+Rerun the 'configure' with the additional option to
+include the netflow module: 
+
+./configure  --prefix=whateva --with-mib-modules="flowtagTable"
+( May have to replace -lcrypto with -lcrypt )
+
+To build the module, it needs to be linked against the btalib bdf_api:
+   
+   cd to subdir 'agent'
+
+   Check the parameters in flowtagTable.h 
+
+   Edit the mibgroups/Makefile and add
+	CPPFLAGS=-I${BTALIB_PATH}
+   Edit the Makefile and add 
+	LOCAL_LIBS=-L${BTALIB_PATH} -lbta -lbdf_api
+	Add $(LOCAL_LIBS) at end of LIBS
+
+   Do a 'make' and 'make install', it should build clean and 
+   produce a 'snmpd'
+
+   Drop a netflow*.bdf file in NETFLOW_DIR and you
+   should be able to run it on a localhost and succesfully
+   do something like: 
+
+   snmpwalk -v 1  -c public localhost .1.3.6.1.4.1.17548
+
+The netflow MIB is described in the CCA*.txt SMI files.
+
+Deploying
+
+The following shared libs are required:
+	libnetsnmp.so.5
+	libnetsnmpagent.so.5
+	libnetsnmphelpers.so.5
+	libnetsnmpmibs.so.5
+put these in meter:/opt/snmp/lib
+
+A snmpd.conf is required, put this in meter:/opt/snmp/etc
+
+A startup script like:
+
+--
+#!/bin/sh
+
+LD_LIBRARY_PATH=/opt/snmp/lib:${LD_LIBRARY_PATH}
+export LD_LIBRARY_PATH
+
+#/opt/snmp/sbin/snmpd -l /var/log/snmpd.log -C -c /opt/snmp/etc/snmpd.conf
+/opt/snmp/sbin/snmpd -f -l /var/log/snmpd.log -L -D -V -d -C -c /opt/snmp/etc/snmpd.conf
+
+--
+Should get things going.
+

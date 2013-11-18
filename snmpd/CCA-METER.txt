@@ -1,0 +1,63 @@
+CCA-METER-MIB DEFINITIONS ::= BEGIN
+
+IMPORTS
+    MODULE-IDENTITY, OBJECT-TYPE, Counter32,
+    IpAddress, mib-2, enterprises	FROM SNMPv2-SMI
+    DisplayString, TimeStamp, TimeTicks      	FROM SNMPv2-TC
+    connect, meter			FROM CCA-PRIVATE
+    MODULE-COMPLIANCE, OBJECT-GROUP    FROM SNMPv2-CONF;
+
+meterMIB MODULE-IDENTITY
+    LAST-UPDATED "9411010000Z"
+    ORGANIZATION "Connect"
+    CONTACT-INFO
+            "        Fred
+
+             Phone:  +
+             Email:  dev@connect.com.au"
+    DESCRIPTION
+            "The MIB module for managing netflow meters."
+    REVISION      "9103310000Z"
+    DESCRIPTION
+            "meter stats such as netflow.
+            "
+    ::= { connect 1 }
+
+-- connect		OBJECT IDENTIFIER ::= { enterprises 19000 }
+-- meter		OBJECT IDENTIFIER ::= { connect 1 }
+netflow		OBJECT IDENTIFIER ::= { meter 1 }
+flowsum		OBJECT IDENTIFIER ::= { meter 2 }
+
+-- NetflowHost OBJECT-TYPE
+--     SYNTAX      DisplayString
+--     MAX-ACCESS  read-only
+--     STATUS      current
+--     DESCRIPTION
+--             "The hostname of the meter."
+--     ::= { netflow 2 }
+-- 
+NetflowFlowCount OBJECT-TYPE
+     SYNTAX      Counter32
+     MAX-ACCESS  read-only
+     STATUS      current
+     DESCRIPTION
+             "The total number of Flows processed in this timestamp."
+     ::= { netflow 3 }
+ 
+-- NetflowFlowFilterCount OBJECT-TYPE
+--     SYNTAX      Counter32
+--     MAX-ACCESS  read-only
+--     STATUS      current
+--     DESCRIPTION
+--             "The total number of Flows processed after filtering in this timestamp."
+--     ::= { netflow 4 }
+
+NetflowTimestamp OBJECT-TYPE
+    SYNTAX      Counter32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+            "The current timestamp of most recent flows flush."
+    ::= { netflow 5 }
+
+END

@@ -1,0 +1,16 @@
+CCA-PRIVATE DEFINITIONS ::= BEGIN
+
+-- $Id: CCA-PRIVATE.txt,v 1.1.1.1 2004/05/29 09:07:42 harry Exp $
+-- $Source: /usr/local/cvsroot/netflow/netflow/snmpd/CCA-PRIVATE.txt,v $
+
+IMPORTS
+    MODULE-IDENTITY, OBJECT-TYPE, Counter32,
+    IpAddress, mib-2, enterprises	FROM SNMPv2-SMI
+    DisplayString, TimeStamp      	FROM SNMPv2-TC
+    MODULE-COMPLIANCE, OBJECT-GROUP    FROM SNMPv2-CONF;
+
+connect		OBJECT IDENTIFIER ::= { enterprises 17458 }
+meter		OBJECT IDENTIFIER ::= { connect 1 }
+flowsum		OBJECT IDENTIFIER ::= { connect 2 }
+
+END
